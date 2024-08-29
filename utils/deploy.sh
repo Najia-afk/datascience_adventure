@@ -109,7 +109,8 @@ deploy() {
     BASE_DIR=$(dirname $(realpath "$0"))
     echo "BASE_DIR: $BASE_DIR"
 
-    PROJECT_DIR="$BASE_DIR/../datascience_adventure"  # Correct path to the datascience_adventure directory
+    # Correct the project directory to the current working directory
+    PROJECT_DIR=$(pwd)
     echo "PROJECT_DIR: $PROJECT_DIR"
 
     NGINX_HTML_DIR="/var/www/htmx_website"
@@ -201,6 +202,7 @@ deploy() {
 
     echo "Deployment complete!"
 }
+
 
 # Execute the deployment process
 deploy
