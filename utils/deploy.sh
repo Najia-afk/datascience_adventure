@@ -77,12 +77,16 @@ generate_script_docs() {
     if [ ! -d "docs" ]; then
         sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile docs
         # Update Sphinx configuration to include Python source files
-        echo "sys.path.insert(0, os.path.abspath('../'))" >> docs/conf.py
+        sed -i '1i\import sys, os' docs/conf.py
+        sed -i "/sys\.path\.insert/a sys.path.insert(0, os.path.abspath('../'))" docs/conf.py
     fi
 
     # Build the documentation
     sphinx-apidoc -o docs/source .
-    make -C docs html
+    make -C docs html || {
+        echo "Failed to build documentation with Sphinx. Check the configuration."
+        return
+    }
 
     # Move the generated documentation to the output directory
     mv docs/_build/html/* "$output_dir/"
