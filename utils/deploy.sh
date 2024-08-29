@@ -17,11 +17,11 @@ restart_or_start_service() {
 
 # Copy updated static files to the web directory
 echo "Copying updated static files..."
-sudo cp -r datascience_adventure/app/static/* /var/www/htmx_website/
+sudo cp -r app/static/* /var/www/htmx_website/
 
 # Copy updated Nginx configuration
 echo "Copying updated Nginx configuration..."
-sudo cp datascience_adventure/nginx/htmx_website /etc/nginx/sites-available/htmx_website
+sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
 
 # Create a symbolic link if it doesn't already exist
 if [ ! -L /etc/nginx/sites-enabled/htmx_website ]; then
