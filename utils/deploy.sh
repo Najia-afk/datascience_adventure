@@ -117,13 +117,15 @@ deploy() {
     fi
 
     # Iterate over mission directories at the same level as Datascience-Adventure
-    for mission in $MISSION_PARENT_DIR/mission*/; do
+    for mission in "$MISSION_PARENT_DIR"/mission*/; do
         # Check if the directory exists and is not empty
-        if [ -d "$mission" ]; then
+        if [ -d "$mission" ] && [ "$(ls -A "$mission")" ]; then
             mission_name=$(basename "$mission")
             notebook_dir="$mission"  # Assuming notebooks are in the root of each mission directory
             scripts_dir="$mission/src/scripts"
             output_dir="$NGINX_HTML_DIR/$mission_name"
+
+            echo "Processing mission: $mission_name"
 
             # Create the output directory if it does not exist
             sudo mkdir -p "$output_dir"
@@ -136,7 +138,7 @@ deploy() {
             # Place files in Nginx directory
             place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
         else
-            echo "Mission directory $mission does not exist or is not accessible. Skipping..."
+            echo "Mission directory $mission does not exist, is not accessible, or is empty. Skipping..."
         fi
     done
 
