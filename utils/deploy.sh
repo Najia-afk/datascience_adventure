@@ -33,8 +33,8 @@ fi
 echo "Refreshing Nginx configuration..."
 sudo nginx -t && sudo systemctl reload nginx
 
-# Restart or start the Flask application service
-echo "Restarting Flask service..."
+# Restart or start the Gunicorn service managed by systemd
+echo "Restarting or starting the Gunicorn service..."
 restart_or_start_service "htmx_website.service"
 
 # Output status of services
