@@ -1,7 +1,7 @@
 # nginx/htmx_website
 server {
     listen 80;
-    server_name your-domain.com;
+    server_name datascience-adventure.xyz;
 
     location / {
         proxy_pass http://127.0.0.1:5000;
