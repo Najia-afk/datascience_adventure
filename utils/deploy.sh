@@ -43,10 +43,16 @@ convert_notebooks() {
     local output_dir=$2
 
     echo "Converting notebooks in $notebook_dir to HTML..."
+    mkdir -p "$output_dir"
     for notebook in "$notebook_dir"/*.ipynb; do
         if [ -f "$notebook" ]; then
-            jupyter nbconvert --to html "$notebook" --output-dir "$output_dir"
+            jupyter nbconvert --to html "$notebook" --output-dir "$output_dir" || {
+                echo "Failed to convert $notebook. Skipping..."
+                continue
+            }
             echo "Converted: $notebook"
+        else
+            echo "No notebooks found in $notebook_dir."
         fi
     done
 }
@@ -61,9 +67,14 @@ generate_script_docs() {
     for script in "$scripts_dir"/*.py; do
         if [ -f "$script" ]; then
             script_name=$(basename "$script" .py)
-            pydoc -w "$script"
+            pydoc -w "$script" || {
+                echo "Failed to generate documentation for $script. Skipping..."
+                continue
+            }
             mv "$script_name.html" "$output_dir/"
             echo "Generated doc for: $script"
+        else
+            echo "No scripts found in $scripts_dir."
         fi
     done
 }
@@ -74,15 +85,23 @@ place_files() {
     local destination_dir=$2
 
     echo "Copying HTML files from $source_dir to $destination_dir..."
-    sudo cp -r "$source_dir"/* "$destination_dir"
+    sudo cp -r "$source_dir"/* "$destination_dir" || {
+        echo "Failed to copy files from $source_dir to $destination_dir. Check permissions."
+    }
 }
 
 # Main deployment logic
 deploy() {
     # Define base directories
     BASE_DIR=$(dirname $(realpath "$0"))
-    MISSION_PARENT_DIR=$(dirname "$BASE_DIR")  # Parent directory of Dataventure-Science and missions
+    MISSION_PARENT_DIR=$(dirname "$BASE_DIR")  # Parent directory of Datascience-Adventure and missions
     NGINX_HTML_DIR="/var/www/htmx_website"
+
+    # Ensure required commands are available
+    if ! command -v jupyter &> /dev/null || ! command -v pydoc &> /dev/null; then
+        echo "Error: Required commands 'jupyter' and 'pydoc' are not installed."
+        exit 1
+    fi
 
     # Iterate over mission directories at the same level as Datascience-Adventure
     for mission in "$MISSION_PARENT_DIR"/mission*/; do
@@ -92,7 +111,8 @@ deploy() {
         output_dir="$NGINX_HTML_DIR/$mission_name"
 
         # Create the output directory if it does not exist
-        mkdir -p "$output_dir"
+        sudo mkdir -p "$output_dir"
+        sudo chown -R ubuntu:ubuntu "$output_dir"
 
         # Convert notebooks and generate script docs
         convert_notebooks "$notebook_dir" "$output_dir"
