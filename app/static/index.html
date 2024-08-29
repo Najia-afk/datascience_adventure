@@ -1,43 +1,87 @@
-<!-- app/static/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple HTMX Web Page</title>
+    <title>Data Science Portfolio - Landing Page</title>
+    <!-- Include HTMX for dynamic content loading -->
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <!-- Include basic CSS for newspaper style -->
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
         }
         .container {
-            max-width: 800px;
+            width: 90%;
+            max-width: 900px;
             margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 2px solid #333;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 3em;
+            font-weight: bold;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+        .navbar a {
+            padding: 14px 20px;
+            display: block;
+            color: #ffffff;
+            text-decoration: none;
+            text-align: center;
+        }
+        .navbar a:hover {
+            background-color: #555;
         }
         .content {
-            margin-top: 20px;
+            padding: 20px;
+        }
+        .article {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #333;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to My Simple HTMX Web Page</h1>
-        <button hx-get="/load-content" hx-target="#dynamic-content" hx-swap="innerHTML">
-            Load Content
-        </button>
-        <div id="dynamic-content" class="content"></div>
-        <h2>Submit Your Feedback</h2>
-        <form hx-post="/submit-feedback" hx-target="#form-response" hx-swap="innerHTML">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-            <br><br>
-            <label for="feedback">Feedback:</label>
-            <textarea id="feedback" name="feedback" required></textarea>
-            <br><br>
-            <button type="submit">Submit</button>
-        </form>
-        <div id="form-response" class="content"></div>
+        <!-- Header Section -->
+        <div class="header">
+            <h1>Data Science Portfolio</h1>
+            <p>Your Journey in Data Science, One Project at a Time</p>
+        </div>
+
+        <!-- Navigation Bar for Different Projects -->
+        <div class="navbar">
+            <a href="#" hx-get="/load-introduction" hx-target="#main-content" hx-swap="innerHTML">Introduction</a>
+            <a href="#" hx-get="/load-project-1" hx-target="#main-content" hx-swap="innerHTML">Project 1</a>
+            <a href="#" hx-get="/load-project-2" hx-target="#main-content" hx-swap="innerHTML">Project 2</a>
+            <a href="#" hx-get="/load-project-3" hx-target="#main-content" hx-swap="innerHTML">Project 3</a>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="main-content" class="content">
+            <!-- Default Content -->
+            <div class="article">
+                <h2>Welcome to My Data Science Portfolio</h2>
+                <p>Click on the tabs above to explore different projects I've worked on, from data analysis to machine learning models and more.</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
