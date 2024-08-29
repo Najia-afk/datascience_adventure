@@ -1,4 +1,4 @@
-# app/server.py
+#!/usr/bin/env python3
 from flask import Flask, request
 
 app = Flask(__name__, static_folder='static', static_url_path='')
