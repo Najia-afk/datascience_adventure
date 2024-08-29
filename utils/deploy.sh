@@ -51,8 +51,6 @@ convert_notebooks() {
                 continue
             }
             echo "Converted: $notebook"
-        else
-            echo "No notebooks found in $notebook_dir."
         fi
     done
 }
@@ -63,6 +61,12 @@ generate_script_docs() {
     local output_dir=$2
 
     echo "Generating HTML documentation for scripts in $scripts_dir using Sphinx..."
+    
+    # Check if the scripts directory exists
+    if [ ! -d "$scripts_dir" ]; then
+        echo "Scripts directory $scripts_dir does not exist. Skipping documentation generation."
+        return
+    fi
 
     # Navigate to the scripts directory
     cd "$scripts_dir" || exit
@@ -112,6 +116,12 @@ deploy() {
 
     # Iterate over mission directories at the same level as Datascience-Adventure
     for mission in "$MISSION_PARENT_DIR"/mission*/; do
+        # Check if mission directory exists
+        if [ ! -d "$mission" ]; then
+            echo "Mission directory $mission does not exist. Skipping..."
+            continue
+        fi
+
         mission_name=$(basename "$mission")
         notebook_dir="$mission"  # Assuming notebooks are in the root of each mission directory
         scripts_dir="$mission/src/scripts"
