@@ -1,0 +1,43 @@
+<!-- app/static/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple HTMX Web Page</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .content {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to My Simple HTMX Web Page</h1>
+        <button hx-get="/load-content" hx-target="#dynamic-content" hx-swap="innerHTML">
+            Load Content
+        </button>
+        <div id="dynamic-content" class="content"></div>
+        <h2>Submit Your Feedback</h2>
+        <form hx-post="/submit-feedback" hx-target="#form-response" hx-swap="innerHTML">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <br><br>
+            <label for="feedback">Feedback:</label>
+            <textarea id="feedback" name="feedback" required></textarea>
+            <br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="form-response" class="content"></div>
+    </div>
+</body>
+</html>
