@@ -117,7 +117,7 @@ deploy() {
     fi
 
     # Iterate over mission directories at the same level as Datascience-Adventure
-    for mission in "$MISSION_PARENT_DIR"/mission*/; do
+    for mission in $MISSION_PARENT_DIR/mission*/; do
         # Check if the directory exists and is not empty
         if [ -d "$mission" ]; then
             mission_name=$(basename "$mission")
@@ -157,4 +157,4 @@ deploy() {
 }
 
 # Execute the deployment process
-deploy 
+deploy
