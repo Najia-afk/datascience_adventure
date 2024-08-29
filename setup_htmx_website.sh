@@ -19,6 +19,17 @@ sudo apt install -y nginx python3 python3-pip certbot python3-certbot-nginx ufw
 echo "Installing Flask..."
 pip3 install Flask
 
+# Remove existing setup if it exists
+echo "Removing any existing setup..."
+sudo systemctl stop htmx_website.service || true
+sudo systemctl disable htmx_website.service || true
+sudo rm -f /etc/systemd/system/htmx_website.service
+sudo rm -rf /var/www/htmx_website
+sudo rm -f /etc/nginx/sites-available/htmx_website
+sudo rm -f /etc/nginx/sites-enabled/htmx_website
+sudo nginx -t || true
+sudo systemctl reload nginx || true
+
 # Create the application directory
 echo "Creating application directory..."
 sudo mkdir -p /var/www/htmx_website
@@ -91,7 +102,7 @@ echo "Configuring Nginx..."
 cat <<EOF | sudo tee /etc/nginx/sites-available/htmx_website
 server {
     listen 80;
-    server_name $DOMAIN www.$DOMAIN;
+    server_name $DOMAIN;
 
     location / {
         proxy_pass http://127.0.0.1:5000;
@@ -108,9 +119,9 @@ sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 
-# Obtain SSL certificate using Certbot
+# Obtain SSL certificate using Certbot without www domain
 echo "Obtaining SSL certificates with Certbot..."
-sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos -m $EMAIL
+sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
 
 # Set up automatic renewal of SSL certificates
 echo "Setting up automatic SSL certificate renewal..."
