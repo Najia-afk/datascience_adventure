@@ -157,4 +157,4 @@ deploy() {
 }
 
 # Execute the deployment process
-deploy
+deploy 
