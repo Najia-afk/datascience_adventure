@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Science Portfolio</title>
+    <!-- Link to your CSS file -->
     <link rel="stylesheet" href="styles/styles.css">
     <!-- Include HTMX for dynamic content loading -->
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
@@ -16,13 +17,21 @@
             <p>Explore various data science projects and their interactive notebooks.</p>
         </div>
 
-        <!-- Project Links -->
-        <div class="content">
-            <h2>Projects</h2>
-            <ul>
-                <li><a href="mission3.html">Mission 3: Data Science with Jupyter Notebook</a></li>
-                <!-- Add more projects as needed -->
-            </ul>
+        <!-- Navigation Bar -->
+        <div class="navbar">
+            <a href="#" hx-get="/load-introduction" hx-target="#main-content" hx-swap="innerHTML">Introduction</a>
+            <a href="#" hx-get="/load-project-1" hx-target="#main-content" hx-swap="innerHTML">Project 1</a>
+            <a href="#" hx-get="/load-project-2" hx-target="#main-content" hx-swap="innerHTML">Project 2</a>
+            <a href="#" hx-get="/load-project-3" hx-target="#main-content" hx-swap="innerHTML">Project 3</a>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="main-content" class="content">
+            <!-- Default Content -->
+            <div class="article">
+                <h2>Welcome to My Data Science Portfolio</h2>
+                <p>Click on the tabs above to explore different projects I've worked on, from data analysis to machine learning models and more.</p>
+            </div>
         </div>
     </div>
 </body>

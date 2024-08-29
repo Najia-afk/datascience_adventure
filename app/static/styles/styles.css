@@ -27,6 +27,35 @@ body {
     font-weight: bold;
 }
 
+.navbar {
+    display: flex;
+    justify-content: center;
+    background-color: #333;
+    margin-bottom: 20px;
+}
+
+.navbar a {
+    padding: 14px 20px;
+    display: block;
+    color: #ffffff;
+    text-decoration: none;
+    text-align: center;
+}
+
+.navbar a:hover {
+    background-color: #555;
+}
+
+.content {
+    padding: 20px;
+}
+
+.article {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #333;
+}
+
 .button-container {
     text-align: center;
     margin-top: 20px;
@@ -42,10 +71,6 @@ body {
 
 .button-container a:hover {
     background-color: #357ae8;
-}
-
-.content {
-    padding: 20px;
 }
 
 iframe {

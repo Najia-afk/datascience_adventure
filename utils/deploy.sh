@@ -37,9 +37,86 @@ sudo nginx -t && sudo systemctl reload nginx
 echo "Restarting or starting the Gunicorn service..."
 restart_or_start_service "htmx_website.service"
 
-# Output status of services
-echo "Checking the status of services..."
-sudo systemctl status nginx
-sudo systemctl status htmx_website.service
+# Function to convert Jupyter notebooks to HTML
+convert_notebooks() {
+    local notebook_dir=$1
+    local output_dir=$2
 
-echo "Deployment complete!"
+    echo "Converting notebooks in $notebook_dir to HTML..."
+    for notebook in "$notebook_dir"/*.ipynb; do
+        if [ -f "$notebook" ]; then
+            jupyter nbconvert --to html "$notebook" --output-dir "$output_dir"
+            echo "Converted: $notebook"
+        fi
+    done
+}
+
+# Function to generate HTML documentation for Python scripts
+generate_script_docs() {
+    local scripts_dir=$1
+    local output_dir=$2
+
+    echo "Generating HTML documentation for scripts in $scripts_dir..."
+    mkdir -p "$output_dir"
+    for script in "$scripts_dir"/*.py; do
+        if [ -f "$script" ]; then
+            script_name=$(basename "$script" .py)
+            pydoc -w "$script"
+            mv "$script_name.html" "$output_dir/"
+            echo "Generated doc for: $script"
+        fi
+    done
+}
+
+# Function to place HTML files in Nginx HTML directory
+place_files() {
+    local source_dir=$1
+    local destination_dir=$2
+
+    echo "Copying HTML files from $source_dir to $destination_dir..."
+    sudo cp -r "$source_dir"/* "$destination_dir"
+}
+
+# Main deployment logic
+deploy() {
+    # Define base directories
+    BASE_DIR=$(dirname $(realpath "$0"))
+    MISSION_PARENT_DIR=$(dirname "$BASE_DIR")  # Parent directory of Dataventure-Science and missions
+    NGINX_HTML_DIR="/var/www/htmx_website"
+
+    # Iterate over mission directories at the same level as Datascience-Adventure
+    for mission in "$MISSION_PARENT_DIR"/mission*/; do
+        mission_name=$(basename "$mission")
+        notebook_dir="$mission"  # Assuming notebooks are in the root of each mission directory
+        scripts_dir="$mission/src/scripts"
+        output_dir="$NGINX_HTML_DIR/$mission_name"
+
+        # Create the output directory if it does not exist
+        mkdir -p "$output_dir"
+
+        # Convert notebooks and generate script docs
+        convert_notebooks "$notebook_dir" "$output_dir"
+        generate_script_docs "$scripts_dir" "$output_dir"
+
+        # Place files in Nginx directory
+        place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
+    done
+
+    # Restart or start the Flask service
+    echo "Restarting or starting the Flask service..."
+    restart_or_start_service "htmx_website.service"
+
+    # Restart or start Nginx to apply changes
+    echo "Restarting or starting Nginx..."
+    restart_or_start_service "nginx"
+
+    # Output status of services
+    echo "Checking the status of services..."
+    sudo systemctl status nginx
+    sudo systemctl status htmx_website.service
+
+    echo "Deployment complete!"
+}
+
+# Execute the deployment process
+deploy
