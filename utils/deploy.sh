@@ -57,7 +57,6 @@ convert_notebooks() {
     done
 }
 
-
 # Function to generate HTML documentation for Python scripts using Sphinx
 generate_script_docs() {
     local scripts_dir=$1
@@ -106,8 +105,8 @@ deploy() {
     NGINX_HTML_DIR="/var/www/htmx_website"
 
     # Ensure required commands are available
-    if ! command -v jupyter &> /dev/null || ! command -v pydoc &> /dev/null; then
-        echo "Error: Required commands 'jupyter' and 'pydoc' are not installed."
+    if ! command -v jupyter &> /dev/null || ! command -v sphinx-quickstart &> /dev/null; then
+        echo "Error: Required commands 'jupyter' and 'Sphinx' are not installed."
         exit 1
     fi
 
