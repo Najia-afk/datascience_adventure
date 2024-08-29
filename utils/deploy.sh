@@ -107,10 +107,28 @@ place_files() {
 deploy() {
     # Define base directories
     BASE_DIR=$(dirname $(realpath "$0"))
+    echo "BASE_DIR: $BASE_DIR"
+
     PROJECT_DIR="$BASE_DIR/../datascience_adventure"  # Correct path to the datascience_adventure directory
+    echo "PROJECT_DIR: $PROJECT_DIR"
+
     NGINX_HTML_DIR="/var/www/htmx_website"
+    echo "NGINX_HTML_DIR: $NGINX_HTML_DIR"
+
     # Directory where HTML files are located
     HTML_DIR="$PROJECT_DIR/app/static"
+    echo "HTML_DIR: $HTML_DIR"
+
+    # Check if directories exist
+    if [ ! -d "$PROJECT_DIR" ]; then
+        echo "Error: Project directory $PROJECT_DIR does not exist."
+        exit 1
+    fi
+
+    if [ ! -d "$HTML_DIR" ]; then
+        echo "Error: HTML directory $HTML_DIR does not exist."
+        exit 1
+    fi
 
     # Ensure required commands are available
     if ! command -v jupyter &> /dev/null || ! command -v sphinx-quickstart &> /dev/null; then
@@ -121,6 +139,12 @@ deploy() {
     # Check each HTML file inside app/static for Colab links to determine corresponding mission directories
     for html_file in "$HTML_DIR/"*.html; do
         echo "Processing HTML file: $html_file"
+
+        # Verify if the file exists before processing
+        if [ ! -f "$html_file" ]; then
+            echo "File $html_file does not exist. Skipping..."
+            continue
+        fi
 
         # Extract the Colab link to determine the mission path
         colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$html_file" || true)
