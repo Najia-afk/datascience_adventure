@@ -116,16 +116,17 @@ deploy() {
         exit 1
     fi
 
-    # Iterate over mission directories at the same level as Datascience-Adventure
+    # Iterate over mission directories that exist at the same level as datascience_adventure
     for mission in "$MISSION_PARENT_DIR"/mission*/; do
-        # Check if the directory exists and is not empty
-        if [ -d "$mission" ] && [ "$(ls -A "$mission")" ]; then
+        # Check if the mission directory exists
+        echo "Checking mission: $mission"
+        if [ -d "$mission" ] && [ "$(basename "$mission")" != "datascience_adventure" ]; then
             mission_name=$(basename "$mission")
             notebook_dir="$mission"  # Assuming notebooks are in the root of each mission directory
             scripts_dir="$mission/src/scripts"
             output_dir="$NGINX_HTML_DIR/$mission_name"
 
-            echo "Processing mission: $mission_name"
+            echo "Processing mission: $mission_name at $mission"
 
             # Create the output directory if it does not exist
             sudo mkdir -p "$output_dir"
@@ -138,9 +139,10 @@ deploy() {
             # Place files in Nginx directory
             place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
         else
-            echo "Mission directory $mission does not exist, is not accessible, or is empty. Skipping..."
+            echo "Mission directory $mission does not exist or is not accessible. Skipping..."
         fi
     done
+
 
     # Restart or start the Flask service
     echo "Restarting or starting the Flask service..."
