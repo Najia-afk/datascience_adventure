@@ -57,26 +57,34 @@ convert_notebooks() {
     done
 }
 
-# Function to generate HTML documentation for Python scripts
+
+# Function to generate HTML documentation for Python scripts using Sphinx
 generate_script_docs() {
     local scripts_dir=$1
     local output_dir=$2
 
-    echo "Generating HTML documentation for scripts in $scripts_dir..."
-    mkdir -p "$output_dir"
-    for script in "$scripts_dir"/*.py; do
-        if [ -f "$script" ]; then
-            script_name=$(basename "$script" .py)
-            pydoc -w "$script" || {
-                echo "Failed to generate documentation for $script. Skipping..."
-                continue
-            }
-            mv "$script_name.html" "$output_dir/"
-            echo "Generated doc for: $script"
-        else
-            echo "No scripts found in $scripts_dir."
-        fi
-    done
+    echo "Generating HTML documentation for scripts in $scripts_dir using Sphinx..."
+
+    # Navigate to the scripts directory
+    cd "$scripts_dir" || exit
+
+    # Initialize Sphinx if not already done
+    if [ ! -d "docs" ]; then
+        sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile docs
+        # Update Sphinx configuration to include Python source files
+        echo "sys.path.insert(0, os.path.abspath('../'))" >> docs/conf.py
+    fi
+
+    # Build the documentation
+    sphinx-apidoc -o docs/source .
+    make -C docs html
+
+    # Move the generated documentation to the output directory
+    mv docs/_build/html/* "$output_dir/"
+    echo "Generated docs in: $output_dir"
+
+    # Go back to the original directory
+    cd - || exit
 }
 
 # Function to place HTML files in Nginx HTML directory
