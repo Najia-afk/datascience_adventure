@@ -107,7 +107,7 @@ place_files() {
 deploy() {
     # Define base directories
     BASE_DIR=$(dirname $(realpath "$0"))
-    MISSION_PARENT_DIR=$(dirname "$BASE_DIR")  # Parent directory of Datascience-Adventure and missions
+    PROJECT_DIR="$BASE_DIR/../datascience_adventure"  # Correct path to the datascience_adventure directory
     NGINX_HTML_DIR="/var/www/htmx_website"
 
     # Ensure required commands are available
@@ -116,33 +116,49 @@ deploy() {
         exit 1
     fi
 
-    # Iterate over mission directories that exist at the same level as datascience_adventure
-    for mission in "$MISSION_PARENT_DIR"/mission*/; do
-        # Check if the mission directory exists
-        echo "Checking mission: $mission"
-        if [ -d "$mission" ] && [ "$(basename "$mission")" != "datascience_adventure" ]; then
-            mission_name=$(basename "$mission")
-            notebook_dir="$mission"  # Assuming notebooks are in the root of each mission directory
-            scripts_dir="$mission/src/scripts"
+    # Check each HTML file inside app/static for Colab links to determine corresponding mission directories
+    for html_file in "$PROJECT_DIR/app/static/"*.html; do
+        echo "Processing HTML file: $html_file"
+
+        # Extract the Colab link to determine the mission path
+        colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$html_file" || true)
+
+        # If a Colab link is found, parse it to find the mission directory
+        if [ -n "$colab_link" ]; then
+            echo "Found Colab link: $colab_link"
+
+            # Extract the mission name and relevant paths
+            mission_name=$(echo "$colab_link" | sed -E 's#.*/(mission[^/]+)/.*#\1#')
+            notebook_path=$(echo "$colab_link" | sed -E 's#.*github/[^/]+/([^/]+)#\1#')
+            mission_path="$HOME/$mission_name"
+            notebook_dir="$mission_path"  # Assuming notebooks are at the root of the mission directory
+            scripts_dir="$mission_path/src/scripts"
             output_dir="$NGINX_HTML_DIR/$mission_name"
 
-            echo "Processing mission: $mission_name at $mission"
+            echo "Processing mission: $mission_name"
+            echo "Mission path: $mission_path"
+            echo "Notebook directory: $notebook_dir"
+            echo "Scripts directory: $scripts_dir"
 
-            # Create the output directory if it does not exist
-            sudo mkdir -p "$output_dir"
-            sudo chown -R ubuntu:ubuntu "$output_dir"
+            # Check if the mission directory exists
+            if [ -d "$mission_path" ]; then
+                # Create the output directory if it does not exist
+                sudo mkdir -p "$output_dir"
+                sudo chown -R ubuntu:ubuntu "$output_dir"
 
-            # Convert notebooks and generate script docs
-            convert_notebooks "$notebook_dir" "$output_dir"
-            generate_script_docs "$scripts_dir" "$output_dir"
+                # Convert notebooks and generate script docs
+                convert_notebooks "$notebook_dir" "$output_dir"
+                generate_script_docs "$scripts_dir" "$output_dir"
 
-            # Place files in Nginx directory
-            place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
+                # Place files in Nginx directory
+                place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
+            else
+                echo "Mission directory $mission_path does not exist or is not accessible. Skipping..."
+            fi
         else
-            echo "Mission directory $mission does not exist or is not accessible. Skipping..."
+            echo "No Colab link found in $html_file. Skipping..."
         fi
     done
-
 
     # Restart or start the Flask service
     echo "Restarting or starting the Flask service..."
