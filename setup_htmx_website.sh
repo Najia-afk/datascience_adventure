@@ -3,9 +3,9 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-# Prompt for the domain name
+# Prompt for the domain name and email address
 read -p "Enter your domain name (e.g., example.com): " DOMAIN
-read -p "Enter your email address for SSL certificate: " EMAIL
+read -p "Enter your email address for SSL certificate notifications: " EMAIL
 
 # Update and upgrade the system
 echo "Updating the system..."
@@ -116,11 +116,20 @@ sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos -m 
 echo "Setting up automatic SSL certificate renewal..."
 echo "0 3 * * * /usr/bin/certbot renew --quiet" | sudo tee -a /etc/crontab > /dev/null
 
-# Configure Firewall
+# Configure Firewall with custom rules
 echo "Configuring the firewall..."
-sudo ufw allow 'Nginx Full'
-sudo ufw allow OpenSSH
-sudo ufw enable
+sudo ufw default deny incoming
+sudo ufw default deny outgoing
+sudo ufw limit ssh
+sudo ufw allow http
+sudo ufw allow https
+sudo ufw allow out http
+sudo ufw allow out https
+sudo ufw allow out 53
+sudo ufw allow svn
+sudo ufw allow git
+sudo ufw logging on
+sudo ufw --force enable
 
 # Security hardening - Disable root login
 echo "Disabling root login..."
