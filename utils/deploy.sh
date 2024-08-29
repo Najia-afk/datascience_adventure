@@ -51,6 +51,8 @@ convert_notebooks() {
                 continue
             }
             echo "Converted: $notebook"
+        else
+            echo "No notebooks found in $notebook_dir."
         fi
     done
 }
@@ -116,27 +118,26 @@ deploy() {
 
     # Iterate over mission directories at the same level as Datascience-Adventure
     for mission in "$MISSION_PARENT_DIR"/mission*/; do
-        # Check if mission directory exists
-        if [ ! -d "$mission" ]; then
-            echo "Mission directory $mission does not exist. Skipping..."
-            continue
+        # Check if the directory exists and is not empty
+        if [ -d "$mission" ]; then
+            mission_name=$(basename "$mission")
+            notebook_dir="$mission"  # Assuming notebooks are in the root of each mission directory
+            scripts_dir="$mission/src/scripts"
+            output_dir="$NGINX_HTML_DIR/$mission_name"
+
+            # Create the output directory if it does not exist
+            sudo mkdir -p "$output_dir"
+            sudo chown -R ubuntu:ubuntu "$output_dir"
+
+            # Convert notebooks and generate script docs
+            convert_notebooks "$notebook_dir" "$output_dir"
+            generate_script_docs "$scripts_dir" "$output_dir"
+
+            # Place files in Nginx directory
+            place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
+        else
+            echo "Mission directory $mission does not exist or is not accessible. Skipping..."
         fi
-
-        mission_name=$(basename "$mission")
-        notebook_dir="$mission"  # Assuming notebooks are in the root of each mission directory
-        scripts_dir="$mission/src/scripts"
-        output_dir="$NGINX_HTML_DIR/$mission_name"
-
-        # Create the output directory if it does not exist
-        sudo mkdir -p "$output_dir"
-        sudo chown -R ubuntu:ubuntu "$output_dir"
-
-        # Convert notebooks and generate script docs
-        convert_notebooks "$notebook_dir" "$output_dir"
-        generate_script_docs "$scripts_dir" "$output_dir"
-
-        # Place files in Nginx directory
-        place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
     done
 
     # Restart or start the Flask service
