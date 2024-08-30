@@ -121,29 +121,32 @@ embed_notebook_into_layout() {
 
     echo "Checking layout and notebook files in $output_dir..."
 
+    # Loop through all layout files in the directory
     for layout_file in "$output_dir"/*_layout.html; do
-        # Determine the paths for notebook and final HTML without "_layout"
-        local notebook_html="${layout_file/_layout.html/.html}"  # The actual notebook HTML
-        local final_html="${layout_file/_layout.html/.html}"     # The desired final output without "_layout"
+        # Define the corresponding notebook file and the desired output file
+        local notebook_html="${layout_file/_layout.html/.html}"  # The actual notebook HTML (e.g., Mission3.html)
+        local final_html="${layout_file/_layout.html/.html}"     # The desired final output without "_layout" (e.g., mission3.html)
 
+        # Check if the notebook file exists
         if [ -f "$notebook_html" ]; then
             echo "Embedding $notebook_html into $layout_file..."
 
-            # Read the notebook content
+            # Read the content of the notebook HTML
             notebook_content=$(<"$notebook_html")
 
-            # Embed notebook content into the layout and write to the final HTML file
+            # Embed the notebook content into the layout HTML and save it as final HTML
             sed "/<div class=\"iframe-container\">/r /dev/stdin" "$layout_file" <<<"$notebook_content" > "$final_html"
 
             echo "Notebook successfully embedded into layout: $final_html"
 
-            # Optionally remove the layout file to prevent direct access to the layout version
+            # Optionally remove the original layout file to prevent access to the unembedded layout version
             sudo rm -f "$layout_file"
         else
             echo "No matching notebook HTML found for $layout_file. Ensure the naming and paths are correct."
         fi
     done
 }
+
 
 # Function to place HTML files in Nginx HTML directory
 place_files() {
