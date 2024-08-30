@@ -23,11 +23,11 @@ update_static_files_and_nginx() {
     sudo find /var/www/htmx_website -type d -exec chmod 755 {} \;
     sudo find /var/www/htmx_website -type f -exec chmod 644 {} \;
 
-    echo "Copying updated Nginx configuration..."
+    echo "Validating new Nginx configuration..."
 
-    # Validate the new Nginx configuration before copying
+    # Validate the new Nginx configuration before applying it
     if sudo nginx -t -c $(pwd)/nginx/htmx_website; then
-        echo "Nginx configuration is valid."
+        echo "New Nginx configuration is valid."
 
         # Backup existing configuration if it exists
         if [ -f /etc/nginx/sites-available/htmx_website ]; then
@@ -35,30 +35,33 @@ update_static_files_and_nginx() {
             sudo cp /etc/nginx/sites-available/htmx_website /etc/nginx/sites-available/htmx_website.bak
         fi
 
-        # Copy the updated configuration
+        # Copy the new configuration file to the Nginx directory
         sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
 
-        # Create symbolic link for Nginx configuration if it does not exist
+        # Create a symbolic link if it doesn't exist
         if [ ! -L /etc/nginx/sites-enabled/htmx_website ]; then
             echo "Creating symbolic link for Nginx configuration..."
             sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
         fi
 
-        echo "Testing Nginx configuration..."
+        # Test the configuration after copying
+        echo "Testing the updated Nginx configuration..."
         if sudo nginx -t; then
             echo "Nginx configuration test passed. Reloading Nginx..."
             sudo systemctl reload nginx
         else
-            echo "Error: Nginx configuration test failed after copying. Restoring previous configuration."
+            echo "Error: Nginx configuration test failed after copying the new configuration."
+            echo "Keeping the old configuration and aborting the reload."
+            # Restore the backup and ensure no changes are made
             sudo cp /etc/nginx/sites-available/htmx_website.bak /etc/nginx/sites-available/htmx_website
-            sudo nginx -t && sudo systemctl reload nginx
             exit 1
         fi
     else
-        echo "Error: Nginx configuration is invalid. Aborting update."
+        echo "Error: The new Nginx configuration is invalid. Aborting the update and keeping the old configuration."
         exit 1
     fi
 }
+
 
 
 # Function to convert Jupyter notebooks to HTML
