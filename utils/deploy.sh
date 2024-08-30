@@ -60,6 +60,7 @@ convert_notebooks() {
 # Function to update Sphinx documentation, fixing toctree warnings
 update_sphinx_docs() {
     local scripts_dir=$1
+    local output_dir="$2/scripts"
 
     echo "Updating Sphinx documentation for scripts in $scripts_dir..."
 
@@ -83,31 +84,22 @@ update_sphinx_docs() {
     # Generate the .rst files for all Python scripts
     sphinx-apidoc -o "$docs_dir/source" "$scripts_dir"
 
-    # Clean previous builds to avoid conflicts and outdated files
+    # Correctly generate index.rst with proper paths
+    {
+        echo ".. toctree::"
+        echo "   :maxdepth: 2"
+        echo "   :caption: Contents:"
+        echo ""
+
+        # List .rst files without nested "source/source" prefix
+        for rst_file in "$docs_dir/source/"*.rst; do
+            rst_filename=$(basename "$rst_file" .rst)
+            echo "   $rst_filename"
+        done
+    } > "$docs_dir/source/index.rst"
+
+    # Clean previous builds to avoid conflicts
     make -C "$docs_dir" clean
-
-    # Correct the generated index.rst if it exists
-    local index_rst="$docs_dir/source/index.rst"
-    if [ -f "$index_rst" ]; then
-        echo "Fixing index.rst references..."
-
-        # Update index.rst to remove incorrect paths or double "source"
-        sed -i 's/source\///g' "$index_rst"
-
-        # Ensure correct toctree structure
-        {
-            echo ".. toctree::"
-            echo "   :maxdepth: 2"
-            echo "   :caption: Contents:"
-            echo ""
-
-            # Add valid .rst files to the toctree
-            for rst_file in "$docs_dir/source/"*.rst; do
-                rst_filename=$(basename "$rst_file" .rst)
-                echo "   $rst_filename"
-            done
-        } > "$index_rst"
-    fi
 
     # Build the documentation
     make -C "$docs_dir" html || {
@@ -115,10 +107,11 @@ update_sphinx_docs() {
         return
     }
 
-    echo "Documentation updated successfully."
+    # Move the generated documentation to the correct output directory under scripts
+    sudo mkdir -p "$output_dir"
+    sudo mv "$docs_dir/_build/html/"* "$output_dir/"
+    echo "Generated docs in: $output_dir"
 }
-
-
 
 # Function to place HTML files in Nginx HTML directory
 place_files() {
@@ -189,7 +182,6 @@ deploy() {
 
             # Extract the mission name and relevant paths
             mission_name=$(echo "$colab_link" | sed -E 's#.*/(mission[^/]+)/.*#\1#')
-            notebook_path=$(echo "$colab_link" | sed -E 's#.*github/[^/]+/([^/]+)#\1#')
             mission_path="$HOME/$mission_name"
             notebook_dir="$mission_path"  # Assuming notebooks are at the root of the mission directory
             scripts_dir="$mission_path/src/scripts"
@@ -208,7 +200,7 @@ deploy() {
 
                 # Convert notebooks and generate script docs
                 convert_notebooks "$notebook_dir" "$output_dir"
-                update_sphinx_docs "$scripts_dir"
+                update_sphinx_docs "$scripts_dir" "$output_dir"
 
                 # Place files in Nginx directory
                 place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
