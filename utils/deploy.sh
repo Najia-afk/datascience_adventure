@@ -81,9 +81,7 @@ update_sphinx_docs() {
         return
     }
 
-    sudo mkdir -p "$output_dir"
-    sudo mv "$docs_dir/_build/html/"* "$output_dir/"
-    echo "Generated docs in: $output_dir"
+    move_generated_docs "$docs_dir/_build/html" "$output_dir"
 }
 
 # Function to generate a proper index.rst for Sphinx documentation
@@ -101,6 +99,22 @@ generate_index_rst() {
     done
 }
 
+# Function to move generated documentation to the correct output directory
+move_generated_docs() {
+    local source_dir="$1"
+    local destination_dir="$2"
+
+    echo "Moving generated documentation from $source_dir to $destination_dir..."
+    if [ -d "$destination_dir" ]; then
+        echo "Cleaning existing directory $destination_dir..."
+        sudo rm -rf "$destination_dir"/*  # Clean up the existing directory
+    fi
+
+    sudo mkdir -p "$destination_dir"
+    sudo mv "$source_dir"/* "$destination_dir/"
+    echo "Moved generated docs to: $destination_dir"
+}
+
 # Function to embed the notebook HTML into the corresponding layout HTML
 embed_notebook_into_layout() {
     local output_dir=$1
@@ -111,10 +125,8 @@ embed_notebook_into_layout() {
 
         if [ -f "$notebook_html" ]; then
             echo "Embedding $notebook_html into $layout_file..."
-
             notebook_content=$(<"$notebook_html")
             sed "/<div class=\"iframe-container\">/a $notebook_content" "$layout_file" > "$final_html"
-
             echo "Notebook embedded into layout: $final_html"
         else
             echo "No matching notebook HTML found for $layout_file. Skipping..."
