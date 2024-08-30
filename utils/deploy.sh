@@ -122,12 +122,16 @@ convert_notebooks() {
     echo "Converting notebooks in $notebook_dir to HTML..."
     mkdir -p "$output_dir"
 
+    # Set permissions to ensure the process can write to the output directory
+    sudo chown -R www-data:www-data "$output_dir"
+    sudo chmod -R 775 "$output_dir"
+
     activate_venv
     for notebook in "$notebook_dir"/*.ipynb; do
         if [ -f "$notebook" ]; then
-            # Ensure permissions are set correctly for the output directory
+            # Adjust permissions of the output directory before conversion
             sudo chown -R www-data:www-data "$output_dir"
-            sudo chmod -R 755 "$output_dir"
+            sudo chmod -R 775 "$output_dir"
             
             jupyter nbconvert --to html "$notebook" --output-dir "$output_dir" || {
                 echo "Failed to convert $notebook. Skipping..."
@@ -139,6 +143,10 @@ convert_notebooks() {
         fi
     done
     deactivate_venv
+
+    # Reset permissions for security
+    sudo chown -R www-data:www-data "$output_dir"
+    sudo chmod -R 755 "$output_dir"
 }
 
 # Function to update Sphinx documentation
