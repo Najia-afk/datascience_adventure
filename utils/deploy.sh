@@ -114,7 +114,7 @@ install_python_packages_in_venv() {
     deactivate_venv
 }
 
-# Function to convert Jupyter notebooks to HTML
+# Function to convert Jupyter notebooks to HTML with additional debugging
 convert_notebooks() {
     local notebook_dir=$1
     local output_dir=$2
@@ -123,21 +123,24 @@ convert_notebooks() {
     mkdir -p "$output_dir"
 
     # Set permissions to ensure the process can write to the output directory
+    echo "Setting permissions for $output_dir..."
     sudo chown -R www-data:www-data "$output_dir"
     sudo chmod -R 775 "$output_dir"
 
     activate_venv
+
+    # List all notebooks in the directory to confirm they exist
+    echo "Listing notebooks in $notebook_dir:"
+    ls -l "$notebook_dir"/*.ipynb
+
     for notebook in "$notebook_dir"/*.ipynb; do
         if [ -f "$notebook" ]; then
-            # Adjust permissions of the output directory before conversion
-            sudo chown -R www-data:www-data "$output_dir"
-            sudo chmod -R 775 "$output_dir"
-            
+            echo "Converting $notebook..."
             jupyter nbconvert --to html "$notebook" --output-dir "$output_dir" || {
-                echo "Failed to convert $notebook. Skipping..."
+                echo "Failed to convert $notebook due to permissions or other errors. Skipping..."
                 continue
             }
-            echo "Converted: $notebook"
+            echo "Converted: $notebook to $output_dir"
         else
             echo "No notebooks found in $notebook_dir."
         fi
@@ -145,9 +148,11 @@ convert_notebooks() {
     deactivate_venv
 
     # Reset permissions for security
+    echo "Resetting permissions for $output_dir..."
     sudo chown -R www-data:www-data "$output_dir"
     sudo chmod -R 755 "$output_dir"
 }
+
 
 # Function to update Sphinx documentation
 update_sphinx_docs() {
