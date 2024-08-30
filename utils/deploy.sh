@@ -83,17 +83,17 @@ update_sphinx_docs() {
     # Generate the .rst files for all Python scripts
     sphinx-apidoc -o "$docs_dir/source" "$scripts_dir"
 
-    # Automatically update index.rst to include all generated .rst files, resolving any missing references
+    # Correctly generate index.rst with proper paths to avoid nested "source/source"
     {
         echo ".. toctree::"
         echo "   :maxdepth: 2"
         echo "   :caption: Contents:"
         echo ""
 
+        # List .rst files without the incorrect source/source prefix
         for rst_file in "$docs_dir/source/"*.rst; do
             rst_filename=$(basename "$rst_file" .rst)
-            # Add each .rst file to the index, ensuring correct paths
-            echo "   source/$rst_filename"
+            echo "   $rst_filename"
         done
     } > "$docs_dir/source/index.rst"
 
