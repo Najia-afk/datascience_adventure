@@ -39,7 +39,7 @@ read -p "Enter 'SSL' for full setup with SSL, 'SSL Only' to only configure SSL, 
 install_packages() {
     echo "Installing Nginx, Python3, pip, Gunicorn, and Certbot..."
     sudo apt update && sudo apt upgrade -y
-    sudo apt install -y nginx python3 python3-pip certbot python3-certbot-nginx ufw
+    sudo apt install -y nginx python3 python3-pip certbot python3-certbot-nginx ufw python3-venv
 }
 
 # Function to install Python dependencies
@@ -72,8 +72,13 @@ server {
     listen [::]:80;
     server_name $DOMAIN;
 
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+
+    # Redirect all other traffic to HTTPS
     location / {
-        return 301 https://\$host\$request_uri;
+        return 301 https://$host$request_uri;
     }
 }
 
@@ -156,19 +161,38 @@ EOF
 # Function to configure the firewall and harden the system
 configure_firewall_and_security() {
     echo "Configuring the firewall..."
+    sudo ufw enable
     sudo ufw default deny incoming
     sudo ufw default allow outgoing
     sudo ufw allow ssh
     sudo ufw allow 'Nginx Full'
-    sudo ufw enable
+    sudo ufw allow 53
+    sudo ufw allow 443/tcp
+
+    sudo ufw reload
+    sudo ufw status
 
     echo "Disabling root login for SSH..."
     sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
     sudo systemctl restart sshd
 
+    echo "Setting up the virtual environment..."
+    # Create the virtual environment if it doesn't exist
+    if [ ! -d "/srv/htmx_website/venv" ]; then
+        sudo mkdir -p /srv/htmx_website/venv
+        sudo python3 -m venv /srv/htmx_website/venv
+        echo "Virtual environment created at /srv/htmx_website/venv."
+    else
+        echo "Virtual environment already exists at /srv/htmx_website/venv."
+    fi
+
+    echo "Activating the virtual environment and installing dependencies..."
+    sudo /srv/htmx_website/venv/bin/pip install --upgrade pip
+    sudo /srv/htmx_website/venv/bin/pip install Flask gunicorn
+
     echo "Setting secure permissions for /srv/htmx_website..."
-    sudo chown -R www-data:www-data /srv/htmx_website/venv
-    sudo chmod -R 755 /srv/htmx_website/venv
+    sudo chown -R www-data:www-data /srv/htmx_website
+    sudo chmod -R 755 /srv/htmx_website
 }
 
 # Main logic for the setup script
