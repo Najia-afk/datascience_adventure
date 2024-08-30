@@ -3,6 +3,28 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Define the path to the virtual environment
+VENV_DIR="/srv/htmx_website/venv"
+
+# Function to activate the virtual environment
+activate_venv() {
+    if [ -d "$VENV_DIR" ]; then
+        echo "Activating the virtual environment..."
+        source "$VENV_DIR/bin/activate"
+    else
+        echo "Error: Virtual environment not found at $VENV_DIR. Please ensure the virtual environment is set up correctly."
+        exit 1
+    fi
+}
+
+# Function to deactivate the virtual environment
+deactivate_venv() {
+    if [[ "$VIRTUAL_ENV" != "" ]]; then
+        echo "Deactivating the virtual environment..."
+        deactivate
+    fi
+}
+
 # Function to restart or start a service
 restart_or_start_service() {
     local service_name=$1
@@ -76,24 +98,20 @@ update_static_files_and_nginx() {
 
 # Function to install necessary Python packages in the virtual environment
 install_python_packages_in_venv() {
-    local venv_dir="/srv/htmx_website/venv"
-
     echo "Installing required Python packages in the virtual environment..."
 
-    # Check if the virtual environment exists
-    if [ ! -d "$venv_dir" ]; then
-        echo "Error: Virtual environment not found at $venv_dir. Please ensure the virtual environment is set up correctly."
-        exit 1
-    fi
+    # Activate the virtual environment
+    activate_venv
 
-    # Activate the virtual environment and install packages
-    sudo $venv_dir/bin/pip install --upgrade pip
-    sudo $venv_dir/bin/pip install sphinx jupyter dash missingno pandas numpy || {
+    pip install --upgrade pip
+    pip install sphinx jupyter dash missingno pandas numpy Flask gunicorn || {
         echo "Failed to install some packages. Please check the virtual environment setup and package availability."
+        deactivate_venv
         exit 1
     }
 
     echo "Python packages installed successfully in the virtual environment."
+    deactivate_venv
 }
 
 # Function to convert Jupyter notebooks to HTML
@@ -103,6 +121,8 @@ convert_notebooks() {
 
     echo "Converting notebooks in $notebook_dir to HTML..."
     mkdir -p "$output_dir"
+    
+    activate_venv
     for notebook in "$notebook_dir"/*.ipynb; do
         if [ -f "$notebook" ]; then
             jupyter nbconvert --to html "$notebook" --output-dir "$output_dir" || {
@@ -114,6 +134,7 @@ convert_notebooks() {
             echo "No notebooks found in $notebook_dir."
         fi
     done
+    deactivate_venv
 }
 
 # Function to update Sphinx documentation
@@ -130,6 +151,7 @@ update_sphinx_docs() {
     local docs_dir="$scripts_dir/docs"
     mkdir -p "$docs_dir/source"
 
+    activate_venv
     if [ ! -f "$docs_dir/conf.py" ]; then
         sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile "$docs_dir"
         sed -i '1i\import sys, os' "$docs_dir/conf.py"
@@ -142,8 +164,10 @@ update_sphinx_docs() {
     make -C "$docs_dir" clean
     make -C "$docs_dir" html || {
         echo "Failed to build documentation with Sphinx. Check the configuration."
+        deactivate_venv
         return
     }
+    deactivate_venv
 
     move_generated_docs "$docs_dir/_build/html" "$output_dir"
 }
@@ -177,7 +201,6 @@ generate_index_rst() {
     echo "index.rst generated successfully in $source_dir."
 }
 
-
 # Function to move generated documentation to the correct output directory
 move_generated_docs() {
     local source_dir="$1"
@@ -196,7 +219,6 @@ move_generated_docs() {
     sudo find "$destination_dir" -type f -exec chmod 644 {} \;
     echo "Moved generated docs to: $destination_dir"
 }
-
 
 # Function to embed the notebook HTML into the corresponding layout HTML
 embed_notebook_into_layout() {
@@ -231,7 +253,6 @@ embed_notebook_into_layout() {
     done
 }
 
-
 # Function to place HTML files in Nginx HTML directory
 place_files() {
     local source_dir=$1
@@ -253,7 +274,6 @@ place_files() {
     fi
 }
 
-
 # Update the deploy function to handle layout embedding and ensure correct placement of files
 deploy() {
     BASE_DIR=$(dirname $(realpath "$0"))
@@ -272,13 +292,7 @@ deploy() {
     fi
 
     update_static_files_and_nginx
-
     install_python_packages_in_venv
-
-    if ! command -v jupyter &> /dev/null || ! command -v sphinx-quickstart &> /dev/null; then
-        echo "Error: Required commands 'jupyter' and 'Sphinx' are not installed."
-        exit 1
-    fi
 
     for html_file in "$HTML_DIR/"*.html; do
         echo "Processing HTML file: $html_file"
