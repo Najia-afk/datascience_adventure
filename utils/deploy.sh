@@ -121,10 +121,14 @@ convert_notebooks() {
 
     echo "Converting notebooks in $notebook_dir to HTML..."
     mkdir -p "$output_dir"
-    
+
     activate_venv
     for notebook in "$notebook_dir"/*.ipynb; do
         if [ -f "$notebook" ]; then
+            # Ensure permissions are set correctly for the output directory
+            sudo chown -R www-data:www-data "$output_dir"
+            sudo chmod -R 755 "$output_dir"
+            
             jupyter nbconvert --to html "$notebook" --output-dir "$output_dir" || {
                 echo "Failed to convert $notebook. Skipping..."
                 continue
@@ -152,6 +156,8 @@ update_sphinx_docs() {
     mkdir -p "$docs_dir/source"
 
     activate_venv
+    export PYTHONPATH="$scripts_dir"  # Set PYTHONPATH to ensure imports work correctly
+    
     if [ ! -f "$docs_dir/conf.py" ]; then
         sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile "$docs_dir"
         sed -i '1i\import sys, os' "$docs_dir/conf.py"
