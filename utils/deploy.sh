@@ -51,14 +51,26 @@ update_static_files_and_nginx() {
             sudo systemctl reload nginx
         else
             echo "Error: Nginx configuration test failed after copying the new configuration."
-            echo "Keeping the old configuration and aborting the reload."
-            # Restore the backup and ensure no changes are made
+            echo "Restoring the previous configuration and continuing with the old configuration."
+            # Restore the backup and ensure Nginx is using the old configuration without aborting
             sudo cp /etc/nginx/sites-available/htmx_website.bak /etc/nginx/sites-available/htmx_website
-            exit 1
+            sudo nginx -t && sudo systemctl reload nginx
         fi
     else
-        echo "Error: The new Nginx configuration is invalid. Aborting the update and keeping the old configuration."
-        exit 1
+        echo "Error: The new Nginx configuration is invalid. The old configuration will be used, and the process will continue."
+        
+        # Ensure the old configuration and symbolic link exist for the first setup
+        if [ ! -f /etc/nginx/sites-available/htmx_website ]; then
+            echo "No existing configuration found. Using the initial setup."
+            sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
+            if [ ! -L /etc/nginx/sites-enabled/htmx_website ]; then
+                echo "Creating symbolic link for Nginx configuration..."
+                sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+            fi
+            sudo nginx -t && sudo systemctl reload nginx
+        else
+            echo "Continuing with the existing valid configuration."
+        fi
     fi
 }
 
