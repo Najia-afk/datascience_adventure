@@ -24,16 +24,42 @@ update_static_files_and_nginx() {
     sudo find /var/www/htmx_website -type f -exec chmod 644 {} \;
 
     echo "Copying updated Nginx configuration..."
-    sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
 
-    if [ ! -L /etc/nginx/sites-enabled/htmx_website ]; then
-        echo "Creating symbolic link for Nginx configuration..."
-        sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+    # Validate the new Nginx configuration before copying
+    if sudo nginx -t -c $(pwd)/nginx/htmx_website; then
+        echo "Nginx configuration is valid."
+
+        # Backup existing configuration if it exists
+        if [ -f /etc/nginx/sites-available/htmx_website ]; then
+            echo "Backing up existing Nginx configuration..."
+            sudo cp /etc/nginx/sites-available/htmx_website /etc/nginx/sites-available/htmx_website.bak
+        fi
+
+        # Copy the updated configuration
+        sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
+
+        # Create symbolic link for Nginx configuration if it does not exist
+        if [ ! -L /etc/nginx/sites-enabled/htmx_website ]; then
+            echo "Creating symbolic link for Nginx configuration..."
+            sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+        fi
+
+        echo "Testing Nginx configuration..."
+        if sudo nginx -t; then
+            echo "Nginx configuration test passed. Reloading Nginx..."
+            sudo systemctl reload nginx
+        else
+            echo "Error: Nginx configuration test failed after copying. Restoring previous configuration."
+            sudo cp /etc/nginx/sites-available/htmx_website.bak /etc/nginx/sites-available/htmx_website
+            sudo nginx -t && sudo systemctl reload nginx
+            exit 1
+        fi
+    else
+        echo "Error: Nginx configuration is invalid. Aborting update."
+        exit 1
     fi
-
-    echo "Refreshing Nginx configuration..."
-    sudo nginx -t && sudo systemctl reload nginx
 }
+
 
 # Function to convert Jupyter notebooks to HTML
 convert_notebooks() {
