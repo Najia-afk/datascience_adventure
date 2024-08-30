@@ -3,44 +3,92 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Check for internet access
+check_internet_access() {
+    echo "Checking for internet access..."
+    if ! ping -c 1 google.com &> /dev/null; then
+        echo "No internet access detected. Please ensure your server is connected to the internet and try again."
+        exit 1
+    fi
+}
+
+# Check for required files and directories
+check_required_files() {
+    echo "Checking required files and directories..."
+
+    # Check if the application directory exists
+    if [ ! -d "app" ]; then
+        echo "Error: The 'app' directory does not exist. Please ensure your application files are present in the 'app' directory."
+        exit 1
+    fi
+
+    # Check if the nginx configuration file exists
+    if [ ! -f "nginx/htmx_website" ]; then
+        echo "Error: Nginx configuration file 'nginx/htmx_website' not found. Please ensure the file is available."
+        exit 1
+    fi
+
+    echo "Required files and directories are present."
+}
+
 # Prompt for the domain name and setup option
 read -p "Enter your domain name (e.g., example.com): " DOMAIN
 read -p "Enter 'SSL' for full setup with SSL, 'SSL Only' to only configure SSL, or press Enter for no SSL: " OPTION
 
-# Install necessary packages
-echo "Installing Nginx, Python3, pip, and Certbot..."
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y nginx python3 python3-pip certbot python3-certbot-nginx ufw
+# Function to install required packages
+install_packages() {
+    echo "Installing Nginx, Python3, pip, Gunicorn, and Certbot..."
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install -y nginx python3 python3-pip certbot python3-certbot-nginx ufw
+}
 
-# Install Flask
-echo "Installing Flask..."
-pip3 install Flask
+# Function to install Python dependencies
+install_python_dependencies() {
+    echo "Installing Flask and Gunicorn..."
+    pip3 install Flask gunicorn
+}
 
-# Remove existing setup if it exists
-echo "Removing any existing setup..."
-sudo systemctl stop htmx_website.service || true
-sudo systemctl disable htmx_website.service || true
-sudo rm -f /etc/systemd/system/htmx_website.service
-sudo rm -rf /var/www/htmx_website
-sudo rm -f /etc/nginx/sites-available/htmx_website
-sudo rm -f /etc/nginx/sites-enabled/htmx_website
-sudo nginx -t || true
-sudo systemctl reload nginx || true
+# Function to remove existing setup if it exists
+remove_existing_setup() {
+    echo "Removing any existing setup..."
+    sudo systemctl stop htmx_website.service || true
+    sudo systemctl disable htmx_website.service || true
+    sudo rm -f /etc/systemd/system/htmx_website.service
+    sudo rm -rf /srv/htmx_website
+    sudo rm -f /etc/nginx/sites-available/htmx_website
+    sudo rm -f /etc/nginx/sites-enabled/htmx_website
+    sudo nginx -t || true
+    sudo systemctl reload nginx || true
+}
 
-# Only perform SSL setup if specified
-if [[ "$OPTION" == "SSL Only" || "$OPTION" == "SSL" ]]; then
-  # Prompt for email if SSL is chosen
-  read -p "Enter your email address for SSL certificate notifications: " EMAIL
+# Function to configure SSL with Nginx
+configure_nginx_ssl() {
+    read -p "Enter your email address for SSL certificate notifications: " EMAIL
 
-  # Configure Nginx to proxy requests to the Flask application with SSL
-  echo "Configuring Nginx for SSL..."
-  cat <<EOF | sudo tee /etc/nginx/sites-available/htmx_website
+    echo "Configuring Nginx for SSL..."
+    cat <<EOF | sudo tee /etc/nginx/sites-available/htmx_website
 server {
     listen 80;
+    listen [::]:80;
     server_name $DOMAIN;
 
     location / {
-        proxy_pass http://127.0.0.1:5000;
+        return 301 https://\$host\$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name $DOMAIN;
+
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -49,139 +97,106 @@ server {
 }
 EOF
 
-  # Enable the Nginx configuration
-  sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
-  sudo nginx -t
-  sudo systemctl restart nginx
+    sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+    sudo nginx -t
+    sudo systemctl restart nginx
 
-  # Obtain SSL certificate using Certbot
-  echo "Obtaining SSL certificates with Certbot..."
-  sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
+    echo "Obtaining SSL certificates with Certbot..."
+    sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
 
-  # Set up automatic renewal of SSL certificates
-  echo "Setting up automatic SSL certificate renewal..."
-  echo "0 3 * * * /usr/bin/certbot renew --quiet" | sudo tee -a /etc/crontab > /dev/null
+    echo "Setting up automatic SSL certificate renewal..."
+    echo "0 3 * * * /usr/bin/certbot renew --quiet" | sudo tee -a /etc/crontab > /dev/null
 
-  echo "SSL setup complete! Visit https://$DOMAIN to see your HTMX website!"
-  exit 0
-fi
+    echo "SSL setup complete! Visit https://$DOMAIN to see your HTMX website!"
+}
 
-# Full setup without SSL
-if [[ "$OPTION" == "" || "$OPTION" == "SSL" ]]; then
-  # Create the application directory
-  echo "Creating application directory..."
-  sudo mkdir -p /var/www/htmx_website
-  sudo chown -R $USER:$USER /var/www/htmx_website
-  cd /var/www/htmx_website
+# Function to configure Nginx without SSL
+configure_nginx() {
+    echo "Configuring Nginx..."
+    sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
 
-  # Create a basic HTMX HTML file
-  echo "Creating index.html..."
-  cat <<EOF > /var/www/htmx_website/index.html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTMX Website</title>
-    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-</head>
-<body>
-    <h1>Hello from HTMX Website</h1>
-    <button hx-get="/hello" hx-target="#response">Click Me</button>
-    <div id="response"></div>
-</body>
-</html>
-EOF
+    sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+    sudo nginx -t
+    sudo systemctl restart nginx
+}
 
-  # Create a basic Python Flask server
-  echo "Creating server.py..."
-  cat <<EOF > /var/www/htmx_website/server.py
-from flask import Flask, send_from_directory
+# Function to set up the Flask application
+setup_flask_app() {
+    echo "Setting up the Flask application in /srv/htmx_website..."
+    sudo mkdir -p /srv/htmx_website
+    sudo cp -r app/* /srv/htmx_website/
+    sudo chown -R www-data:www-data /srv/htmx_website
+    sudo find /srv/htmx_website -type d -exec chmod 755 {} \;  # Set directories to 755
+    sudo find /srv/htmx_website -type f -exec chmod 644 {} \;  # Set files to 644
+}
 
-app = Flask(__name__, static_folder='.', static_url_path='')
-
-@app.route('/')
-def index():
-    return app.send_static_file('index.html')
-
-@app.route('/hello')
-def hello():
-    return '<p>Hello from HTMX!</p>'
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
-EOF
-
-  # Create a systemd service for the Flask application
-  echo "Creating systemd service file..."
-  cat <<EOF | sudo tee /etc/systemd/system/htmx_website.service
+# Function to create the Gunicorn systemd service
+create_gunicorn_service() {
+    echo "Creating systemd service file for Gunicorn..."
+    cat <<EOF | sudo tee /etc/systemd/system/htmx_website.service
 [Unit]
-Description=HTMX Website using Flask
+Description=HTMX Website using Gunicorn and Flask
 After=network.target
 
 [Service]
-User=www-data
-WorkingDirectory=/var/www/htmx_website
-ExecStart=/usr/bin/python3 /var/www/htmx_website/server.py
+User=ubuntu
+WorkingDirectory=/srv/htmx_website
+ExecStart=/usr/local/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 server:app
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-  # Reload systemd and start the Flask service
-  echo "Starting Flask service..."
-  sudo systemctl daemon-reload
-  sudo systemctl start htmx_website.service
-  sudo systemctl enable htmx_website.service
-
-  # Configure Nginx to proxy requests to the Flask application
-  echo "Configuring Nginx..."
-  cat <<EOF | sudo tee /etc/nginx/sites-available/htmx_website
-server {
-    listen 80;
-    server_name $DOMAIN;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
+    sudo systemctl daemon-reload
+    sudo systemctl start htmx_website.service
+    sudo systemctl enable htmx_website.service
 }
-EOF
 
-  # Enable the Nginx configuration
-  sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
-  sudo nginx -t
-  sudo systemctl restart nginx
+# Function to configure the firewall and harden the system
+configure_firewall_and_security() {
+    echo "Configuring the firewall..."
+    sudo ufw default deny incoming
+    sudo ufw default allow outgoing
+    sudo ufw allow ssh
+    sudo ufw allow 'Nginx Full'
+    sudo ufw enable
 
-  # Configure Firewall with custom rules
-  echo "Configuring the firewall..."
-  sudo ufw default deny incoming
-  sudo ufw default deny outgoing
-  sudo ufw limit ssh
-  sudo ufw allow http
-  sudo ufw allow https
-  sudo ufw allow out http
-  sudo ufw allow out https
-  sudo ufw allow out 53
-  sudo ufw allow svn
-  sudo ufw allow git
-  sudo ufw logging on
-  sudo ufw --force enable
+    echo "Disabling root login for SSH..."
+    sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+    sudo systemctl restart sshd
 
-  # Security hardening - Disable root login
-  echo "Disabling root login..."
-  sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
-  sudo systemctl restart sshd
+    echo "Setting secure permissions for /srv/htmx_website..."
+    sudo chown -R www-data:www-data /srv/htmx_website/venv
+    sudo chmod -R 755 /srv/htmx_website/venv
+}
 
-  # Set proper permissions
-  echo "Setting proper permissions for security..."
-  sudo chown -R www-data:www-data /var/www/htmx_website
-  sudo chmod -R 755 /var/www/htmx_website
+# Main logic for the setup script
+main() {
+    check_internet_access
+    check_required_files
+    install_packages
+    install_python_dependencies
+    remove_existing_setup
 
-  echo "Setup complete! Your HTMX website is now running."
-  echo "Visit http://$DOMAIN to see your HTMX website!"
-fi
+    if [[ "$OPTION" == "SSL Only" ]]; then
+        configure_nginx_ssl
+        exit 0
+    fi
+
+    setup_flask_app
+    create_gunicorn_service
+
+    if [[ "$OPTION" == "SSL" ]]; then
+        configure_nginx_ssl
+    else
+        configure_nginx
+    fi
+
+    configure_firewall_and_security
+
+    echo "Setup complete! Your HTMX website is now running on http://$DOMAIN or https://$DOMAIN if SSL is configured."
+}
+
+# Run the main function
+main

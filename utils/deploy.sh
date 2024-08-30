@@ -19,6 +19,9 @@ restart_or_start_service() {
 update_static_files_and_nginx() {
     echo "Copying updated static files..."
     sudo cp -r app/static/* /var/www/htmx_website/
+    sudo chown -R www-data:www-data /var/www/htmx_website
+    sudo find /var/www/htmx_website -type d -exec chmod 755 {} \;
+    sudo find /var/www/htmx_website -type f -exec chmod 644 {} \;
 
     echo "Copying updated Nginx configuration..."
     sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
@@ -88,16 +91,31 @@ update_sphinx_docs() {
 generate_index_rst() {
     local source_dir=$1
 
-    echo ".. toctree::" > "$source_dir/index.rst"
-    echo "   :maxdepth: 2" >> "$source_dir/index.rst"
-    echo "   :caption: Contents:" >> "$source_dir/index.rst"
-    echo "" >> "$source_dir/index.rst"
+    # Check if the source directory exists
+    if [ ! -d "$source_dir" ]; then
+        echo "Source directory $source_dir does not exist. Skipping index generation."
+        return
+    fi
 
+    echo "Generating index.rst in $source_dir..."
+
+    # Create the index.rst file
+    {
+        echo ".. toctree::"
+        echo "   :maxdepth: 2"
+        echo "   :caption: Contents:"
+        echo ""
+    } > "$source_dir/index.rst"
+
+    # Append .rst files to the index.rst
     for rst_file in "$source_dir/"*.rst; do
         rst_filename=$(basename "$rst_file" .rst)
         echo "   $rst_filename" >> "$source_dir/index.rst"
     done
+
+    echo "index.rst generated successfully in $source_dir."
 }
+
 
 # Function to move generated documentation to the correct output directory
 move_generated_docs() {
@@ -112,8 +130,12 @@ move_generated_docs() {
 
     sudo mkdir -p "$destination_dir"
     sudo mv "$source_dir"/* "$destination_dir/"
+    sudo chown -R www-data:www-data "$destination_dir"
+    sudo find "$destination_dir" -type d -exec chmod 755 {} \;
+    sudo find "$destination_dir" -type f -exec chmod 644 {} \;
     echo "Moved generated docs to: $destination_dir"
 }
+
 
 # Function to embed the notebook HTML into the corresponding layout HTML
 embed_notebook_into_layout() {
@@ -139,8 +161,9 @@ embed_notebook_into_layout() {
 
             echo "Notebook successfully embedded into layout: $final_html"
 
-            # Optionally remove the original layout file to prevent access to the unembedded layout version
+            # Remove the original layout file to prevent access to the unembedded layout version
             sudo rm -f "$layout_file"
+            sudo mv "$final_html" "$notebook_html"  # Ensure endpoint matches the original notebook file
         else
             echo "No matching notebook HTML found for $layout_file. Ensure the naming and paths are correct."
         fi
@@ -161,10 +184,14 @@ place_files() {
         sudo cp -r "$source_dir"/* "$destination_dir" || {
             echo "Failed to copy files from $source_dir to $destination_dir. Check permissions."
         }
+        sudo chown -R www-data:www-data "$destination_dir"
+        sudo find "$destination_dir" -type d -exec chmod 755 {} \;
+        sudo find "$destination_dir" -type f -exec chmod 644 {} \;
     else
         echo "Warning: Source and destination directories are the same. Skipping copy operation."
     fi
 }
+
 
 # Update the deploy function to handle layout embedding and ensure correct placement of files
 deploy() {
@@ -214,7 +241,7 @@ deploy() {
 
             if [ -d "$mission_path" ]; then
                 sudo mkdir -p "$output_dir"
-                sudo chown -R ubuntu:ubuntu "$output_dir"
+                sudo chown -R www-data:www-data "$output_dir"
 
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
