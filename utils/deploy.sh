@@ -120,19 +120,28 @@ embed_notebook_into_layout() {
     local output_dir=$1
 
     for layout_file in "$output_dir"/*_layout.html; do
-        local notebook_html="${layout_file/_layout.html/.html}"
-        local final_html="${layout_file/_layout.html/_final.html}"
+        local notebook_html="${layout_file/_layout.html/.html}" # Original notebook HTML
+        local final_html="${layout_file/_layout.html/.html}"    # The target combined file that will be named mission3.html
 
         if [ -f "$notebook_html" ]; then
             echo "Embedding $notebook_html into $layout_file..."
+
+            # Read the content of the notebook
             notebook_content=$(<"$notebook_html")
+
+            # Embed the notebook content into the layout file
             sed "/<div class=\"iframe-container\">/a $notebook_content" "$layout_file" > "$final_html"
+
             echo "Notebook embedded into layout: $final_html"
+
+            # Remove the original notebook HTML to avoid accidental access
+            sudo rm -f "$notebook_html"
         else
             echo "No matching notebook HTML found for $layout_file. Skipping..."
         fi
     done
 }
+
 
 # Function to place HTML files in Nginx HTML directory
 place_files() {
