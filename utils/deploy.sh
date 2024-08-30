@@ -102,10 +102,17 @@ place_files() {
     local destination_dir=$2
 
     echo "Copying HTML files from $source_dir to $destination_dir..."
-    sudo cp -r "$source_dir"/* "$destination_dir" || {
-        echo "Failed to copy files from $source_dir to $destination_dir. Check permissions."
-    }
+    
+    # Check if the source and destination are not the same before copying
+    if [ "$source_dir" != "$destination_dir" ]; then
+        sudo cp -r "$source_dir"/* "$destination_dir" || {
+            echo "Failed to copy files from $source_dir to $destination_dir. Check permissions."
+        }
+    else
+        echo "Source and destination directories are the same. Skipping copy operation."
+    fi
 }
+
 
 # Main deployment logic
 deploy() {
