@@ -57,7 +57,7 @@ convert_notebooks() {
     done
 }
 
-# Function to generate HTML documentation for Python scripts using Sphinx
+# Function to configure Sphinx and generate HTML documentation for Python scripts
 generate_script_docs() {
     local scripts_dir=$1
     local output_dir=$2
@@ -75,11 +75,25 @@ generate_script_docs() {
 
     # Initialize Sphinx if not already done
     if [ ! -d "docs" ]; then
-        sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile docs
-        # Update Sphinx configuration to include Python source files
+        sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --ext-autosummary --makefile docs
+        # Update Sphinx configuration to include Python source files and enable necessary extensions
         sed -i '1i\import sys, os' docs/conf.py
         sed -i "/sys\.path\.insert/a sys.path.insert(0, os.path.abspath('../'))" docs/conf.py
+        sed -i "/extensions = \[/a 'sphinx.ext.autodoc', 'sphinx.ext.autosummary'," docs/conf.py
     fi
+
+    # Automatically add all scripts to the index.rst file
+    INDEX_RST="docs/source/index.rst"
+    echo ".. toctree::" > "$INDEX_RST"
+    echo "   :maxdepth: 2" >> "$INDEX_RST"
+    echo "   :caption: Contents:" >> "$INDEX_RST"
+    echo "" >> "$INDEX_RST"
+    
+    # List all Python scripts in the source folder
+    for script in "$scripts_dir"/*.py; do
+        script_name=$(basename "$script" .py)
+        echo "   $script_name" >> "$INDEX_RST"
+    done
 
     # Build the documentation
     sphinx-apidoc -o docs/source .
@@ -112,7 +126,6 @@ place_files() {
         echo "Source and destination directories are the same. Skipping copy operation."
     fi
 }
-
 
 # Main deployment logic
 deploy() {
@@ -213,7 +226,6 @@ deploy() {
 
     echo "Deployment complete!"
 }
-
 
 # Execute the deployment process
 deploy
