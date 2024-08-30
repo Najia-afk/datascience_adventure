@@ -119,9 +119,11 @@ move_generated_docs() {
 embed_notebook_into_layout() {
     local output_dir=$1
 
+    echo "Checking layout and notebook files in $output_dir..."
+
     for layout_file in "$output_dir"/*_layout.html; do
-        local notebook_html="${layout_file/_layout.html/.html}"  # Original notebook HTML
-        local final_html="${layout_file/_layout.html/.html}"     # The target combined file that will be named mission3.html
+        local notebook_html="${layout_file/_layout.html/.html}"  # Original notebook HTML without "_layout"
+        local final_html="${layout_file/_layout.html/.html}"     # The final file that should be served
 
         if [ -f "$notebook_html" ]; then
             echo "Embedding $notebook_html into $layout_file..."
@@ -132,12 +134,12 @@ embed_notebook_into_layout() {
             # Embed the notebook content into the layout file
             sed "/<div class=\"iframe-container\">/r /dev/stdin" "$layout_file" <<<"$notebook_content" > "$final_html"
 
-            echo "Notebook embedded into layout: $final_html"
+            echo "Notebook successfully embedded into layout: $final_html"
 
-            # Optionally, you can remove the layout file to avoid access
+            # Optionally remove the _layout.html file to prevent access
             sudo rm -f "$layout_file"
         else
-            echo "No matching notebook HTML found for $layout_file. Skipping..."
+            echo "No matching notebook HTML found for $layout_file. Ensure the naming and paths are correct."
         fi
     done
 }
