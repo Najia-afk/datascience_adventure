@@ -144,9 +144,10 @@ Description=HTMX Website using Gunicorn and Flask
 After=network.target
 
 [Service]
-User=ubuntu
+User=www-data
+Group=www-data
 WorkingDirectory=/srv/htmx_website
-ExecStart=/usr/local/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 server:app
+ExecStart=/srv/htmx_website/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 server:app
 Restart=always
 
 [Install]
