@@ -83,22 +83,31 @@ update_sphinx_docs() {
     # Generate the .rst files for all Python scripts
     sphinx-apidoc -o "$docs_dir/source" "$scripts_dir"
 
-    # Correctly generate index.rst with proper paths to avoid nested "source/source"
-    {
-        echo ".. toctree::"
-        echo "   :maxdepth: 2"
-        echo "   :caption: Contents:"
-        echo ""
-
-        # List .rst files without the incorrect source/source prefix
-        for rst_file in "$docs_dir/source/"*.rst; do
-            rst_filename=$(basename "$rst_file" .rst)
-            echo "   $rst_filename"
-        done
-    } > "$docs_dir/source/index.rst"
-
     # Clean previous builds to avoid conflicts and outdated files
     make -C "$docs_dir" clean
+
+    # Correct the generated index.rst if it exists
+    local index_rst="$docs_dir/source/index.rst"
+    if [ -f "$index_rst" ]; then
+        echo "Fixing index.rst references..."
+
+        # Update index.rst to remove incorrect paths or double "source"
+        sed -i 's/source\///g' "$index_rst"
+
+        # Ensure correct toctree structure
+        {
+            echo ".. toctree::"
+            echo "   :maxdepth: 2"
+            echo "   :caption: Contents:"
+            echo ""
+
+            # Add valid .rst files to the toctree
+            for rst_file in "$docs_dir/source/"*.rst; do
+                rst_filename=$(basename "$rst_file" .rst)
+                echo "   $rst_filename"
+            done
+        } > "$index_rst"
+    fi
 
     # Build the documentation
     make -C "$docs_dir" html || {
@@ -108,6 +117,7 @@ update_sphinx_docs() {
 
     echo "Documentation updated successfully."
 }
+
 
 
 # Function to place HTML files in Nginx HTML directory
