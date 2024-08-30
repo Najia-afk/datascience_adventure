@@ -106,13 +106,22 @@ generate_script_docs() {
         return
     }
 
+    # Ensure the output directory exists
+    sudo mkdir -p "$output_dir"
+    
+    # Remove existing content in the destination directories to avoid conflicts
+    echo "Cleaning existing directories in $output_dir..."
+    sudo rm -rf "$output_dir/_sources" "$output_dir/_static" "$output_dir/source"
+
     # Move the generated documentation to the output directory
-    mv docs/_build/html/* "$output_dir/"
+    echo "Moving generated documentation to $output_dir..."
+    sudo mv docs/_build/html/* "$output_dir/"
     echo "Generated docs in: $output_dir"
 
     # Go back to the original directory
     cd - || exit
 }
+
 
 # Function to place HTML files in Nginx HTML directory
 place_files() {
