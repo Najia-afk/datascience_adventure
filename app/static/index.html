@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,31 +9,153 @@
     <link rel="stylesheet" href="styles/styles.css">
     <!-- Include HTMX for dynamic content loading -->
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            padding: 20px;
+            background-color: #4285F4;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #f4f4f4;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar .category {
+            margin-bottom: 20px;
+        }
+
+        .sidebar .category h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .sidebar .category ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .sidebar .category ul li {
+            margin: 5px 0;
+        }
+
+        .sidebar .category ul li a {
+            text-decoration: none;
+            color: #4285F4;
+            padding: 5px 10px;
+            border: 1px solid #4285F4;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar .category ul li a:hover {
+            background-color: #4285F4;
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .content h2 {
+            margin-top: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                box-shadow: none;
+                padding-bottom: 0;
+            }
+        }
+    </style>
 </head>
+
 <body>
+    <!-- Header Section -->
+    <div class="header">
+        <h1>Welcome to My Data Science Portfolio</h1>
+        <p>Explore various data science projects and their interactive notebooks.</p>
+    </div>
+
+    <!-- Main container with sidebar and content -->
     <div class="container">
-        <!-- Header Section -->
-        <div class="header">
-            <h1>Welcome to My Data Science Portfolio</h1>
-            <p>Explore various data science projects and their interactive notebooks.</p>
-        </div>
+        <!-- Sidebar with categories and projects -->
+        <div class="sidebar">
+            <h2>Projects</h2>
 
-        <!-- Navigation Bar -->
-        <div class="navbar">
-            <a href="#" hx-get="/load-introduction" hx-target="#main-content" hx-swap="innerHTML">Introduction</a>
-            <a href="#" hx-get="/load-project-1" hx-target="#main-content" hx-swap="innerHTML">Project 1</a>
-            <a href="#" hx-get="/load-project-2" hx-target="#main-content" hx-swap="innerHTML">Project 2</a>
-            <a href="#" hx-get="/load-project-3" hx-target="#main-content" hx-swap="innerHTML">Project 3</a>
-        </div>
-
-        <!-- Main Content Area -->
-        <div id="main-content" class="content">
-            <!-- Default Content -->
-            <div class="article">
-                <h2>Welcome to My Data Science Portfolio</h2>
-                <p>Click on the tabs above to explore different projects I've worked on, from data analysis to machine learning models and more.</p>
+            <!-- Category: Data Scientist Training -->
+            <div class="category">
+                <h3>Data Scientist Training</h3>
+                <ul>
+                    <li><a href="mission1.html">Project 1</a></li>
+                    <li><a href="mission2.html">Project 2</a></li>
+                    <li><a href="mission3.html">Project 3</a></li>
+                </ul>
             </div>
+
+            <!-- Add more categories as needed -->
+            <!-- Example: Economic Analysis -->
+            <div class="category">
+                <h3>Economic Analysis</h3>
+                <ul>
+                    <li><a href="#">Project 4</a></li>
+                    <li><a href="#">Project 5</a></li>
+                </ul>
+            </div>
+
+            <!-- Example: Sports Analytics -->
+            <div class="category">
+                <h3>Sports Analytics</h3>
+                <ul>
+                    <li><a href="#">Project 6</a></li>
+                    <li><a href="#">Project 7</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="content" id="main-content">
+            <!-- Default Content -->
+            <h2>Welcome to My Data Science Portfolio</h2>
+            <p>Click on the tabs above to explore different projects I've worked on, from data analysis to machine learning models and more.</p>
         </div>
     </div>
 </body>
+
 </html>
