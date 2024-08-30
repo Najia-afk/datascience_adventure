@@ -3,7 +3,7 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-# Function to restart a service if it is running, otherwise start it
+# Function to restart or start a service
 restart_or_start_service() {
     local service_name=$1
     if systemctl is-active --quiet "$service_name"; then
@@ -15,27 +15,22 @@ restart_or_start_service() {
     fi
 }
 
-# Copy updated static files to the web directory
-echo "Copying updated static files..."
-sudo cp -r app/static/* /var/www/htmx_website/
+# Function to copy updated static files and Nginx configuration
+update_static_files_and_nginx() {
+    echo "Copying updated static files..."
+    sudo cp -r app/static/* /var/www/htmx_website/
 
-# Copy updated Nginx configuration
-echo "Copying updated Nginx configuration..."
-sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
+    echo "Copying updated Nginx configuration..."
+    sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
 
-# Create a symbolic link if it doesn't already exist
-if [ ! -L /etc/nginx/sites-enabled/htmx_website ]; then
-    echo "Creating symbolic link for Nginx configuration..."
-    sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
-fi
+    if [ ! -L /etc/nginx/sites-enabled/htmx_website ]; then
+        echo "Creating symbolic link for Nginx configuration..."
+        sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+    fi
 
-# Refresh Nginx configuration
-echo "Refreshing Nginx configuration..."
-sudo nginx -t && sudo systemctl reload nginx
-
-# Restart or start the Gunicorn service managed by systemd
-echo "Restarting or starting the Gunicorn service..."
-restart_or_start_service "htmx_website.service"
+    echo "Refreshing Nginx configuration..."
+    sudo nginx -t && sudo systemctl reload nginx
+}
 
 # Function to convert Jupyter notebooks to HTML
 convert_notebooks() {
@@ -57,60 +52,74 @@ convert_notebooks() {
     done
 }
 
-# Function to update Sphinx documentation, fixing toctree warnings
+# Function to update Sphinx documentation
 update_sphinx_docs() {
     local scripts_dir=$1
     local output_dir="$2/scripts"
 
     echo "Updating Sphinx documentation for scripts in $scripts_dir..."
-
-    # Check if the scripts directory exists
     if [ ! -d "$scripts_dir" ]; then
         echo "Scripts directory $scripts_dir does not exist. Skipping documentation generation."
         return
     fi
 
-    # Navigate to the docs directory
     local docs_dir="$scripts_dir/docs"
     mkdir -p "$docs_dir/source"
 
-    # Initialize Sphinx if not already done
     if [ ! -f "$docs_dir/conf.py" ]; then
         sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile "$docs_dir"
         sed -i '1i\import sys, os' "$docs_dir/conf.py"
         sed -i "/sys\.path\.insert/a sys.path.insert(0, os.path.abspath('../'))" "$docs_dir/conf.py"
     fi
 
-    # Generate the .rst files for all Python scripts
     sphinx-apidoc -o "$docs_dir/source" "$scripts_dir"
+    generate_index_rst "$docs_dir/source"
 
-    # Correctly generate index.rst with proper paths
-    {
-        echo ".. toctree::"
-        echo "   :maxdepth: 2"
-        echo "   :caption: Contents:"
-        echo ""
-
-        # List .rst files without nested "source/source" prefix
-        for rst_file in "$docs_dir/source/"*.rst; do
-            rst_filename=$(basename "$rst_file" .rst)
-            echo "   $rst_filename"
-        done
-    } > "$docs_dir/source/index.rst"
-
-    # Clean previous builds to avoid conflicts
     make -C "$docs_dir" clean
-
-    # Build the documentation
     make -C "$docs_dir" html || {
         echo "Failed to build documentation with Sphinx. Check the configuration."
         return
     }
 
-    # Move the generated documentation to the correct output directory under scripts
     sudo mkdir -p "$output_dir"
     sudo mv "$docs_dir/_build/html/"* "$output_dir/"
     echo "Generated docs in: $output_dir"
+}
+
+# Function to generate a proper index.rst for Sphinx documentation
+generate_index_rst() {
+    local source_dir=$1
+
+    echo ".. toctree::" > "$source_dir/index.rst"
+    echo "   :maxdepth: 2" >> "$source_dir/index.rst"
+    echo "   :caption: Contents:" >> "$source_dir/index.rst"
+    echo "" >> "$source_dir/index.rst"
+
+    for rst_file in "$source_dir/"*.rst; do
+        rst_filename=$(basename "$rst_file" .rst)
+        echo "   $rst_filename" >> "$source_dir/index.rst"
+    done
+}
+
+# Function to embed the notebook HTML into the corresponding layout HTML
+embed_notebook_into_layout() {
+    local output_dir=$1
+
+    for layout_file in "$output_dir"/*_layout.html; do
+        local notebook_html="${layout_file/_layout.html/.html}"
+        local final_html="${layout_file/_layout.html/_final.html}"
+
+        if [ -f "$notebook_html" ]; then
+            echo "Embedding $notebook_html into $layout_file..."
+
+            notebook_content=$(<"$notebook_html")
+            sed "/<div class=\"iframe-container\">/a $notebook_content" "$layout_file" > "$final_html"
+
+            echo "Notebook embedded into layout: $final_html"
+        else
+            echo "No matching notebook HTML found for $layout_file. Skipping..."
+        fi
+    done
 }
 
 # Function to place HTML files in Nginx HTML directory
@@ -131,59 +140,42 @@ place_files() {
 
 # Main deployment logic
 deploy() {
-    # Define base directories
     BASE_DIR=$(dirname $(realpath "$0"))
-    echo "BASE_DIR: $BASE_DIR"
-
-    # Correct the project directory to the current working directory
     PROJECT_DIR=$(pwd)
-    echo "PROJECT_DIR: $PROJECT_DIR"
-
     NGINX_HTML_DIR="/var/www/htmx_website"
-    echo "NGINX_HTML_DIR: $NGINX_HTML_DIR"
-
-    # Directory where HTML files are located
     HTML_DIR="$PROJECT_DIR/app/static"
+
+    echo "BASE_DIR: $BASE_DIR"
+    echo "PROJECT_DIR: $PROJECT_DIR"
+    echo "NGINX_HTML_DIR: $NGINX_HTML_DIR"
     echo "HTML_DIR: $HTML_DIR"
 
-    # Check if directories exist
-    if [ ! -d "$PROJECT_DIR" ]; then
-        echo "Error: Project directory $PROJECT_DIR does not exist."
+    if [ ! -d "$PROJECT_DIR" ] || [ ! -d "$HTML_DIR" ]; then
+        echo "Error: Project or HTML directory does not exist."
         exit 1
     fi
 
-    if [ ! -d "$HTML_DIR" ]; then
-        echo "Error: HTML directory $HTML_DIR does not exist."
-        exit 1
-    fi
+    update_static_files_and_nginx
 
-    # Ensure required commands are available
     if ! command -v jupyter &> /dev/null || ! command -v sphinx-quickstart &> /dev/null; then
         echo "Error: Required commands 'jupyter' and 'Sphinx' are not installed."
         exit 1
     fi
 
-    # Check each HTML file inside app/static for Colab links to determine corresponding mission directories
     for html_file in "$HTML_DIR/"*.html; do
         echo "Processing HTML file: $html_file"
 
-        # Verify if the file exists before processing
         if [ ! -f "$html_file" ]; then
             echo "File $html_file does not exist. Skipping..."
             continue
         fi
 
-        # Extract the Colab link to determine the mission path
         colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$html_file" || true)
 
-        # If a Colab link is found, parse it to find the mission directory
         if [ -n "$colab_link" ]; then
-            echo "Found Colab link: $colab_link"
-
-            # Extract the mission name and relevant paths
             mission_name=$(echo "$colab_link" | sed -E 's#.*/(mission[^/]+)/.*#\1#')
             mission_path="$HOME/$mission_name"
-            notebook_dir="$mission_path"  # Assuming notebooks are at the root of the mission directory
+            notebook_dir="$mission_path"
             scripts_dir="$mission_path/src/scripts"
             output_dir="$NGINX_HTML_DIR/$mission_name"
 
@@ -192,17 +184,13 @@ deploy() {
             echo "Notebook directory: $notebook_dir"
             echo "Scripts directory: $scripts_dir"
 
-            # Check if the mission directory exists
             if [ -d "$mission_path" ]; then
-                # Create the output directory if it does not exist
                 sudo mkdir -p "$output_dir"
                 sudo chown -R ubuntu:ubuntu "$output_dir"
 
-                # Convert notebooks and generate script docs
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
-
-                # Place files in Nginx directory
+                embed_notebook_into_layout "$output_dir"
                 place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
             else
                 echo "Mission directory $mission_path does not exist or is not accessible. Skipping..."
@@ -212,18 +200,8 @@ deploy() {
         fi
     done
 
-    # Restart or start the Flask service
-    echo "Restarting or starting the Flask service..."
     restart_or_start_service "htmx_website.service"
-
-    # Restart or start Nginx to apply changes
-    echo "Restarting or starting Nginx..."
     restart_or_start_service "nginx"
-
-    # Output status of services
-    echo "Checking the status of services..."
-    sudo systemctl status nginx
-    sudo systemctl status htmx_website.service
 
     echo "Deployment complete!"
 }

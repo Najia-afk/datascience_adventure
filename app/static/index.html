@@ -5,157 +5,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Science Portfolio</title>
-    <!-- Link to your CSS file -->
     <link rel="stylesheet" href="styles/styles.css">
     <!-- Include HTMX for dynamic content loading -->
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .header {
-            padding: 20px;
-            background-color: #4285F4;
-            color: white;
-            text-align: center;
-        }
-
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #f4f4f4;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-        }
-
-        .sidebar h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        .sidebar .category {
-            margin-bottom: 20px;
-        }
-
-        .sidebar .category h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .sidebar .category ul {
-            list-style-type: none;
-            padding: 0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .sidebar .category ul li {
-            margin: 5px 0;
-        }
-
-        .sidebar .category ul li a {
-            text-decoration: none;
-            color: #4285F4;
-            padding: 5px 10px;
-            border: 1px solid #4285F4;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .sidebar .category ul li a:hover {
-            background-color: #4285F4;
-            color: white;
-        }
-
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .content h2 {
-            margin-top: 0;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                box-shadow: none;
-                padding-bottom: 0;
-            }
-        }
-    </style>
 </head>
 
 <body>
-    <!-- Header Section -->
-    <div class="header">
-        <h1>Welcome to My Data Science Portfolio</h1>
-        <p>Explore various data science projects and their interactive notebooks.</p>
-    </div>
-
-    <!-- Main container with sidebar and content -->
-    <div class="container">
-        <!-- Sidebar with categories and projects -->
-        <div class="sidebar">
-            <h2>Projects</h2>
-
-            <!-- Category: Data Scientist Training -->
-            <div class="category">
-                <h3>Data Scientist Training</h3>
-                <ul>
-                    <li><a href="mission1.html">Project 1</a></li>
-                    <li><a href="mission2.html">Project 2</a></li>
-                    <li><a href="mission3.html">Project 3</a></li>
-                </ul>
-            </div>
-
-            <!-- Add more categories as needed -->
-            <!-- Example: Economic Analysis -->
-            <div class="category">
-                <h3>Economic Analysis</h3>
-                <ul>
-                    <li><a href="#">Project 4</a></li>
-                    <li><a href="#">Project 5</a></li>
-                </ul>
-            </div>
-
-            <!-- Example: Sports Analytics -->
-            <div class="category">
-                <h3>Sports Analytics</h3>
-                <ul>
-                    <li><a href="#">Project 6</a></li>
-                    <li><a href="#">Project 7</a></li>
-                </ul>
-            </div>
+    <!-- Top Navigation Bar -->
+    <header class="top-bar">
+        <div class="logo">
+            <img src="logo.png" alt="Logo" class="logo-img">
         </div>
+        <nav class="top-nav">
+            <a href="#" hx-get="/load-home" hx-target="#main-content" hx-swap="innerHTML">Home</a>
+            <div class="dropdown">
+                <button class="dropbtn">Projects</button>
+                <div class="dropdown-content">
+                    <a href="#" hx-get="/load-project-1" hx-target="#main-content" hx-swap="innerHTML">Project 1</a>
+                    <a href="#" hx-get="/load-project-2" hx-target="#main-content" hx-swap="innerHTML">Project 2</a>
+                    <a href="#" hx-get="/load-project-3" hx-target="#main-content" hx-swap="innerHTML">Project 3</a>
+                </div>
+            </div>
+            <a href="#" hx-get="/load-contact" hx-target="#main-content" hx-swap="innerHTML">Contact</a>
+            <button class="dark-mode-toggle" hx-get="/toggle-dark-mode" hx-target="body" hx-swap="innerHTML">
+                🌙
+            </button>
+        </nav>
+    </header>
 
-        <!-- Main content area -->
-        <div class="content" id="main-content">
-            <!-- Default Content -->
-            <h2>Welcome to My Data Science Portfolio</h2>
-            <p>Click on the tabs above to explore different projects I've worked on, from data analysis to machine learning models and more.</p>
-        </div>
-    </div>
+    <!-- Main Content Area -->
+    <main id="main-content" class="content">
+        <section class="grid-container">
+            <!-- Sample Grid Item -->
+            <article class="grid-item">
+                <h2>Project Title</h2>
+                <p class="date">Wednesday, August 30, 2024</p>
+                <p class="category">Category - Topic</p>
+                <p>A brief description of the project. Click more to read the details and explore the data science insights.</p>
+                <a href="#" hx-get="/load-project-details" hx-target="#main-content" hx-swap="innerHTML" class="more-link">More</a>
+            </article>
+            <!-- Repeat similar blocks for other projects -->
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>© 2024 Data Science Portfolio</p>
+    </footer>
 </body>
 
 </html>
