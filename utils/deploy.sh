@@ -122,28 +122,28 @@ embed_notebook_into_layout() {
     echo "Checking layout and notebook files in $output_dir..."
 
     for layout_file in "$output_dir"/*_layout.html; do
-        local notebook_html="${layout_file/_layout.html/.html}"  # Original notebook HTML without "_layout"
-        local final_html="${layout_file/_layout.html/.html}"     # The final file that should be served
+        # Determine the paths for notebook and final HTML without "_layout"
+        local notebook_html="${layout_file/_layout.html/.html}"  # The actual notebook HTML
+        local final_html="${layout_file/_layout.html/.html}"     # The desired final output without "_layout"
 
         if [ -f "$notebook_html" ]; then
             echo "Embedding $notebook_html into $layout_file..."
 
-            # Read the content of the notebook
+            # Read the notebook content
             notebook_content=$(<"$notebook_html")
 
-            # Embed the notebook content into the layout file
+            # Embed notebook content into the layout and write to the final HTML file
             sed "/<div class=\"iframe-container\">/r /dev/stdin" "$layout_file" <<<"$notebook_content" > "$final_html"
 
             echo "Notebook successfully embedded into layout: $final_html"
 
-            # Optionally remove the _layout.html file to prevent access
+            # Optionally remove the layout file to prevent direct access to the layout version
             sudo rm -f "$layout_file"
         else
             echo "No matching notebook HTML found for $layout_file. Ensure the naming and paths are correct."
         fi
     done
 }
-
 
 # Function to place HTML files in Nginx HTML directory
 place_files() {
@@ -152,16 +152,18 @@ place_files() {
 
     echo "Copying HTML files from $source_dir to $destination_dir..."
 
+    # Check if source and destination paths are not the same
     if [ "$source_dir" != "$destination_dir" ]; then
+        # Perform the copy operation
         sudo cp -r "$source_dir"/* "$destination_dir" || {
             echo "Failed to copy files from $source_dir to $destination_dir. Check permissions."
         }
     else
-        echo "Source and destination directories are the same. Skipping copy operation."
+        echo "Warning: Source and destination directories are the same. Skipping copy operation."
     fi
 }
 
-# Main deployment logic
+# Update the deploy function to handle layout embedding and ensure correct placement of files
 deploy() {
     BASE_DIR=$(dirname $(realpath "$0"))
     PROJECT_DIR=$(pwd)
@@ -214,6 +216,8 @@ deploy() {
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
                 embed_notebook_into_layout "$output_dir"
+
+                # Place files correctly
                 place_files "$output_dir" "$NGINX_HTML_DIR/$mission_name"
             else
                 echo "Mission directory $mission_path does not exist or is not accessible. Skipping..."
