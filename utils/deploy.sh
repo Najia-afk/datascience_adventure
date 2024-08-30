@@ -74,7 +74,27 @@ update_static_files_and_nginx() {
     fi
 }
 
+# Function to install necessary Python packages in the virtual environment
+install_python_packages_in_venv() {
+    local venv_dir="/srv/htmx_website/venv"
 
+    echo "Installing required Python packages in the virtual environment..."
+
+    # Check if the virtual environment exists
+    if [ ! -d "$venv_dir" ]; then
+        echo "Error: Virtual environment not found at $venv_dir. Please ensure the virtual environment is set up correctly."
+        exit 1
+    fi
+
+    # Activate the virtual environment and install packages
+    sudo $venv_dir/bin/pip install --upgrade pip
+    sudo $venv_dir/bin/pip install sphinx jupyter dash missingno pandas numpy || {
+        echo "Failed to install some packages. Please check the virtual environment setup and package availability."
+        exit 1
+    }
+
+    echo "Python packages installed successfully in the virtual environment."
+}
 
 # Function to convert Jupyter notebooks to HTML
 convert_notebooks() {
@@ -252,6 +272,8 @@ deploy() {
     fi
 
     update_static_files_and_nginx
+
+    install_python_packages_in_venv
 
     if ! command -v jupyter &> /dev/null || ! command -v sphinx-quickstart &> /dev/null; then
         echo "Error: Required commands 'jupyter' and 'Sphinx' are not installed."
