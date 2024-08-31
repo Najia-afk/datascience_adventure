@@ -80,11 +80,6 @@ server {
     location /styles/ {
         alias /var/www/htmx_website/styles/;
     }
-
-    # Redirect all other traffic to HTTPS
-    location / {
-        return 301 https://$host$request_uri;
-    }
 }
 
 server {

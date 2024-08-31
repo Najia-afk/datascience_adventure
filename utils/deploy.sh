@@ -136,7 +136,9 @@ convert_notebooks() {
     for notebook in "$notebook_dir"/*.ipynb; do
         if [ -f "$notebook" ]; then
             echo "Converting $notebook..."
-            jupyter nbconvert --to html "$notebook" --output-dir "$output_dir" || {
+
+            # Use the full path to jupyter-nbconvert and sudo with environment preservation
+            sudo -E /srv/htmx_website/venv/bin/jupyter-nbconvert "$notebook" --to html --output-dir "$output_dir" || {
                 echo "Failed to convert $notebook due to permissions or other errors. Skipping..."
                 continue
             }
@@ -145,6 +147,7 @@ convert_notebooks() {
             echo "No notebooks found in $notebook_dir."
         fi
     done
+
     deactivate_venv
 
     # Reset permissions for security
@@ -152,7 +155,6 @@ convert_notebooks() {
     sudo chown -R www-data:www-data "$output_dir"
     sudo chmod -R 755 "$output_dir"
 }
-
 
 # Function to update Sphinx documentation
 update_sphinx_docs() {
@@ -170,7 +172,7 @@ update_sphinx_docs() {
 
     activate_venv
     export PYTHONPATH="$scripts_dir"  # Set PYTHONPATH to ensure imports work correctly
-    
+
     if [ ! -f "$docs_dir/conf.py" ]; then
         sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile "$docs_dir"
         sed -i '1i\import sys, os' "$docs_dir/conf.py"
