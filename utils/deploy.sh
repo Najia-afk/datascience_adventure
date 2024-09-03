@@ -92,8 +92,7 @@ process_project() {
     # Copy static files and update Nginx configuration
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
 
-    # Set permissions for static files
-    set_permissions "$nginx_html_dir" "www-data:www-data"
+    
 
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
@@ -122,6 +121,9 @@ process_project() {
         fi
     done
 
+    # Set permissions for static files
+    set_permissions "$nginx_html_dir" "www-data:www-data"
+
     # Restart services after deployment
     restart_or_start_service "htmx_website.service"
     restart_or_start_service "nginx"
@@ -136,7 +138,6 @@ update_static_files_and_nginx() {
 
     log "Copying updated static files for project: $project_dir"
     sudo cp -r "$project_dir/app/static/"* "$nginx_html_dir/"
-    set_permissions "$nginx_html_dir" "www-data:www-data"
 
     log "Validating new Nginx configuration..."
     if sudo nginx -t -c "$project_dir/nginx/htmx_website"; then
