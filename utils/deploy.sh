@@ -92,33 +92,28 @@ process_project() {
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
         log "Processing HTML file: $html_file"
+        project_name=$(basename "$html_file" _layout.html)
+        colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$project_name" || true)
 
-        if [ -f "$html_file" ]; then
-            colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$html_file" || true)
+        if [ -n "$colab_link" ]; then
+            project_path="$BASE_DIR/$project_name"
+            notebook_dir="$project_path"
+            scripts_dir="$project_path/src/scripts"
+            output_dir="$nginx_html_dir/$project_name"
 
-            if [ -n "$colab_link" ]; then
-                mission_name=$(echo "$colab_link" | sed -E 's#.*/(mission[^/]+)/.*#\1#')
-                mission_path="$BASE_DIR/$mission_name"
-                notebook_dir="$mission_path"
-                scripts_dir="$mission_path/src/scripts"
-                output_dir="$nginx_html_dir/$mission_name"
-
-                log "Processing mission: $mission_name"
-                if [ -d "$mission_path" ]; then
-                    sudo mkdir -p "$output_dir"
-                    set_permissions "$output_dir" "www-data:www-data"
-                    convert_notebooks "$notebook_dir" "$output_dir"
-                    update_sphinx_docs "$scripts_dir" "$output_dir"
-                    embed_notebook_into_layout "$output_dir"
-                    place_files "$output_dir" "$nginx_html_dir/$mission_name"
-                else
-                    log "Mission directory $mission_path does not exist or is not accessible. Skipping..."
-                fi
+            log "Processing mission: $project_name"
+            if [ -d "$project_path" ]; then
+                sudo mkdir -p "$output_dir"
+                set_permissions "$output_dir" "www-data:www-data"
+                convert_notebooks "$notebook_dir" "$output_dir"
+                update_sphinx_docs "$scripts_dir" "$output_dir"
+                embed_notebook_into_layout "$output_dir" "$project_dir/app/static/$html_file"
+                place_files "$output_dir" "$nginx_html_dir/$project_name"
             else
-                log "No Colab link found in $html_file. Skipping..."
+                log "Mission directory $project_path does not exist or is not accessible. Skipping..."
             fi
         else
-            log "File $html_file does not exist. Skipping..."
+            log "No Colab link found in $project_name. Skipping..."
         fi
     done
 
@@ -303,16 +298,24 @@ move_generated_docs() {
 # Function to embed Jupyter notebooks into the layout
 embed_notebook_into_layout() {
     local output_dir="$1"
-    local layout_file="/srv/htmx_website/app/static/mission3_layout.html"
+    local layout_file="$2"  # Layout file passed as a parameter
 
     log "Embedding notebooks into layout using $layout_file"
 
     for notebook_html in "$output_dir"/*.html; do
         if [ -f "$notebook_html" ]; then
+            local output_html="$output_dir/$(basename "$notebook_html")"
             log "Embedding $notebook_html into layout..."
-            # Use a command to embed the HTML files into the layout HTML
-            # Example placeholder for embedding operation
-            cat "$layout_file" "$notebook_html" > "$output_dir/$(basename "$notebook_html")"
+
+            if [ -f "$layout_file" ]; then
+                cat "$layout_file" "$notebook_html" > "$output_html" || {
+                    log "Failed to embed $notebook_html into layout due to permission issues."
+                    continue
+                }
+                log "Embedded $notebook_html into layout successfully."
+            else
+                log "Layout file $layout_file does not exist. Skipping embedding for $notebook_html."
+            fi
         else
             log "No HTML files found in $output_dir."
         fi
