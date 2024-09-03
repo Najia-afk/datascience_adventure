@@ -105,10 +105,9 @@ process_project() {
             if [ -d "$project_path" ]; then
                 sudo mkdir -p "$output_dir"
                 set_permissions "$output_dir" "www-data:www-data"
+                set_permissions "$notebook_dir" "www-data:www-data"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
-                set_permissions "$output_dir" "www-data:www-data"
-                set_permissions "$html_file" "www-data:www-data"
                 embed_notebook_into_layout "$output_dir" "$html_file"
                 place_files "$output_dir" "$nginx_html_dir/$project_name"
             else
