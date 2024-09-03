@@ -41,7 +41,7 @@ set_permissions() {
     log "Setting permissions for $target_dir..."
 
     sudo chown -R "$user_group" "$target_dir" || {
-        log "Failed to change ownership of $target_dir."
+        log "Failed to change ownership of $target_dir for $user_group."
         exit 1
     }
     sudo find "$target_dir" -type d -exec chmod 755 {} \;
