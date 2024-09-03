@@ -306,7 +306,7 @@ embed_notebook_into_layout() {
 
     for notebook_html in "$output_dir"/*.html; do
         if [ -f "$notebook_html" ]; then
-            local output_html=tolower("$output_dir/$(basename "$notebook_html")")
+            local output_html=tolower( $output_dir/$(basename "$notebook_html") )
             log "Embedding $notebook_html into layout..."
 
             if [ -f "$layout_file" ]; then
