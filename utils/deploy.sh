@@ -92,6 +92,9 @@ process_project() {
     # Copy static files and update Nginx configuration
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
 
+    # Set permissions for static files
+    set_permissions "$nginx_html_dir" "www-data:www-data"
+
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
         log "Processing HTML file: $html_file"
@@ -108,6 +111,7 @@ process_project() {
             if [ -d "$project_path" ]; then
                 sudo mkdir -p "$output_dir"
                 set_permissions "$output_dir" "www-data:www-data"
+                set_permissions "$notebook_dir" "www-data:www-data"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
                 embed_notebook_into_layout "$output_dir" "$html_file"
