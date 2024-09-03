@@ -43,7 +43,7 @@ def load_project_3():
     <div class="article">
         <h2>Project 3: Deep Learning with TensorFlow</h2>
         <p>Explore the exciting world of deep learning by building neural networks to solve complex tasks like image classification and natural language processing.</p>
-        <a href="/mission3.html" target="_blank">Go to Project 3</a>
+        <a href="/mission3/mission3.html" target="_blank">Go to Project 3</a>
     </div>
     """
     return render_template_string(content)

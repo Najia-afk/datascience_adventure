@@ -309,13 +309,13 @@ embed_notebook_into_layout() {
             log "Embedding $notebook_html into layout..."
 
             if [ -f "$layout_file" ]; then
-                sudo cat "$layout_file" "$notebook_html" > "$output_html" || {
-                    log "Failed to embed $layout_file and $notebook_html into $output_html."
+                sudo cat "$layout_file" > "$output_html" || {
+                    log "Failed to embed $layout_file into $output_html."
                     continue
                 }
-                log "Embedded $notebook_html into layout successfully."
+                log "Embedded $layout_file into layout successfully."
             else
-                log "Layout file $layout_file does not exist. Skipping embedding for $notebook_html."
+                log "Layout file $layout_file does not exist. Skipping embedding for $output_html."
             fi
         else
             log "No HTML files found in $output_dir."
