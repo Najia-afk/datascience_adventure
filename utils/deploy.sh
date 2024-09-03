@@ -311,7 +311,7 @@ embed_notebook_into_layout() {
 
             if [ -f "$layout_file" ]; then
                 cat "$layout_file" "$notebook_html" > "$output_html" || {
-                    log "Failed to embed $notebook_html into layout due to permission issues."
+                    log "Failed to embed $layout_file and $notebook_html into $output_html."
                     continue
                 }
                 log "Embedded $notebook_html into layout successfully."
