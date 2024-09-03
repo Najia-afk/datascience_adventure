@@ -110,8 +110,6 @@ process_project() {
             log "Processing mission: $project_name"
             if [ -d "$project_path" ]; then
                 sudo mkdir -p "$output_dir"
-                set_permissions "$output_dir" "www-data:www-data"
-                set_permissions "$notebook_dir" "www-data:www-data"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
                 embed_notebook_into_layout "$output_dir" "$html_file"
@@ -183,11 +181,6 @@ convert_notebooks() {
     echo "Converting notebooks in $notebook_dir to HTML..."
     mkdir -p "$output_dir"
 
-    # Set permissions to ensure the process can write to the output directory
-    echo "Setting permissions for $output_dir..."
-    sudo chown -R www-data:www-data "$output_dir"
-    sudo chmod -R 775 "$output_dir"
-
     activate_venv
 
     # List all notebooks in the directory to confirm they exist
@@ -211,10 +204,7 @@ convert_notebooks() {
 
     deactivate_venv
 
-    # Reset permissions for security
-    echo "Resetting permissions for $output_dir..."
-    sudo chown -R www-data:www-data "$output_dir"
-    sudo chmod -R 755 "$output_dir"
+    
 }
 
 # Function to update Sphinx documentation
@@ -302,9 +292,8 @@ move_generated_docs() {
 
     sudo mkdir -p "$destination_dir"
     sudo mv "$source_dir"/* "$destination_dir/"
-    sudo chown -R www-data:www-data "$destination_dir"
-    sudo find "$destination_dir" -type d -exec chmod 755 {} \;
-    sudo find "$destination_dir" -type f -exec chmod 644 {} \;
+    set_permissions "$destination_dir" "www-data:www-data"
+    
     echo "Moved generated docs to: $destination_dir"
 }
 
@@ -348,9 +337,7 @@ place_files() {
 
     sudo mkdir -p "$destination_dir"
     sudo cp -r "$source_dir/"* "$destination_dir/"
-    sudo chown -R www-data:www-data "$destination_dir"
-    sudo find "$destination_dir" -type d -exec chmod 755 {} \;
-    sudo find "$destination_dir" -type f -exec chmod 644 {} \;
+    set_permissions "$destination_dir" "www-data:www-data"
     log "Files placed in: $destination_dir"
 }
 
