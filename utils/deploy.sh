@@ -91,12 +91,7 @@ process_project() {
 
     # Copy static files and update Nginx configuration
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
-
-    
-    # Set permissions for static files
-    set_permissions "$project_dir" "ubuntu:ubuntu"
-    set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
-    
+  
 
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
@@ -127,8 +122,6 @@ process_project() {
         fi
     done
 
-    # Set permissions for static files
-    set_permissions "$nginx_html_dir" "www-data:www-data"
 
     # Restart services after deployment
     restart_or_start_service "htmx_website.service"
@@ -299,7 +292,6 @@ move_generated_docs() {
 
     sudo mkdir -p "$destination_dir"
     sudo mv "$source_dir"/* "$destination_dir/"
-    set_permissions "$destination_dir" "www-data:www-data"
     
     echo "Moved generated docs to: $destination_dir"
 }
