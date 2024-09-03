@@ -341,7 +341,7 @@ place_files() {
 # Main deployment function
 deploy() {
     # Loop through all directories matching the pattern (e.g., mission*, toto*, etc.)
-    for project_dir in "$BASE_DIR"/mission3 "$BASE_DIR"/datascience_adventure; do
+    for project_dir in "$BASE_DIR"/datascience_adventure; do
         [ -d "$project_dir" ] && process_project "$project_dir" || log "Skipping non-directory: $project_dir"
     done
 }
