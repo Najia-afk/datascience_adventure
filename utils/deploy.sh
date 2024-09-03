@@ -116,6 +116,7 @@ process_project() {
                 sudo mkdir -p "$output_dir"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
+                set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
                 embed_notebook_into_layout "$output_dir" "$html_file"
                 place_files "$output_dir" "$nginx_html_dir/$project_name"
             else
