@@ -65,14 +65,13 @@ process_project() {
     # Activate the fixed virtual environment
     activate_venv
 
-    
     pip install --upgrade pip
 
     # Create a temporary requirements file excluding pywin32
     grep -v '^pywin32' requirements.txt > requirements_temp.txt
 
     # Install necessary Python packages
-    pip install -r "$git /requirements_temp.txt" || {
+    pip install -r requirements_temp.txt || {
         log "Failed to install some packages. Please check the virtual environment setup."
         deactivate_venv
         exit 1
@@ -126,6 +125,7 @@ process_project() {
 
     log "Deployment complete for project: $project_dir!"
 }
+
 
 # Function to update Nginx static files and configuration
 update_static_files_and_nginx() {
