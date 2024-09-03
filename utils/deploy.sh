@@ -93,6 +93,10 @@ process_project() {
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
 
     
+    # Set permissions for static files
+    set_permissions "$project_dir" "ubuntu:ubuntu"
+    set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
+    set_permissions "$notebook_dir" "ubuntu:ubuntu"
 
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
