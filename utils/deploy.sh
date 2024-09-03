@@ -4,6 +4,7 @@
 set -e
 
 BASE_DIR="$HOME"  # Base directory where all projects are located
+VENV_DIR="/srv/htmx_website/venv"  # Fixed virtual environment path
 LOG_FILE="/var/log/htmx_deploy.log"  # Centralized log file
 
 # Logging function
@@ -11,14 +12,13 @@ log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-# Function to activate the virtual environment
+# Function to activate the fixed virtual environment
 activate_venv() {
-    local venv_dir="$1"
-    if [ -d "$venv_dir" ]; then
-        log "Activating the virtual environment at $venv_dir..."
-        source "$venv_dir/bin/activate"
+    if [ -d "$VENV_DIR" ]; then
+        log "Activating the virtual environment at $VENV_DIR..."
+        source "$VENV_DIR/bin/activate"
     else
-        log "Error: Virtual environment not found at $venv_dir. Exiting."
+        log "Error: Virtual environment not found at $VENV_DIR. Exiting."
         exit 1
     fi
 }
@@ -57,14 +57,13 @@ restart_or_start_service() {
 # Function to process each project
 process_project() {
     local project_dir="$1"
-    local venv_dir="$project_dir/venv"
     local nginx_html_dir="$project_dir/nginx"
     local html_dir="$project_dir/app/static"
 
     log "Processing project: $project_dir"
 
-    # Activate the virtual environment for the project
-    activate_venv "$venv_dir"
+    # Activate the fixed virtual environment
+    activate_venv
 
     # Install necessary Python packages (you can customize this based on project requirements)
     pip install --upgrade pip
