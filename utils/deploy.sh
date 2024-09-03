@@ -5,7 +5,7 @@ set -e
 
 BASE_DIR="$HOME"  # Base directory where all projects are located
 VENV_DIR="/srv/htmx_website/venv"  # Fixed virtual environment path
-LOG_FILE="/var/log/htmx_deploy.log"  # Centralized log file
+LOG_FILE="$HOME/log/htmx_deploy.log"  # Centralized log file
 
 # Logging function
 log() {
