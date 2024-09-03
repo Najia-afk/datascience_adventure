@@ -106,6 +106,7 @@ process_project() {
                 sudo mkdir -p "$output_dir"
                 set_permissions "$output_dir" "www-data:www-data"
                 set_permissions "$notebook_dir" "www-data:www-data"
+                set_permissions "$scripts_dir" "www-data:www-data"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
                 embed_notebook_into_layout "$output_dir" "$html_file"
