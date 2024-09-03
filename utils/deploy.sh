@@ -111,7 +111,7 @@ process_project() {
             scripts_dir="$project_path/src/scripts"
             output_dir="$nginx_html_dir/$project_name"
 
-            log "Processing mission: $project_name"
+            log "Processing project: $project_name"
             if [ -d "$project_path" ]; then
                 sudo mkdir -p "$output_dir"
                 convert_notebooks "$notebook_dir" "$output_dir"
@@ -313,7 +313,7 @@ embed_notebook_into_layout() {
 
     for notebook_html in "$output_dir"/*.html; do
         if [ -f "$notebook_html" ]; then
-            local output_html="$output_dir/$(basename "$notebook_html")"
+            local output_html="$output_dir/$(basename "$notebook_html"| tr '[:upper:]' '[:lower:]')"
             log "Embedding $notebook_html into layout..."
 
             if [ -f "$layout_file" ]; then
