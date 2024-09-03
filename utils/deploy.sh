@@ -65,13 +65,21 @@ process_project() {
     # Activate the fixed virtual environment
     activate_venv
 
-    # Install necessary Python packages (you can customize this based on project requirements)
+    
     pip install --upgrade pip
-    pip install -r "$project_dir/requirements.txt" || {
+
+    # Create a temporary requirements file excluding pywin32
+    grep -v '^pywin32' requirements.txt > requirements_temp.txt
+
+    # Install necessary Python packages
+    pip install -r "$git /requirements_temp.txt" || {
         log "Failed to install some packages. Please check the virtual environment setup."
         deactivate_venv
         exit 1
     }
+
+    # Clean up temporary file
+    rm requirements_temp.txt
 
     deactivate_venv
     log "Python packages installed successfully for project: $project_dir."
