@@ -317,7 +317,7 @@ embed_notebook_into_layout() {
             log "Embedding $notebook_html into layout..."
 
             if [ -f "$layout_file" ]; then
-                cat "$layout_file" "$notebook_html" > "$output_html" || {
+                sudo cat "$layout_file" "$notebook_html" > "$output_html" || {
                     log "Failed to embed $layout_file and $notebook_html into $output_html."
                     continue
                 }
