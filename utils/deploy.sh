@@ -118,7 +118,7 @@ process_project() {
                 update_sphinx_docs "$scripts_dir" "$output_dir"
                 set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
                 embed_notebook_into_layout "$output_dir" "$html_file"
-                place_files "$output_dir" "$nginx_html_dir/$project_name"
+                place_files "$output_dir" "/var/www/htmx_website/$project_name"
             else
                 log "Mission directory $project_path does not exist or is not accessible. Skipping..."
             fi
