@@ -93,7 +93,7 @@ process_project() {
     for html_file in "$html_dir/"*.html; do
         log "Processing HTML file: $html_file"
         project_name=$(basename "$html_file" _layout.html)
-        colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$project_name" || true)
+        colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$html_file" || true)
 
         if [ -n "$colab_link" ]; then
             project_path="$BASE_DIR/$project_name"
