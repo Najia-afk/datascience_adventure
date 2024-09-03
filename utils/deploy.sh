@@ -223,6 +223,7 @@ update_sphinx_docs() {
     local output_dir="$2/scripts"
 
     echo "Updating Sphinx documentation for scripts in $scripts_dir..."
+
     if [ ! -d "$scripts_dir" ]; then
         echo "Scripts directory $scripts_dir does not exist. Skipping documentation generation."
         return
@@ -231,8 +232,12 @@ update_sphinx_docs() {
     local docs_dir="$scripts_dir/docs"
     mkdir -p "$docs_dir/source"
 
+    # Ensure the script has permissions to write to the docs directory
+    sudo chown -R $(whoami):$(whoami) "$docs_dir"
+    sudo chmod -R u+w "$docs_dir"
+
     activate_venv
-    export PYTHONPATH="$scripts_dir"  # Set PYTHONPATH to ensure imports work correctly
+    export PYTHONPATH="$scripts_dir"
 
     if [ ! -f "$docs_dir/conf.py" ]; then
         sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile "$docs_dir"
@@ -253,6 +258,7 @@ update_sphinx_docs() {
 
     move_generated_docs "$docs_dir/_build/html" "$output_dir"
 }
+
 
 # Function to generate a proper index.rst for Sphinx documentation
 generate_index_rst() {
