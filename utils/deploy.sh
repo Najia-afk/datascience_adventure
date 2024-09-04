@@ -78,7 +78,7 @@ process_project() {
     log "Processing project: $project_dir" "INFO"
 
     sudo chmod -R +x "$VENV_DIR"
-    
+
     # Activate the fixed virtual environment
     activate_venv
 
@@ -90,8 +90,8 @@ process_project() {
     # Install necessary Python packages
     pip install -r requirements_temp.txt || {
         log "Failed to install some packages. Please check the virtual environment setup." "ERROR"
-        deactivate_venv
-        exit 1
+        # deactivate_venv
+        # exit 1
     }
 
     # Clean up temporary file
