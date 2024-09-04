@@ -108,7 +108,6 @@ pyasn1-modules==0.2.1
 pycparser==2.22
 Pygments==2.18.0
 PyHamcrest==2.0.2
-PyICU==2.8.1
 PyJWT==2.3.0
 pyOpenSSL==21.0.0
 pyparsing==2.4.7
