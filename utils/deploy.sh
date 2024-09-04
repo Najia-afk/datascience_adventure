@@ -318,21 +318,23 @@ generate_index_rst() {
 
     log "Generating index.rst in $source_dir..." "INFO"
 
+    sudo -u www-data bash <<EOF
     # Create the index.rst file
     {
-        echo ".. toctree::"
-        echo "   :maxdepth: 2"
-        echo "   :caption: Contents:"
-        echo ""
+        log ".. toctree::" "INFO"
+        log "   :maxdepth: 2" "INFO"
+        log "   :caption: Contents:" "INFO"
+        log "" "INFO"
     } > "$source_dir/index.rst"
 
     # Append .rst files to the index.rst
     for rst_file in "$source_dir/"*.rst; do
         if [ -f "$rst_file" ]; then
             local rst_filename=$(basename "$rst_file" .rst)
-            echo "   $rst_filename" >> "$source_dir/index.rst"
+            log "   $rst_filename" >> "$source_dir/index.rst" "INFO"
         fi
     done
+EOF
 
     log "index.rst generated successfully in $source_dir." "INFO"
 }
