@@ -99,6 +99,7 @@ process_project() {
     log "Python packages installed successfully for project: $project_dir." "INFO"
 
     # Copy static files and update Nginx configuration
+    set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
   
 
@@ -119,7 +120,6 @@ process_project() {
                 sudo mkdir -p "$output_dir"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
-                set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
                 embed_notebook_into_layout "$output_dir" "$html_file"
                 place_files "$output_dir" "/var/www/htmx_website/$project_name"
             else
@@ -130,9 +130,8 @@ process_project() {
         fi
     done
 
-    setup_flask_app
+    deploy_flask_app
     # Restart services after deployment
-    restart_or_start_service "htmx_website.service"
     restart_or_start_service "nginx"
 
     log "Deployment complete for project: $project_dir!" "INFO"
@@ -173,53 +172,60 @@ update_static_files_and_nginx() {
 }
 
 # Function to set up the Flask application
-setup_flask_app() {
+deploy_flask_app() {
     log "Stopping Flask service (htmx_website.service)..." "INFO"
-    
-    
-    # Set appropriate permissions for the new configuration
-    set_permissions /srv/htmx_website "www-data:www-data"
-    set_permissions app/ "www-data:www-data"
 
-    sudo -su www-data
-
+    # Switch to the 'www-data' user to stop the service and handle file operations
+    sudo -u www-data bash <<EOF
     # Stop the Flask service before making changes
     sudo systemctl stop htmx_website.service || {
-        log "Failed to stop htmx_website.service. Please check the service status." "ERROR"
+        echo "Failed to stop htmx_website.service. Please check the service status." >&2
         exit 1
     }
 
     # Backup the existing Flask configuration
     if [ -f /srv/htmx_website/server.py ]; then
-        log "Backing up existing Flask configuration..." "INFO"
+        echo "Backing up existing Flask configuration..." >&2
         sudo cp /srv/htmx_website/server.py /srv/htmx_website/server.py.bak || {
-            log "Failed to backup the existing Flask configuration." "ERROR"
+            echo "Failed to backup the existing Flask configuration." >&2
             exit 1
         }
     fi
 
     # Copy the new server.py configuration
-    log "Copying new Flask configuration..." "INFO"
-    sudo cp -r app/server.py /srv/htmx_website/server.py || {
-        log "Failed to copy the new Flask configuration." "ERROR"
-        restore_flask_config
+    echo "Copying new Flask configuration..." >&2
+    sudo cp -r /srv/htmx_website/app/server.py /srv/htmx_website/server.py || {
+        echo "Failed to copy the new Flask configuration." >&2
         exit 1
     }
 
     # Validate the new Flask application by starting the service
-    log "Starting Flask service (htmx_website.service) to validate the new configuration..." "INFO"
+    echo "Starting Flask service (htmx_website.service) to validate the new configuration..." >&2
     if sudo systemctl start htmx_website.service; then
-        log "Flask service started successfully with the new configuration." "INFO"
+        echo "Flask service started successfully with the new configuration." >&2
     else
-        log "Error: Failed to start Flask service with the new configuration. Restoring the previous configuration..." "ERROR"
-        restore_flask_config
+        echo "Error: Failed to start Flask service with the new configuration. Restoring the previous configuration..." >&2
+        if [ -f /srv/htmx_website/server.py.bak ]; then
+            sudo cp /srv/htmx_website/server.py.bak /srv/htmx_website/server.py || {
+                echo "Failed to restore the previous Flask configuration." >&2
+                exit 1
+            }
+            echo "Previous Flask configuration restored successfully." >&2
+        else
+            echo "No backup found to restore the previous Flask configuration." >&2
+            exit 1
+        fi
         sudo systemctl start htmx_website.service || {
-            log "Failed to start Flask service with the restored configuration. Please check the service status." "ERROR"
+            echo "Failed to start Flask service with the restored configuration. Please check the service status." >&2
             exit 1
         }
     fi
 
-    
+    # Set appropriate permissions for the new configuration
+    sudo chown www-data:www-data /srv/htmx_website/server.py
+    sudo chmod 644 /srv/htmx_website/server.py
+
+EOF
 }
 
 # Function to restore the previous Flask configuration
@@ -237,6 +243,7 @@ restore_flask_config() {
     fi
 }
 
+
 # Function to convert Jupyter notebooks to HTML
 convert_notebooks() {
     local notebook_dir=$1
@@ -244,9 +251,7 @@ convert_notebooks() {
     log "Converting notebooks in $notebook_dir to HTML in $output_dir" "INFO"
 
     if [ -d "$notebook_dir" ]; then
-        activate_venv
         jupyter nbconvert --to html --output-dir="$output_dir" "$notebook_dir"/*.ipynb
-        deactivate_venv
         log "Notebook conversion completed." "INFO"
     else
         log "Notebook directory $notebook_dir does not exist. Skipping conversion." "WARNING"
@@ -255,33 +260,25 @@ convert_notebooks() {
 
 # Function to update Sphinx documentation
 update_sphinx_docs() {
-    local sphinx_dir=$1
-    local output_dir=$2
-    log "Updating Sphinx documentation from $sphinx_dir to $output_dir" "INFO"
-
-    if [ -d "$sphinx_dir" ]; then
-        (cd "$sphinx_dir" && make html)
-        cp -r "$sphinx_dir/_build/html/"* "$output_dir/"
-        log "Sphinx documentation updated successfully." "INFO"
-    else
-        log "Sphinx documentation directory $sphinx_dir does not exist. Skipping documentation update." "WARNING"
-    fi
-}
-
-update_sphinx_docs() {
     local scripts_dir=$1
     local output_dir="$2/scripts"
 
-    log "Updating Sphinx documentation from $sphinx_dir to $output_dir" "INFO"
+    log "Updating Sphinx documentation from $scripts_dir to $output_dir" "INFO"
 
     if [ ! -d "$scripts_dir" ]; then
-        log "Sphinx documentation directory $sphinx_dir does not exist. Skipping documentation generation." "WARNING"
+        log "Sphinx documentation directory $scripts_dir does not exist. Skipping documentation generation." "WARNING"
         return
     fi
 
     local docs_dir="$scripts_dir/docs"
     mkdir -p "$docs_dir/source"
 
+    # Ensure permissions for the docs directory
+    sudo chown -R www-data:www-data "$docs_dir"
+    sudo chmod -R 775 "$docs_dir"
+
+    # Switch to 'www-data' user and execute the Sphinx commands
+    sudo -u www-data bash <<EOF
     activate_venv
     export PYTHONPATH="$scripts_dir"
 
@@ -296,15 +293,66 @@ update_sphinx_docs() {
 
     make -C "$docs_dir" clean
     make -C "$docs_dir" html || {
-        echo "Failed to build documentation with Sphinx. Check the configuration."
+        log "Failed to build documentation with Sphinx. Check the configuration." "WARNING"
         deactivate_venv
-        return
+        exit 1
     }
     deactivate_venv
+EOF
 
+    # Switch back to the original user and move generated documentation
+    sudo -u $(whoami) bash <<EOF
     move_generated_docs "$docs_dir/_build/html" "$output_dir"
+EOF
 }
 
+# Function to generate a proper index.rst for Sphinx documentation
+generate_index_rst() {
+    local source_dir=$1
+
+    # Check if the source directory exists
+    if [ ! -d "$source_dir" ]; then
+        log "Source directory $source_dir does not exist. Skipping index generation." "WARNING"
+        return
+    fi
+
+    log "Generating index.rst in $source_dir..." "INFO"
+
+    # Create the index.rst file
+    {
+        echo ".. toctree::"
+        echo "   :maxdepth: 2"
+        echo "   :caption: Contents:"
+        echo ""
+    } > "$source_dir/index.rst"
+
+    # Append .rst files to the index.rst
+    for rst_file in "$source_dir/"*.rst; do
+        if [ -f "$rst_file" ]; then
+            local rst_filename=$(basename "$rst_file" .rst)
+            echo "   $rst_filename" >> "$source_dir/index.rst"
+        fi
+    done
+
+    log "index.rst generated successfully in $source_dir." "INFO"
+}
+
+# Function to move generated documentation to the correct output directory
+move_generated_docs() {
+    local source_dir="$1"
+    local destination_dir="$2"
+
+    log "Moving generated documentation from $source_dir to $destination_dir..." "INFO"
+    if [ -d "$destination_dir" ]; then
+        log "Cleaning existing directory $destination_dir..." "INFO"
+        sudo rm -rf "$destination_dir"/*  # Clean up the existing directory
+    fi
+
+    sudo mkdir -p "$destination_dir"
+    sudo mv "$source_dir"/* "$destination_dir/"
+    
+    log "Moved generated docs to: $destination_dir" "INFO"
+}
 
 
 
