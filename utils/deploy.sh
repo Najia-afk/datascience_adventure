@@ -68,8 +68,6 @@ process_project() {
 
     log "Processing project: $project_dir"
 
-    # sudo systemctl stop htmx_website.service
-
     # Activate the fixed virtual environment
     activate_venv
 
@@ -219,9 +217,8 @@ setup_flask_app() {
     fi
 
     # Set appropriate permissions for the new configuration
-    sudo chown -R www-data:www-data /srv/htmx_website/server.py
-    sudo find /srv/htmx_website -type d -exec chmod 755 {} \;
-    sudo find /srv/htmx_website -type f -exec chmod 644 {} \;
+    # Ssudo chown -R www-data:www-data /srv/htmx_website/server.py
+    # sudo find /srv/htmx_website -type d -exec chmod 755 {} \;
 }
 
 # Function to restore the previous Flask configuration
