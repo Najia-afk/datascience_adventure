@@ -70,7 +70,7 @@ process_project() {
 
     sudo systemctl stop htmx_website.service
 
-    set_permissions "$VENV_DIR" "ubuntu:ubuntu"
+    set_permissions "/srv/" "ubuntu:ubuntu"
     # Activate the fixed virtual environment
     activate_venv
 
