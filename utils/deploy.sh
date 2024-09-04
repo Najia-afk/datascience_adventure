@@ -276,8 +276,7 @@ update_sphinx_docs() {
     mkdir -p "$docs_dir/source"
 
     # Ensure permissions for the docs directory
-    sudo chown -R www-data:www-data "$docs_dir"
-    sudo chmod -R 775 "$docs_dir"
+    set_permissions "$scripts_dir" "www-data:www-data"
 
     # Switch to 'www-data' user and execute the Sphinx commands
     activate_venv
@@ -290,6 +289,10 @@ update_sphinx_docs() {
     fi
 
     sphinx-apidoc -o "$docs_dir/source" "$scripts_dir"
+
+    # Ensure permissions for the docs directory
+    set_permissions "$scripts_dir" "ubuntu:ubuntu"
+    
     generate_index_rst "$docs_dir/source"
 
     make -C "$docs_dir" clean
@@ -318,7 +321,7 @@ generate_index_rst() {
 
     log "Generating index.rst in $source_dir..." "INFO"
 
-    sudo -u www-data bash <<EOF
+    
     # Create the index.rst file
     {
         log ".. toctree::" "INFO"
@@ -334,7 +337,6 @@ generate_index_rst() {
             log "   $rst_filename" >> "$source_dir/index.rst" "INFO"
         fi
     done
-EOF
 
     log "index.rst generated successfully in $source_dir." "INFO"
 }
