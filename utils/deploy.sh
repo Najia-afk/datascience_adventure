@@ -178,7 +178,6 @@ deploy_flask_app() {
     log "Stopping Flask service (htmx_website.service)..." "INFO"
 
     # Switch to the 'www-data' user to stop the service and handle file operations
-    sudo -u www-data bash <<EOF
     # Stop the Flask service before making changes
     sudo systemctl stop htmx_website.service || {
         echo "Failed to stop htmx_website.service. Please check the service status." >&2
@@ -203,7 +202,7 @@ deploy_flask_app() {
 
     # Validate the new Flask application by starting the service
     echo "Starting Flask service (htmx_website.service) to validate the new configuration..." >&2
-    if sudo systemctl start htmx_website.service; then
+    if sudo -su www-data systemctl start htmx_website.service; then
         echo "Flask service started successfully with the new configuration." >&2
     else
         echo "Error: Failed to start Flask service with the new configuration. Restoring the previous configuration..." >&2
@@ -217,7 +216,7 @@ deploy_flask_app() {
             echo "No backup found to restore the previous Flask configuration." >&2
             exit 1
         fi
-        sudo systemctl start htmx_website.service || {
+        sudo -su www-data systemctl start htmx_website.service || {
             echo "Failed to start Flask service with the restored configuration. Please check the service status." >&2
             exit 1
         }
@@ -226,8 +225,6 @@ deploy_flask_app() {
     # Set appropriate permissions for the new configuration
     sudo chown www-data:www-data /srv/htmx_website/server.py
     sudo chmod 644 /srv/htmx_website/server.py
-
-EOF
 }
 
 # Function to restore the previous Flask configuration
@@ -292,7 +289,7 @@ update_sphinx_docs() {
 
     # Ensure permissions for the docs directory
     set_permissions "$scripts_dir" "ubuntu:ubuntu"
-    
+
     generate_index_rst "$docs_dir/source"
 
     make -C "$docs_dir" clean
