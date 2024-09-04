@@ -122,7 +122,7 @@ process_project() {
         fi
     done
 
-
+    setup_flask_app
     # Restart services after deployment
     restart_or_start_service "htmx_website.service"
     restart_or_start_service "nginx"
@@ -171,6 +171,17 @@ update_static_files_and_nginx() {
         }
         sudo nginx -t && sudo systemctl reload nginx
     fi
+}
+
+
+# Function to set up the Flask application
+setup_flask_app() {
+    echo "Setting up the Flask application in /srv/htmx_website..."
+    sudo mkdir -p /srv/htmx_website
+    sudo cp -r app/* /srv/htmx_website/
+    sudo chown -R www-data:www-data /srv/htmx_website
+    sudo find /srv/htmx_website -type d -exec chmod 755 {} \;  # Set directories to 755
+    sudo find /srv/htmx_website -type f -exec chmod 644 {} \;  # Set files to 644
 }
 
 # Function to convert Jupyter notebooks to HTML with additional debugging
