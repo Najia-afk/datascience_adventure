@@ -68,7 +68,7 @@ process_project() {
 
     log "Processing project: $project_dir"
 
-    set_permissions "/srv/htmx_website" "ubuntu:ubuntu"
+    set_permissions "$VENV_DIR" "ubuntu:ubuntu"
     # Activate the fixed virtual environment
     activate_venv
 
