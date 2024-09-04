@@ -176,10 +176,8 @@ update_static_files_and_nginx() {
 
 # Function to set up the Flask application
 setup_flask_app() {
-    echo "Setting up the Flask application in /srv/htmx_website..."
-    sudo mkdir -p /srv/htmx_website
-    sudo cp -r app/* /srv/htmx_website/
-    sudo chown -R www-data:www-data /srv/htmx_website
+    sudo cp -r app/server.py /srv/htmx_website/server.py
+    sudo chown -R www-data:www-data /srv/htmx_website/server.py
     sudo find /srv/htmx_website -type d -exec chmod 755 {} \;  # Set directories to 755
     sudo find /srv/htmx_website -type f -exec chmod 644 {} \;  # Set files to 644
 }
