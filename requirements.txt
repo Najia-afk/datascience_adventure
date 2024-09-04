@@ -34,7 +34,6 @@ debugpy==1.8.5
 decorator==5.1.1
 defusedxml==0.7.1
 distro==1.7.0
-ec2-hibinit-agent==1.0.0
 exceptiongroup==1.2.2
 executing==2.1.0
 fastjsonschema==2.20.0
