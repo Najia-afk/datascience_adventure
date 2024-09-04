@@ -112,7 +112,6 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.1
 pycparser==2.22
 Pygments==2.18.0
-PyGObject==3.42.1
 PyHamcrest==2.0.2
 PyICU==2.8.1
 PyJWT==2.3.0
