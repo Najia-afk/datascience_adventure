@@ -111,7 +111,6 @@ process_project() {
         if [ -n "$colab_link" ]; then
             project_path="$BASE_DIR/$project_name"
             notebook_dir="$project_path"
-            set_permissions "$notebook_dir" "ubuntu:ubuntu"
             scripts_dir="$project_path/src/scripts"
             output_dir="$nginx_html_dir/$project_name"
 
@@ -342,7 +341,7 @@ log "Starting deployment script..." "INFO"
 
 # Process each project in the base directory
 for project in "$BASE_DIR"/*; do
-    if [ -d "$project" ]; then
+    if [ -d "$project" = "datascience_adventure"]; then
         process_project "$project"
     fi
 done
