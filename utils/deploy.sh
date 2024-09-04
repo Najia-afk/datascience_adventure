@@ -278,7 +278,6 @@ update_sphinx_docs() {
     sudo chmod -R 775 "$docs_dir"
 
     # Switch to 'www-data' user and execute the Sphinx commands
-    sudo -u www-data
     activate_venv
     export PYTHONPATH="$scripts_dir"
 
@@ -295,13 +294,12 @@ update_sphinx_docs() {
     make -C "$docs_dir" html || {
         log "Failed to build documentation with Sphinx. Check the configuration." "WARNING"
         deactivate_venv
-        exit 1
+        # exit 1
     }
     deactivate_venv
 
 
     # Switch back to the original user and move generated documentation
-    sudo -u $(whoami)
     move_generated_docs "$docs_dir/_build/html" "$output_dir"
 
 }
