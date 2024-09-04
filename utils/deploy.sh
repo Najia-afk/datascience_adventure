@@ -176,12 +176,64 @@ update_static_files_and_nginx() {
 
 # Function to set up the Flask application
 setup_flask_app() {
-    sudo cp -r app/server.py /srv/htmx_website/server.py
+    log "Stopping Flask service (htmx_website.service)..."
+    
+    # Stop the Flask service before making changes
+    sudo systemctl stop htmx_website.service || {
+        log "Failed to stop htmx_website.service. Please check the service status."
+        exit 1
+    }
+
+    # Backup the existing Flask configuration
+    if [ -f /srv/htmx_website/server.py ]; then
+        log "Backing up existing Flask configuration..."
+        sudo cp /srv/htmx_website/server.py /srv/htmx_website/server.py.bak || {
+            log "Failed to backup the existing Flask configuration."
+            exit 1
+        }
+    fi
+
+    # Copy the new server.py configuration
+    log "Copying new Flask configuration..."
+    sudo cp -r app/server.py /srv/htmx_website/server.py || {
+        log "Failed to copy the new Flask configuration."
+        restore_flask_config
+        exit 1
+    }
+
+    # Set appropriate permissions for the new configuration
     sudo chown -R www-data:www-data /srv/htmx_website/server.py
-    sudo find /srv/htmx_website -type d -exec chmod 755 {} \;  # Set directories to 755
-    sudo find /srv/htmx_website -type f -exec chmod 644 {} \;  # Set files to 644
+    sudo find /srv/htmx_website -type d -exec chmod 755 {} \;
+    sudo find /srv/htmx_website -type f -exec chmod 644 {} \;
+
+    # Validate the new Flask application by starting the service
+    log "Starting Flask service (htmx_website.service) to validate the new configuration..."
+    if sudo systemctl start htmx_website.service; then
+        log "Flask service started successfully with the new configuration."
+    else
+        log "Error: Failed to start Flask service with the new configuration. Restoring the previous configuration..."
+        restore_flask_config
+        sudo systemctl start htmx_website.service || {
+            log "Failed to start Flask service with the restored configuration. Please check the service status."
+            exit 1
+        }
+    fi
 }
 
+# Function to restore the previous Flask configuration
+restore_flask_config() {
+    log "Restoring the previous Flask configuration..."
+    if [ -f /srv/htmx_website/server.py.bak ]; then
+        sudo cp /srv/htmx_website/server.py.bak /srv/htmx_website/server.py || {
+            log "Failed to restore the previous Flask configuration."
+            exit 1
+        }
+        log "Previous Flask configuration restored successfully."
+    else
+        log "No backup configuration found to restore. Aborting."
+        exit 1
+    fi
+}
 # Function to convert Jupyter notebooks to HTML with additional debugging
 convert_notebooks() {
     local notebook_dir=$1
