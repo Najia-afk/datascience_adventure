@@ -341,9 +341,10 @@ log "Starting deployment script..." "INFO"
 
 # Process each project in the base directory
 for project in "$BASE_DIR"/*; do
-    if [ -d "$project" = "datascience_adventure"]; then
+    if [ -d "$project" ] && [ "$(basename "$project")" = "datascience_adventure" ]; then
         process_project "$project"
     fi
 done
+
 
 log "Deployment script completed successfully!" "INFO"
