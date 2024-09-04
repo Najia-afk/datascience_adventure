@@ -77,6 +77,8 @@ process_project() {
 
     log "Processing project: $project_dir" "INFO"
 
+    sudo chmod -R +x "$VENV_DIR"
+    
     # Activate the fixed virtual environment
     activate_venv
 
@@ -294,7 +296,7 @@ update_sphinx_docs() {
     make -C "$docs_dir" html || {
         log "Failed to build documentation with Sphinx. Check the configuration." "WARNING"
         deactivate_venv
-        # exit 1
+        exit 1
     }
     deactivate_venv
 
