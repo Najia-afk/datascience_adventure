@@ -68,6 +68,8 @@ process_project() {
 
     log "Processing project: $project_dir"
 
+    sudo systemctl stop htmx_website.service
+
     set_permissions "$VENV_DIR" "ubuntu:ubuntu"
     # Activate the fixed virtual environment
     activate_venv
