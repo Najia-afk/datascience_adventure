@@ -177,6 +177,13 @@ update_static_files_and_nginx() {
 setup_flask_app() {
     log "Stopping Flask service (htmx_website.service)..." "INFO"
     
+    
+    # Set appropriate permissions for the new configuration
+    set_permissions /srv/htmx_website "www-data:www-data"
+    set_permissions app/ "www-data:www-data"
+
+    sudo -su www-data
+
     # Stop the Flask service before making changes
     sudo systemctl stop htmx_website.service || {
         log "Failed to stop htmx_website.service. Please check the service status." "ERROR"
@@ -213,8 +220,7 @@ setup_flask_app() {
         }
     fi
 
-    # Set appropriate permissions for the new configuration
-    set_permissions /srv/htmx_website "www-data:www-data"
+    
 }
 
 # Function to restore the previous Flask configuration
@@ -239,7 +245,9 @@ convert_notebooks() {
     log "Converting notebooks in $notebook_dir to HTML in $output_dir" "INFO"
 
     if [ -d "$notebook_dir" ]; then
+        activate_venv
         jupyter nbconvert --to html --output-dir="$output_dir" "$notebook_dir"/*.ipynb
+        deactivate_venv
         log "Notebook conversion completed." "INFO"
     else
         log "Notebook directory $notebook_dir does not exist. Skipping conversion." "WARNING"
@@ -260,6 +268,46 @@ update_sphinx_docs() {
         log "Sphinx documentation directory $sphinx_dir does not exist. Skipping documentation update." "WARNING"
     fi
 }
+
+update_sphinx_docs() {
+    local scripts_dir=$1
+    local output_dir="$2/scripts"
+
+    log "Updating Sphinx documentation from $sphinx_dir to $output_dir" "INFO"
+
+    if [ ! -d "$scripts_dir" ]; then
+        log "Sphinx documentation directory $sphinx_dir does not exist. Skipping documentation generation." "WARNING"
+        return
+    fi
+
+    local docs_dir="$scripts_dir/docs"
+    mkdir -p "$docs_dir/source"
+
+    activate_venv
+    export PYTHONPATH="$scripts_dir"
+
+    if [ ! -f "$docs_dir/conf.py" ]; then
+        sphinx-quickstart --quiet -p "Script Documentation" -a "Author" -v 1.0 --ext-autodoc --makefile "$docs_dir"
+        sed -i '1i\import sys, os' "$docs_dir/conf.py"
+        sed -i "/sys\.path\.insert/a sys.path.insert(0, os.path.abspath('../'))" "$docs_dir/conf.py"
+    fi
+
+    sphinx-apidoc -o "$docs_dir/source" "$scripts_dir"
+    generate_index_rst "$docs_dir/source"
+
+    make -C "$docs_dir" clean
+    make -C "$docs_dir" html || {
+        echo "Failed to build documentation with Sphinx. Check the configuration."
+        deactivate_venv
+        return
+    }
+    deactivate_venv
+
+    move_generated_docs "$docs_dir/_build/html" "$output_dir"
+}
+
+
+
 
 # Function to embed notebook into layout
 embed_notebook_into_layout() {
