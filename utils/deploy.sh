@@ -106,6 +106,7 @@ process_project() {
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
 
     log "Copying updated static files for project: $project_dir" "INFO"
+    sudo mkdir -p "$project_dir"
     sudo cp -r "$project_dir/app/static/"* "$website_html_dir/"
     set_permissions "$website_html_dir" "ubuntu:ubuntu"
 
