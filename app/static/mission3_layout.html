@@ -12,11 +12,20 @@
 <body>
     <!-- Top Navigation Bar -->
     <header class="top-bar">
-        <div class="logo">Data Science Portfolio</div>
+        <div class="logo">
+            <img src="logo.png" alt="Logo" class="logo-img">
+        </div>
         <nav class="top-nav">
             <a href="#" hx-get="/load-home" hx-target="#main-content" hx-swap="innerHTML">Home</a>
-            <a href="#" hx-get="/load-projects" hx-target="#main-content" hx-swap="innerHTML">Projects</a>
-            <a href="#" hx-get="/toggle-dark-mode" hx-target="body" hx-swap="innerHTML" class="dark-mode-toggle">🌙</a>
+            <div class="dropdown">
+                <button class="dropbtn">Datascientist Training</button>
+                <div class="dropdown-content">
+                    <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML">Mission 3</a>
+                </div>
+            </div>
+            <a href="#" hx-get="/load-contact" hx-target="#main-content" hx-swap="innerHTML">Contact</a>
+            <button class="dark-mode-toggle" hx-get="/toggle-dark-mode" hx-target="body" hx-swap="innerHTML">🌙</button>
+            <a href="#" hx-get="/test" hx-target="#main-content" hx-swap="innerHTML">Test</a>
         </nav>
     </header>
 
@@ -50,7 +59,7 @@
 
             <!-- Correctly Display the Jupyter Notebook -->
             <div class="iframe-container">
-                <iframe src="Mission3.html"></iframe> <!-- Ensure this points to the notebook only -->
+                <iframe src="Mission3.html"></iframe>
             </div>
         </section>
     </div>
@@ -60,5 +69,4 @@
         <p>© 2024 Datascience Adventure</p>
     </footer>
 </body>
-
 </html>

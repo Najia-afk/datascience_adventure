@@ -9,6 +9,7 @@ body {
     height: 100vh;
 }
 
+/* Top Navigation Bar */
 .top-bar {
     display: flex;
     justify-content: space-between;
@@ -49,6 +50,13 @@ body {
     font-size: 16px;
 }
 
+/* Main Container */
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
 /* Sidebar Styles */
 .sidebar {
     width: 16%;
@@ -87,12 +95,7 @@ body {
     background-color: #ddd;
 }
 
-/* Main Content Styles */
-.main-container {
-    display: flex;
-    flex: 1;
-}
-
+/* Main Content Area */
 .main-content {
     flex: 5;
     display: flex;
@@ -100,6 +103,7 @@ body {
     padding: 20px;
 }
 
+/* Project Header Styles */
 .project-header {
     margin-bottom: 15px;
     text-align: left;
@@ -117,7 +121,7 @@ body {
     font-size: 14px;
 }
 
-/* Button Styles */
+/* Google Colab Button */
 .button-container {
     margin-bottom: 10px;
     text-align: center;
@@ -175,5 +179,9 @@ body {
         height: auto;
         box-shadow: none;
         padding-bottom: 0;
+    }
+
+    .iframe-container iframe {
+        height: calc(100vh - 150px); /* Adjust height for smaller screens */
     }
 }
