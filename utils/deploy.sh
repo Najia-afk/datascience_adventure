@@ -369,21 +369,30 @@ move_generated_docs() {
 # Function to embed notebook into layout
 embed_notebook_into_layout() {
     local output_dir=$1
-    local layout_file=$2
-    local html_file=$3
+    local html_file=$2
+    local project_name=$3
 
-    log "Embedding notebook files into layout $layout_file..." "INFO"
+    local basename_html_file=$(basename "$html_file")
+    local original_file_path="$output_dir/$basename_html_file"
+    local new_file_path="$output_dir/$project_name/$project_name.html"
 
-    # notebook_files=$(find "$output_dir" -type f -name '*.html')
+    # Check if the file exists in output_dir
+    if [ -f "$original_file_path" ]; then
+        log "File $original_file_path exists. Proceeding with operations..." "INFO"
 
-    # for notebook_file in $notebook_files; do
-        # notebook_content=$(cat "$notebook_file")
-        # sed -i "/<!-- NOTEBOOK_PLACEHOLDER -->/r $notebook_file" "$layout_file"
-    # done
+        # Ensure the target directory exists
+        mkdir -p "$(dirname "$new_file_path")"
 
-    sudo cp "$layout_file" "$output_dir$html_file.html"
+        # Copy the content into the new file
+        cp "$original_file_path" "$new_file_path"
+        log "Copied content from $original_file_path to $new_file_path" "INFO"
 
-    log "Notebooks embedded into layout successfully." "INFO"
+        # Delete the original file
+        rm "$original_file_path"
+        log "Deleted original file $original_file_path" "INFO"
+    else
+        log "File $original_file_path does not exist. No action taken." "INFO"
+    fi
 }
 
 # Function to place final files into the destination directory
