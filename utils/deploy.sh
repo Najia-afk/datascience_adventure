@@ -108,7 +108,7 @@ process_project() {
     log "Copying updated static files for project: $project_dir" "INFO"
     sudo mkdir -p "$project_dir"
     sudo cp -r "$project_dir/app/static/"* "$website_html_dir/"
-    set_permissions "$website_html_dir" "ubuntu:ubuntu"
+    set_permissions "$website_html_dir/" "ubuntu:ubuntu"
 
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
