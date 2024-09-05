@@ -109,7 +109,7 @@ process_project() {
     for html_file in "$html_dir/"*.html; do
         log "Processing HTML file: $html_file" "INFO"
         project_name=$(basename "$html_file" _layout.html)
-        colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$html_file" || true)
+        colab_link=$(grep -oP 'https://colab\.research\.google\.com/github/[^"]+' "$project_name" || true)
 
         if [ -n "$colab_link" ]; then
             project_path="$BASE_DIR/$project_name"
@@ -128,7 +128,7 @@ process_project() {
                 log "Mission directory $project_path does not exist or is not accessible. Skipping..." "WARNING"
             fi
         else
-            cp "$html_file" "/var/www/htmx_website/$html_file"
+            cp "$html_file" "/var/www/htmx_website/$(basename "$html_file")"
             log "No Colab link found in $html_file. Skipping..." "INFO"
         fi
     done
