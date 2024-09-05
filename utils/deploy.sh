@@ -132,7 +132,7 @@ process_project() {
         fi
     done
 
-    deploy_flask_app
+    deploy_flask_app "$project_dir"
     # Restart services after deployment
     restart_or_start_service "nginx"
 
