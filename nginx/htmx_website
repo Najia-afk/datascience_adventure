@@ -15,7 +15,7 @@ server {
 
     # Serve HTML files with clean URLs
     location /project/ {
-        try_files $uri $uri/ /project/$uri.html;
+        try_files $uri $uri/ /project/$uri.html =404;
     }
 
     # Serve HTML files from the root directory

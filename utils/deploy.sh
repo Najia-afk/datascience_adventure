@@ -155,24 +155,28 @@ update_static_files_and_nginx() {
     fi
 
     log "Validating new Nginx configuration..." "INFO"
-    if sudo nginx -t -c "$project_dir/nginx/htmx_website"; then
+    if sudo nginx -t -c /etc/nginx/nginx.conf; then
         log "New Nginx configuration is valid. Applying it now." "INFO"
 
         sudo cp "$project_dir/nginx/htmx_website" /etc/nginx/sites-available/htmx_website
 
-        if [ ! -L /etc/nginx/sites-enabled/htmx_website ]; then
+        # Ensure symbolic link is updated correctly
+        if [ ! -L /etc/nginx/sites-enabled/htmx_website ] || [ "$(readlink -f /etc/nginx/sites-enabled/htmx_website)" != "/etc/nginx/sites-available/htmx_website" ]; then
             log "Creating symbolic link for Nginx configuration..." "INFO"
-            sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+            sudo ln -sf /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/htmx_website
         fi
 
         log "Reloading Nginx with the new configuration..." "INFO"
         sudo systemctl reload nginx
     else
         log "Error: New Nginx configuration is invalid. Reverting to the previous configuration." "ERROR"
-        sudo cp /etc/nginx/sites-available/htmx_website.bak.$backup_timestamp /etc/nginx/sites-available/htmx_website
+        if [ -f /etc/nginx/sites-available/htmx_website.bak.$backup_timestamp ]; then
+            sudo cp /etc/nginx/sites-available/htmx_website.bak.$backup_timestamp /etc/nginx/sites-available/htmx_website
+        fi
         sudo nginx -t && sudo systemctl reload nginx
     fi
 }
+
 
 # Function to set up the Flask application
 deploy_flask_app() {
