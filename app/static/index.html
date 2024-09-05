@@ -21,7 +21,7 @@
             <div class="dropdown">
                 <button class="dropbtn">Projects</button>
                 <div class="dropdown-content">
-                    <a href="/mission3/mission3.html" target="more-link">Project 3</a> <!-- Direct link -->
+                    <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML">Project 3</a> <!-- HTMX link -->
                 </div>
             </div>
             <a href="#" hx-get="/load-contact" hx-target="#main-content" hx-swap="innerHTML">Contact</a>
@@ -40,7 +40,7 @@
                 <p class="date">Wednesday, August 30, 2024</p>
                 <p class="category">Datascientist training</p>
                 <p>The Public Health Agency wishes to improve the quality of Open Food Facts data, an open source database is made available to individuals and organizations to allow them to know the nutritional quality of products.</p>
-                <a href="/mission3/mission3.html" target="more-link" class="more-link">More</a> <!-- Direct link -->
+                <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML" class="more-link">More</a> <!-- HTMX link -->
             </article>
             <!-- Repeat similar blocks for other projects -->
         </section>
