@@ -105,6 +105,8 @@ process_project() {
     set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
 
+    log "Copying updated static files for project: $project_dir" "INFO"
+    sudo cp -r "$project_dir/app/static/"* "$website_html_dir/"
     set_permissions "$website_html_dir" "ubuntu:ubuntu"
 
     # Process all HTML files in the static directory
@@ -147,9 +149,6 @@ update_static_files_and_nginx() {
     local project_dir="$1"
     local nginx_html_dir="$2"
     local backup_timestamp=$(date +'%Y%m%d%H%M%S')
-
-    log "Copying updated static files for project: $project_dir" "INFO"
-    sudo cp -r "$project_dir/app/static/"* "$nginx_html_dir/"
 
     log "Backing up current Nginx configuration..." "INFO"
     if [ -f /etc/nginx/sites-available/htmx_website ]; then
