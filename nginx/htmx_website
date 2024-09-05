@@ -13,7 +13,7 @@ server {
         alias /var/www/htmx_website/styles/;
     }
 
-    # Serve HTML files with clean URLs
+    # Serve HTML files from the root directory
     location / {
         root /var/www/htmx_website;
         try_files $uri $uri/ /index.html =404;
