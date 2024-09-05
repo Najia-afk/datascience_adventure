@@ -107,8 +107,8 @@ process_project() {
 
     log "Copying updated static files for project: $project_dir" "INFO"
     sudo mkdir -p "$website_html_dir"
-    sudo cp -r "$project_dir/app/static/"* "$website_html_dir/"
     set_permissions "$website_html_dir/" "ubuntu:ubuntu"
+    sudo cp -r "$project_dir/app/static/"* "$website_html_dir/"
 
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
@@ -127,7 +127,7 @@ process_project() {
                 sudo mkdir -p "$output_dir"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
-                embed_notebook_into_layout "$output_dir" "$html_file" "$project_name"
+                embed_notebook_into_layout "$website_html_dir" "$html_file" "$project_name"
                 place_files "$output_dir" "/var/www/htmx_website/$project_name"
             else
                 log "Mission directory $project_path does not exist or is not accessible. Skipping..." "WARNING"
