@@ -16,13 +16,13 @@ server {
     # Serve HTML files from the root directory
     location / {
         root /var/www/htmx_website;
-        try_files $uri $uri/ /index.html =404;
+        try_files $uri $uri/ /index.html;
     }
 
     # Serve HTML files from the 'mission3' directory
-    location /mission3/ {
-        alias /var/www/htmx_website/mission3/;
-        try_files $uri $uri/ /mission3.html =404;
+    location /mission3 {
+        alias /var/www/htmx_website/mission3;
+        try_files $uri $uri/ /mission3.html;
     }
 
     # Proxy pass to Flask application
