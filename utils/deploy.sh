@@ -80,25 +80,25 @@ process_project() {
     sudo chmod -R +x "$VENV_DIR"
 
     # Activate the fixed virtual environment
-    activate_venv
+    # activate_venv
 
-    pip install --upgrade pip
+    # pip install --upgrade pip
 
     # Create a temporary requirements file excluding pywin32
-    grep -v '^pywin32' requirements.txt > requirements_temp.txt
+    # grep -v '^pywin32' requirements.txt > requirements_temp.txt
 
     # Install necessary Python packages
-    pip install -r requirements_temp.txt || {
-        log "Failed to install some packages. Please check the virtual environment setup." "ERROR"
+    # pip install -r requirements_temp.txt || {
+    #     log "Failed to install some packages. Please check the virtual environment setup." "ERROR"
         # deactivate_venv
         # exit 1
-    }
+    # }
 
     # Clean up temporary file
-    rm requirements_temp.txt
+    # rm requirements_temp.txt
 
-    deactivate_venv
-    log "Python packages installed successfully for project: $project_dir." "INFO"
+    # deactivate_venv
+    # log "Python packages installed successfully for project: $project_dir." "INFO"
 
     # Copy static files and update Nginx configuration
     set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
@@ -128,7 +128,7 @@ process_project() {
                 log "Mission directory $project_path does not exist or is not accessible. Skipping..." "WARNING"
             fi
         else
-            cp "$html_file" "/var/www/htmx_website/$(basename "$html_file")"
+            sudo cp "$html_file" "/var/www/htmx_website/$(basename "$html_file")"
             log "No Colab link found in $html_file. Skipping..." "INFO"
         fi
     done
