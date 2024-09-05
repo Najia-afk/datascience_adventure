@@ -128,7 +128,8 @@ process_project() {
                 log "Mission directory $project_path does not exist or is not accessible. Skipping..." "WARNING"
             fi
         else
-            log "No Colab link found in $project_name. Skipping..." "INFO"
+            cp "$html_file" "/var/www/htmx_website/$html_file"
+            log "No Colab link found in $html_file. Skipping..." "INFO"
         fi
     done
 
@@ -182,15 +183,15 @@ deploy_flask_app() {
     # Switch to the 'www-data' user to stop the service and handle file operations
     # Stop the Flask service before making changes
     sudo systemctl stop htmx_website.service || {
-        echo "Failed to stop htmx_website.service. Please check the service status." >&2
+        log "Failed to stop htmx_website.service. Please check the service status." "ERROR" >&2
         exit 1
     }
 
     # Backup the existing Flask configuration
     if [ -f /srv/htmx_website/server.py ]; then
-        echo "Backing up existing Flask configuration..." >&2
+        log "Backing up existing Flask configuration..." "INFO" >&2
         sudo cp $flask_app_dir/server.py $flask_app_dir/server.py.bak || {
-            echo "Failed to backup the existing Flask configuration." >&2
+            log "Failed to backup the existing Flask configuration." "ERROR" >&2
             exit 1
         }
     fi
@@ -198,28 +199,28 @@ deploy_flask_app() {
     # Copy the new server.py configuration
     echo "Copying new Flask configuration..." >&2
     sudo cp -r $project_dir/app/server.py $flask_app_dir/server.py || {
-        echo "Failed to copy the new Flask configuration." >&2
+        log "Failed to copy the new Flask configuration." "ERROR" >&2
         exit 1
     }
 
     # Validate the new Flask application by starting the service
-    echo "Starting Flask service (htmx_website.service) to validate the new configuration..." >&2
+    log "Starting Flask service (htmx_website.service) to validate the new configuration..." "INFO" >&2
     if sudo systemctl start htmx_website.service; then
-        echo "Flask service started successfully with the new configuration." >&2
+        log "Flask service started successfully with the new configuration." "INFO"  >&2
     else
-        echo "Error: Failed to start Flask service with the new configuration. Restoring the previous configuration..." >&2
+        log "Error: Failed to start Flask service with the new configuration. Restoring the previous configuration..." "ERROR" >&2
         if [ -f /srv/htmx_website/server.py.bak ]; then
             sudo cp $flask_app_dir/server.py.bak $flask_app_dir/server.py || {
-                echo "Failed to restore the previous Flask configuration." >&2
+                log "Failed to restore the previous Flask configuration." "ERROR" >&2
                 exit 1
             }
-            echo "Previous Flask configuration restored successfully." >&2
+            log "Previous Flask configuration restored successfully." "INFO" >&2
         else
-            echo "No backup found to restore the previous Flask configuration." >&2
+            log "No backup found to restore the previous Flask configuration." "ERROR" >&2
             exit 1
         fi
         sudo systemctl start htmx_website.service || {
-            echo "Failed to start Flask service with the restored configuration. Please check the service status." >&2
+            log "Failed to start Flask service with the restored configuration. Please check the service status." "ERROR" >&2
             exit 1
         }
     fi
