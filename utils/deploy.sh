@@ -122,7 +122,7 @@ process_project() {
                 sudo mkdir -p "$output_dir"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
-                embed_notebook_into_layout "$output_dir" "$html_file"
+                embed_notebook_into_layout "$output_dir" "$html_file" "$project_name"
                 place_files "$output_dir" "/var/www/htmx_website/$project_name"
             else
                 log "Mission directory $project_path does not exist or is not accessible. Skipping..." "WARNING"
@@ -368,6 +368,7 @@ move_generated_docs() {
 embed_notebook_into_layout() {
     local output_dir=$1
     local layout_file=$2
+    local html_file=$3
 
     log "Embedding notebook files into layout $layout_file..." "INFO"
 
@@ -378,7 +379,7 @@ embed_notebook_into_layout() {
         # sed -i "/<!-- NOTEBOOK_PLACEHOLDER -->/r $notebook_file" "$layout_file"
     # done
 
-    sudo cp "$html_file" "$output_dir$(basename "$html_file")"
+    sudo cp "$layout_file" "$output_dir$html_file.html"
 
     log "Notebooks embedded into layout successfully." "INFO"
 }
