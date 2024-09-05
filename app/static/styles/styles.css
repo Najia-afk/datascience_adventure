@@ -4,6 +4,9 @@ body {
     font-family: 'Courier New', Courier, monospace;
     background-color: #ffffff; /* White background */
     color: #1c1c1c; /* Black text */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 
 .top-bar {
@@ -16,20 +19,19 @@ body {
 }
 
 .logo {
-    font-size: 18px; /* Adjusted to match your HTML */
+    font-size: 20px;
     font-weight: bold;
 }
 
 .top-nav {
     display: flex;
-    align-items: center;
+    gap: 15px;
 }
 
 .top-nav a,
 .dark-mode-toggle {
     color: #1c1c1c; /* Black text */
     text-decoration: none;
-    margin: 0 15px;
     font-size: 14px;
     font-weight: bold;
     background: none;
@@ -45,9 +47,6 @@ body {
 
 .dark-mode-toggle {
     font-size: 16px;
-    border: none;
-    background: none;
-    cursor: pointer;
 }
 
 /* Sidebar Styles */

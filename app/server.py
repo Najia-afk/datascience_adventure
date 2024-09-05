@@ -35,5 +35,9 @@ def toggle_dark_mode():
     # Dummy example for dark mode toggle, replace with actual logic
     return "<style>body { background-color: #333; color: #fff; }</style>"
 
+@app.route("/test")
+def test():
+    return "<p>This is a test response.</p>"
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)

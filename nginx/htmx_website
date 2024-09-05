@@ -8,7 +8,7 @@ server {
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
 
-    # Serve static files over HTTPS
+    # Serve static files
     location /styles/ {
         alias /var/www/htmx_website/styles/;
     }
@@ -21,14 +21,8 @@ server {
 
     # Serve HTML files from the 'mission3' directory
     location /mission3/ {
-        root /var/www/htmx_website;
-        try_files $uri $uri/ /mission3/mission3.html =404;
-    }
-
-    # Serve HTML files from the 'mission4' directory (example)
-    location /mission4/ {
-        root /var/www/htmx_website;
-        try_files $uri $uri/ /mission4/mission4.html =404;
+        alias /var/www/htmx_website/mission3/;
+        try_files $uri $uri/ /mission3.html =404;
     }
 
     # Proxy pass to Flask application
