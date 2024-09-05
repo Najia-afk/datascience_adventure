@@ -204,7 +204,7 @@ deploy_flask_app() {
 
     # Validate the new Flask application by starting the service
     echo "Starting Flask service (htmx_website.service) to validate the new configuration..." >&2
-    if sudo -su www-data systemctl start htmx_website.service; then
+    if sudo systemctl start htmx_website.service; then
         echo "Flask service started successfully with the new configuration." >&2
     else
         echo "Error: Failed to start Flask service with the new configuration. Restoring the previous configuration..." >&2
@@ -218,7 +218,7 @@ deploy_flask_app() {
             echo "No backup found to restore the previous Flask configuration." >&2
             exit 1
         fi
-        sudo -su www-data systemctl start htmx_website.service || {
+        sudo systemctl start htmx_website.service || {
             echo "Failed to start Flask service with the restored configuration. Please check the service status." >&2
             exit 1
         }
