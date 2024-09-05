@@ -175,6 +175,8 @@ update_static_files_and_nginx() {
 
 # Function to set up the Flask application
 deploy_flask_app() {
+    local project_dir="$1"
+    local flask_app_dir="/srv/htmx_website"
     log "Stopping Flask service (htmx_website.service)..." "INFO"
 
     # Switch to the 'www-data' user to stop the service and handle file operations
@@ -187,7 +189,7 @@ deploy_flask_app() {
     # Backup the existing Flask configuration
     if [ -f /srv/htmx_website/server.py ]; then
         echo "Backing up existing Flask configuration..." >&2
-        sudo cp /srv/htmx_website/server.py /srv/htmx_website/server.py.bak || {
+        sudo cp $flask_app_dir/server.py $flask_app_dir/server.py.bak || {
             echo "Failed to backup the existing Flask configuration." >&2
             exit 1
         }
@@ -195,7 +197,7 @@ deploy_flask_app() {
 
     # Copy the new server.py configuration
     echo "Copying new Flask configuration..." >&2
-    sudo cp -r /srv/htmx_website/app/server.py /srv/htmx_website/server.py || {
+    sudo cp -r $project_dir/app/server.py $flask_app_dir/server.py || {
         echo "Failed to copy the new Flask configuration." >&2
         exit 1
     }
@@ -207,7 +209,7 @@ deploy_flask_app() {
     else
         echo "Error: Failed to start Flask service with the new configuration. Restoring the previous configuration..." >&2
         if [ -f /srv/htmx_website/server.py.bak ]; then
-            sudo cp /srv/htmx_website/server.py.bak /srv/htmx_website/server.py || {
+            sudo cp $flask_app_dir/server.py.bak $flask_app_dir/server.py || {
                 echo "Failed to restore the previous Flask configuration." >&2
                 exit 1
             }
@@ -223,15 +225,15 @@ deploy_flask_app() {
     fi
 
     # Set appropriate permissions for the new configuration
-    sudo chown www-data:www-data /srv/htmx_website/server.py
-    sudo chmod 644 /srv/htmx_website/server.py
+    sudo chown www-data:www-data $flask_app_dir/server.py
+    sudo chmod 644 $flask_app_dir/server.py
 }
 
 # Function to restore the previous Flask configuration
 restore_flask_config() {
     log "Restoring the previous Flask configuration..." "INFO"
     if [ -f /srv/htmx_website/server.py.bak ]; then
-        sudo cp /srv/htmx_website/server.py.bak /srv/htmx_website/server.py || {
+        sudo cp $flask_app_dir/server.py.bak $flask_app_dir/server.py || {
             log "Failed to restore the previous Flask configuration." "ERROR"
             exit 1
         }
