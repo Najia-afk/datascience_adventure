@@ -1,6 +1,6 @@
 from flask import Flask, render_template_string, send_from_directory, abort
 
-app = Flask(__name__, static_folder="/var/www/htmx_website")
+app = Flask(__name__, static_folder="/var/www/htmx_website/")
 
 @app.route("/")
 def index():
