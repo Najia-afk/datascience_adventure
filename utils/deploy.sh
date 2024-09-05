@@ -74,6 +74,7 @@ process_project() {
     local project_dir="$1"
     local nginx_html_dir="$project_dir/nginx"
     local html_dir="$project_dir/app/static"
+    local website_html_dir="$project_dir/www"
 
     log "Processing project: $project_dir" "INFO"
 
@@ -103,7 +104,8 @@ process_project() {
     # Copy static files and update Nginx configuration
     set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
-  
+
+    set_permissions "$website_html_dir" "ubuntu:ubuntu"
 
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
@@ -115,7 +117,7 @@ process_project() {
             project_path="$BASE_DIR/$project_name"
             notebook_dir="$project_path"
             scripts_dir="$project_path/src/scripts"
-            output_dir="$nginx_html_dir/$project_name"
+            output_dir="$website_html_dir/$project_name"
 
             log "Processing project: $project_name" "INFO"
             if [ -d "$project_path" ]; then
