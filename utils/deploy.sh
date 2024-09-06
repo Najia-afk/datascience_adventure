@@ -106,7 +106,6 @@ process_project() {
 
     # Step 1: Set up permissions
     set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
-    set_permissions "$website_html_dir" "ubuntu:ubuntu"
 
     # Step 2: Clear existing static files in the website directory to avoid stale files
     sudo rm -rf "$website_html_dir/"*
@@ -276,6 +275,9 @@ restore_flask_config() {
 convert_notebooks() {
     local notebook_dir=$1
     local output_dir=$2
+
+    set_permissions "$output_dir" "ubuntu:ubuntu"
+    
     log "Converting notebooks in $notebook_dir to HTML in $output_dir" "INFO"
 
     if [ -d "$notebook_dir" ]; then
