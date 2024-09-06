@@ -25,9 +25,10 @@ def load_home():
     return render_template('templates/home.html')
 
 @app.route('/mission3')
+@app.route('/mission3/')
 def mission3():
     return render_template('mission3/mission3.html')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000)
-    
+
