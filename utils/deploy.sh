@@ -109,7 +109,9 @@ process_project() {
     sudo mkdir -p "$website_html_dir"
     set_permissions "$website_html_dir/" "ubuntu:ubuntu"
     sudo cp -r "$project_dir/app/static/"* "$website_html_dir/"
+    sudo mkdir -p "/var/www/htmx_website/templates"
     sudo cp -r "$project_dir/app/static/templates/"* "/var/www/htmx_website/templates"
+    sudo mkdir -p "/var/www/htmx_website/styles"
     sudo cp -r "$project_dir/app/static/styles/"* "/var/www/htmx_website/styles"
 
     # Process all HTML files in the static directory
