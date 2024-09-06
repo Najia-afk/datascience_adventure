@@ -1,8 +1,12 @@
 from flask import Flask, render_template
 
 app = Flask(__name__, 
-            static_folder="/var/www/htmx_website/static/", 
+            static_folder="/var/www/htmx_website/", 
             template_folder="/var/www/htmx_website/templates/")
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/header')
 def header():
