@@ -1,0 +1,17 @@
+<header class="top-bar">
+    <div class="logo">
+        <img src="logo.png" alt="Logo" class="logo-img">
+    </div>
+    <nav class="top-nav">
+        <a href="#" hx-get="/load-home" hx-target="#main-content" hx-swap="innerHTML">Home</a>
+        <div class="dropdown">
+            <button class="dropbtn">Datascientist Training</button>
+            <div class="dropdown-content">
+                <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML">Mission 3</a>
+                <a href="#" hx-get="/mission2" hx-target="#main-content" hx-swap="innerHTML">Mission 2</a>
+            </div>
+        </div>
+        <a href="#" hx-get="/load-contact" hx-target="#main-content" hx-swap="innerHTML">Contact</a>
+        <button class="dark-mode-toggle" hx-get="/toggle-dark-mode" hx-target="body" hx-swap="innerHTML">🌙</button>
+    </nav>
+</header>

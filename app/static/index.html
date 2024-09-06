@@ -9,40 +9,17 @@
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 
-<body>
-    <header class="top-bar">
-        <div class="logo">
-            <img src="logo.png" alt="Logo" class="logo-img">
-        </div>
-        <nav class="top-nav">
-            <a href="#" hx-get="/load-home" hx-target="#main-content" hx-swap="innerHTML">Home</a>
-            <div class="dropdown">
-                <button class="dropbtn">Datascientist Training</button>
-                <div class="dropdown-content">
-                    <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML">Mission 3</a>
-                </div>
-            </div>
-            <a href="#" hx-get="/load-contact" hx-target="#main-content" hx-swap="innerHTML">Contact</a>
-            <button class="dark-mode-toggle" hx-get="/toggle-dark-mode" hx-target="body" hx-swap="innerHTML">🌙</button>
-            <a href="#" hx-get="/test" hx-target="#main-content" hx-swap="innerHTML">Test</a>
-        </nav>
-    </header>
+<body hx-boost="true">
+    <!-- Header will be dynamically loaded -->
+    <div hx-get="/header" hx-target="this" hx-trigger="load"></div>
 
     <main id="main-content" class="content">
-        <section class="grid-container">
-            <article class="grid-item">
-                <h2>Mission 3: Data exploration for a public health agency</h2>
-                <p class="date">Wednesday, August 30, 2024</p>
-                <p class="category">Datascientist training</p>
-                <p>The Public Health Agency wishes to improve the quality of Open Food Facts data...</p>
-                <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML" class="more-link">More</a>
-            </article>
-        </section>
+        <!-- Summary will be dynamically loaded -->
+        <div hx-get="/summary" hx-target="this" hx-trigger="load"></div>
     </main>
 
-    <footer class="footer">
-        <p>© 2024 Datascience Adventure</p>
-    </footer>
+    <!-- Footer will be dynamically loaded -->
+    <div hx-get="/footer" hx-target="this" hx-trigger="load"></div>
 </body>
 
 </html>

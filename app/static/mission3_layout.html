@@ -3,32 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Science Portfolio - Project 3</title>
+    <title>Mission 3: Data Exploration</title>
     <link rel="stylesheet" href="../styles/styles.css">
-    <!-- Include HTMX for dynamic content loading -->
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 
 <body>
-    <!-- Top Navigation Bar -->
-    <header class="top-bar">
-        <div class="logo">
-            <img src="logo.png" alt="Logo" class="logo-img">
-        </div>
-        <nav class="top-nav">
-            <a href="#" hx-get="/load-home" hx-target="#main-content" hx-swap="innerHTML">Home</a>
-            <div class="dropdown">
-                <button class="dropbtn">Datascientist Training</button>
-                <div class="dropdown-content">
-                    <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML">Mission 3</a>
-                </div>
-            </div>
-            <a href="#" hx-get="/load-contact" hx-target="#main-content" hx-swap="innerHTML">Contact</a>
-            <button class="dark-mode-toggle" hx-get="/toggle-dark-mode" hx-target="body" hx-swap="innerHTML">🌙</button>
-            <a href="#" hx-get="/test" hx-target="#main-content" hx-swap="innerHTML">Test</a>
-        </nav>
-    </header>
-
     <!-- Main Container -->
     <div class="main-container">
         <!-- Sidebar -->
@@ -46,7 +26,7 @@
         <!-- Main Content Area -->
         <section class="main-content">
             <div class="project-header">
-                <h1>Mission3: Data exploration for a public health agency</h1>
+                <h1>Mission 3: Data Exploration for a Public Health Agency</h1>
                 <p>The Public Health Agency wishes to improve the quality of Open Food Facts data, an open source database is made available to individuals and organizations to allow them to know the nutritional quality of products.</p>
             </div>
 
@@ -57,16 +37,11 @@
                 </a>
             </div>
 
-            <!-- Correctly Display the Jupyter Notebook -->
+            <!-- Iframe Display for the Jupyter Notebook -->
             <div class="iframe-container">
                 <iframe src="Mission3.html"></iframe>
             </div>
         </section>
     </div>
-
-    <!-- Footer Section -->
-    <footer class="footer">
-        <p>© 2024 Datascience Adventure</p>
-    </footer>
 </body>
 </html>
