@@ -1,11 +1,7 @@
-from flask import Flask, send_from_directory, abort, render_template
+from flask import Flask, render_template
 
 app = Flask(__name__, static_folder="/var/www/htmx_website/")
 
-@app.route("/")
-def index():
-    # Serve the main index.html file
-    return app.send_static_file('index.html')
 
 @app.route('/header')
 def header():
@@ -27,16 +23,6 @@ def load_home():
 @app.route('/mission3')
 def mission3():
     return render_template('/mission3/mission3.html')
-
-@app.route("/load-contact")
-def load_contact():
-    # Dummy example for contact page, replace with actual content
-    return "<h1>Contact Us</h1><p>Contact details here...</p>"
-
-@app.route("/toggle-dark-mode")
-def toggle_dark_mode():
-    # Dummy example for dark mode toggle, replace with actual logic
-    return "<style>body { background-color: #333; color: #fff; }</style>"
 
 
 if __name__ == "__main__":

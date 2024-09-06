@@ -101,18 +101,35 @@ process_project() {
     # deactivate_venv
     # log "Python packages installed successfully for project: $project_dir." "INFO"
 
-    # Copy static files and update Nginx configuration
-    set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
-    update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
+    log "Processing project: $project_dir" "INFO"
 
-    log "Copying updated static files for project: $project_dir" "INFO"
+    # Ensure the virtual environment is executable (if used)
+    sudo chmod -R +x "$VENV_DIR"
+
+    # Step 1: Set up permissions
+    set_permissions "$nginx_html_dir" "ubuntu:ubuntu"
+    set_permissions "$website_html_dir" "ubuntu:ubuntu"
+
+    # Step 2: Clear existing static files in the website directory to avoid stale files
+    sudo rm -rf "$website_html_dir/*"
+    log "Cleared existing static files in $website_html_dir" "INFO"
+    sudo rm -rf "/var/www/htmx_website/*"
+    log "Cleared existing static files in /var/www/htmx_website/" "INFO"
+
+
+    # Step 3: Copy updated static files to the website directory
     sudo mkdir -p "$website_html_dir"
-    set_permissions "$website_html_dir/" "ubuntu:ubuntu"
-    sudo cp -r "$project_dir/app/static/"* "$website_html_dir/"
     sudo mkdir -p "/var/www/htmx_website/templates"
-    sudo cp -r "$project_dir/app/static/templates/"* "/var/www/htmx_website/templates"
     sudo mkdir -p "/var/www/htmx_website/styles"
+    
+
+    log "Copying static files from $html_dir to $website_html_dir" "INFO"
+    
+    sudo cp -r "$project_dir/app/static/templates/"* "/var/www/htmx_website/templates"
     sudo cp -r "$project_dir/app/static/styles/"* "/var/www/htmx_website/styles"
+
+    # Copy static files and update Nginx configuration
+    update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
 
     # Process all HTML files in the static directory
     for html_file in "$html_dir/"*.html; do
@@ -142,6 +159,7 @@ process_project() {
         fi
     done
 
+    set_permissions "/var/www/htmx_website/" "www-data:www-data"
     deploy_flask_app "$project_dir"
     # Restart services after deployment
     restart_or_start_service "nginx"
