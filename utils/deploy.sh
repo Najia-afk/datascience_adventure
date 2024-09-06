@@ -111,9 +111,9 @@ process_project() {
     set_permissions "$website_html_dir" "ubuntu:ubuntu"
 
     # Step 2: Clear existing static files in the website directory to avoid stale files
-    sudo rm -rf "$website_html_dir/*"
+    sudo rm -rf "$website_html_dir/"*
     log "Cleared existing static files in $website_html_dir" "INFO"
-    sudo rm -rf "/var/www/htmx_website/*"
+    sudo rm -rf "/var/www/htmx_website/"*
     log "Cleared existing static files in /var/www/htmx_website/" "INFO"
 
 
