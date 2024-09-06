@@ -13,13 +13,9 @@
     <!-- Header will be dynamically loaded -->
     <div id="header" hx-get="/header" hx-target="#header" hx-trigger="load"></div>
 
-    <button hx-get="/test" hx-target="#response">Fetch Data</button>
-
-    <div id="response"></div>
-
     <main id="main-content" class="content">
-        <!-- Summary will be dynamically loaded -->
-        <div id="summary" hx-get="/summary" hx-target="#main-content" hx-trigger="load"></div>
+        <!-- Summary will be dynamically loaded by default -->
+        <div id="default-content" hx-get="/summary" hx-target="#main-content" hx-trigger="load"></div>
     </main>
 
     <!-- Footer will be dynamically loaded -->
