@@ -145,7 +145,7 @@ process_project() {
                 sudo mkdir -p "$output_dir"
                 convert_notebooks "$notebook_dir" "$output_dir"
                 update_sphinx_docs "$scripts_dir" "$output_dir"
-                embed_notebook_into_layout "$website_html_dir" "$html_file" "$project_name"
+                embed_notebook_into_layout "$output_dir" "$html_file" "$project_name"
                 place_files "$output_dir" "/var/www/htmx_website/$project_name"
             else
                 log "Mission directory $project_path does not exist or is not accessible. Skipping..." "WARNING"
@@ -395,23 +395,19 @@ embed_notebook_into_layout() {
     local project_name=$3
 
     local basename_html_file=$(basename "$html_file")
-    local original_file_path="$output_dir/$basename_html_file"
-    local new_file_path="$output_dir/$project_name/$project_name.html"
+    local new_file_path="$output_dir/$project_name.html"
 
     # Check if the file exists in output_dir
-    if [ -f "$original_file_path" ]; then
-        log "File $original_file_path exists. Proceeding with operations..." "INFO"
+    if [ -f "$html_file" ]; then
+        log "File $html_file exists. Proceeding with operations..." "INFO"
 
         # Ensure the target directory exists
         mkdir -p "$(dirname "$new_file_path")"
 
         # Copy the content into the new file
-        cp "$original_file_path" "$new_file_path"
-        log "Copied content from $original_file_path to $new_file_path" "INFO"
+        cp "$html_file" "$new_file_path"
+        log "Copied content from $html_file to $new_file_path" "INFO"
 
-        # Delete the original file
-        rm "$original_file_path"
-        log "Deleted original file $original_file_path" "INFO"
     else
         log "File $original_file_path does not exist. No action taken." "INFO"
     fi
