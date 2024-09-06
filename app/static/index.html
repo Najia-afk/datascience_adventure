@@ -5,21 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Datascience Adventure</title>
-    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="/styles/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 
 <body hx-boost="true">
     <!-- Header will be dynamically loaded -->
-    <div hx-get="/header" hx-target="this" hx-trigger="load"></div>
+    <div hx-get="/header" hx-target="header" hx-trigger="load"></div>
 
     <main id="main-content" class="content">
         <!-- Summary will be dynamically loaded -->
-        <div hx-get="/summary" hx-target="this" hx-trigger="load"></div>
+        <div hx-get="/summary" hx-target="main-content" hx-trigger="load"></div>
     </main>
 
     <!-- Footer will be dynamically loaded -->
-    <div hx-get="/footer" hx-target="this" hx-trigger="load"></div>
+    <div hx-get="/footer" hx-target="footer" hx-trigger="load"></div>
 </body>
 
 </html>
