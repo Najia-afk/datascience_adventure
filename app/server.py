@@ -2,7 +2,7 @@ from flask import Flask, render_template
 
 app = Flask(__name__, 
             static_folder="/var/www/htmx_website/", 
-            template_folder="/var/www/htmx_website/templates/")
+            template_folder="/var/www/htmx_website/")
 
 @app.route('/')
 def index():
@@ -10,19 +10,19 @@ def index():
 
 @app.route('/header')
 def header():
-    return render_template('header.html')
+    return render_template('templates/header.html')
 
 @app.route('/footer')
 def footer():
-    return render_template('footer.html')
+    return render_template('templates/footer.html')
 
 @app.route('/summary')
 def summary():
-    return render_template('summary.html')
+    return render_template('templates/summary.html')
 
 @app.route('/load-home')
 def load_home():
-    return render_template('home.html')
+    return render_template('templates/home.html')
 
 @app.route('/mission3')
 def mission3():
