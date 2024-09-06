@@ -120,7 +120,7 @@ process_project() {
     sudo mkdir -p "/var/www/htmx_website/templates"
     sudo mkdir -p "/var/www/htmx_website/styles"
     
-    set_permissions "$website_html_dir" "ubuntu:ubuntu"
+    set_permissions "$website_html_dir" "www-data:www-data"
 
     log "Copying static files from $html_dir to $website_html_dir" "INFO"
     
