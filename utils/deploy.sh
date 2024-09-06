@@ -76,8 +76,6 @@ process_project() {
     local html_dir="$project_dir/app/static"
     local website_html_dir="$project_dir/www"
 
-    log "Processing project: $project_dir" "INFO"
-
     sudo chmod -R +x "$VENV_DIR"
 
     # Activate the fixed virtual environment
@@ -122,6 +120,7 @@ process_project() {
     sudo mkdir -p "/var/www/htmx_website/templates"
     sudo mkdir -p "/var/www/htmx_website/styles"
     
+    set_permissions "$website_html_dir" "ubuntu:ubuntu"
 
     log "Copying static files from $html_dir to $website_html_dir" "INFO"
     
