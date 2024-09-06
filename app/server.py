@@ -1,8 +1,8 @@
 from flask import Flask, render_template
 
 app = Flask(__name__, 
-            static_folder="/var/www/htmx_website/static", 
-            template_folder="/var/www/htmx_website/templates")
+            static_folder="/var/www/htmx_website/static/", 
+            template_folder="/var/www/htmx_website/templates/")
 
 @app.route('/header')
 def header():
