@@ -1,13 +1,14 @@
 <div class="scroll-container">
-    <button class="scroll-btn left-btn" 
+    <button class="scroll-btn left-btn"
+            hx-get="/scroll-left"
+            hx-target="#scroll-wrapper"
+            hx-swap="none"
             hx-trigger="click"
-            hx-get="/scroll-left" 
-            hx-target="#scroll-wrapper" 
-            hx-swap="none">◀</button>
-    
+            hx-vals='{"scroll-direction": "left"}'>◀</button>
+
     <div id="scroll-wrapper" class="scroll-wrapper">
         <article class="grid-item">
-            <h2>Mission 3: Data exploration</h2>
+            <h2>Mission 3: Data Exploration</h2>
             <p>August 30, 2024</p>
             <p>Data Scientist Training</p>
             <p>The Public Health Agency wishes to improve the quality of Open Food Facts data....</p>
@@ -15,10 +16,11 @@
         </article>
         <!-- Add more grid-items as needed -->
     </div>
-    
-    <button class="scroll-btn right-btn" 
-            hx-trigger="click" 
-            hx-get="/scroll-right" 
-            hx-target="#scroll-wrapper" 
-            hx-swap="none">▶</button>
+
+    <button class="scroll-btn right-btn"
+            hx-get="/scroll-right"
+            hx-target="#scroll-wrapper"
+            hx-swap="none"
+            hx-trigger="click"
+            hx-vals='{"scroll-direction": "right"}'>▶</button>
 </div>
