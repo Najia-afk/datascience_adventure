@@ -126,8 +126,8 @@ button:focus {
     display: flex;
     flex: 1;
     padding: 20px;
-    margin-top: 20px;
     flex-direction: row;
+    overflow: hidden; /* Ensure no extra scrollbars on main container */
 }
 
 /* Sidebar Styles */
@@ -331,9 +331,9 @@ button:focus {
 .scroll-container {
     display: flex;
     align-items: center;
-    overflow: hidden;
+    overflow-x: auto; /* Horizontal scrolling */
     position: relative;
-    height: 300px;
+    height: calc(100vh - 70px); /* Full viewport height minus top bar height */
     padding: 0 10px; /* Added padding to ensure buttons are visible */
 }
 
@@ -422,15 +422,6 @@ button:focus {
 
 .scroll-btn:hover {
     background-color: #495057;
-}
-
-/* Main Container */
-.main-container {
-    display: flex;
-    flex-direction: row;
-    overflow: hidden; /* Ensure no extra scrollbars on main container */
-    padding: 20px;
-    margin-top: 20px;
 }
 
 /* Iframe Container */
