@@ -8,6 +8,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    overflow: hidden; /* Prevents body from showing extra scrollbars */
 }
 
 /* Top Navigation Bar */
@@ -35,6 +36,11 @@ body {
     margin-right: 15px;
 }
 
+.top-nav {
+    display: flex;
+    align-items: center;
+}
+
 .top-nav a,
 .dark-mode-toggle {
     color: #ffffff;
@@ -46,6 +52,13 @@ body {
 .top-nav a:hover,
 .dark-mode-toggle:hover {
     color: #e9ecef;
+}
+
+/* Ensure uniform spacing and alignment */
+.top-nav .nav-link,
+.top-nav .dropbtn {
+    display: flex;
+    align-items: center;
 }
 
 .dropdown {
@@ -61,6 +74,8 @@ body {
     border: none;
     cursor: pointer;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
 }
 
 .dropdown-content {
@@ -71,6 +86,8 @@ body {
     z-index: 1;
     min-width: 180px;
     border-radius: 4px;
+    top: 100%; /* Position below the button */
+    left: 0;
 }
 
 .dropdown-content a {
@@ -87,6 +104,21 @@ body {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+/* Focus Styles */
+a:focus,
+button:focus {
+    outline: 2px solid #007bff; /* Blue outline for focus */
+    outline-offset: 2px;
+}
+
+a:focus {
+    text-decoration: underline; /* Optional: underline links on focus */
+}
+
+button:focus {
+    background-color: #495057; /* Optional: change button background on focus */
 }
 
 /* Main Layout */
@@ -302,8 +334,10 @@ body {
     overflow: hidden;
     position: relative;
     height: 300px;
+    padding: 0 10px; /* Added padding to ensure buttons are visible */
 }
 
+/* Scroll Wrapper */
 .scroll-wrapper {
     display: flex;
     align-items: center;
@@ -312,8 +346,10 @@ body {
     white-space: nowrap;
     padding: 15px;
     scroll-snap-type: x mandatory;
+    width: calc(100% - 100px); /* Adjust width to account for scroll buttons */
 }
 
+/* Grid Items */
 .grid-item {
     flex: 0 0 auto;
     width: 320px;
@@ -324,16 +360,25 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: left;
     scroll-snap-align: start;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .grid-item h2 {
     font-size: 18px;
     margin: 0 0 10px 0;
+    white-space: nowrap; /* Prevents header from wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds ellipsis if header is too long */
 }
 
 .grid-item p {
     margin: 0 0 10px 0;
     font-size: 14px;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds ellipsis if paragraph text is too long */
 }
 
 .grid-item a {
@@ -357,7 +402,7 @@ body {
     bottom: 0;
     width: 50px;
     height: 100%;
-    transform: translateY(-50%);
+    transform: translateY(0); /* Remove translation to align with container */
     z-index: 10;
     opacity: 0;
     transition: opacity 0.3s;
@@ -379,6 +424,15 @@ body {
     background-color: #495057;
 }
 
+/* Main Container */
+.main-container {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden; /* Ensure no extra scrollbars on main container */
+    padding: 20px;
+    margin-top: 20px;
+}
+
 /* Iframe Container */
 .iframe-container {
     position: relative;
@@ -387,10 +441,11 @@ body {
     padding-bottom: 56.25%; /* 16:9 aspect ratio */
     margin-top: 20px;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: hidden; /* Prevents extra scrollbars */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Iframe Styling */
 .iframe-container iframe {
     position: absolute;
     top: 0;
@@ -398,12 +453,14 @@ body {
     width: 100%;
     height: 100%;
     border: none;
+    overflow: hidden; /* Ensures iframe doesn't introduce extra scrollbars */
 }
 
 /* Responsive Layout Adjustments */
 @media (max-width: 768px) {
     .main-container {
         flex-direction: column;
+        overflow-y: auto; /* Allow vertical scroll if needed */
     }
 
     .sidebar {
@@ -412,10 +469,6 @@ body {
         box-shadow: none;
         position: relative;
         top: auto;
-    }
-
-    .sidebar.expanded {
-        width: 100%;
     }
 
     .main-content {
