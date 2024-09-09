@@ -311,6 +311,7 @@ body {
     scroll-behavior: smooth;
     white-space: nowrap;
     padding: 15px;
+    scroll-snap-type: x mandatory;
 }
 
 .grid-item {
@@ -322,6 +323,26 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: left;
+    scroll-snap-align: start;
+}
+
+.grid-item h2 {
+    font-size: 18px;
+    margin: 0 0 10px 0;
+}
+
+.grid-item p {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.grid-item a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.grid-item a:hover {
+    text-decoration: underline;
 }
 
 /* Scroll Buttons */
@@ -338,6 +359,12 @@ body {
     height: 100%;
     transform: translateY(-50%);
     z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.scroll-container:hover .scroll-btn {
+    opacity: 1;
 }
 
 .left-btn {
@@ -350,6 +377,27 @@ body {
 
 .scroll-btn:hover {
     background-color: #495057;
+}
+
+/* Iframe Container */
+.iframe-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 
 /* Responsive Layout Adjustments */
@@ -371,8 +419,7 @@ body {
     }
 
     .main-content {
-        margin-left: 0;
-        margin-top: 20px;
+        margin-left: 0; /* No sidebar on small screens */
     }
 
     .scroll-container {
