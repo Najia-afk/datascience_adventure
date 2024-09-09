@@ -12,6 +12,16 @@ def index():
 def header():
     return render_template('templates/header.html')
 
+@app.route('/scroll-left')
+def scroll_left():
+    # HTMX will handle the scroll action on the front-end
+    return ""
+
+@app.route('/scroll-right')
+def scroll_right():
+    # HTMX will handle the scroll action on the front-end
+    return ""
+
 @app.route('/footer')
 def footer():
     return render_template('templates/footer.html')

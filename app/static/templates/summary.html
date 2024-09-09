@@ -1,10 +1,24 @@
-<section class="grid-container">
-    <article class="grid-item">
-        <h2>Mission 3: Data exploration for a public health agency</h2>
-        <p class="date">Wednesday, August 30, 2024</p>
-        <p class="category">Data Scientist Training</p>
-        <p>The Public Health Agency wishes to improve the quality of Open Food Facts data...</p>
-        <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML" class="more-link">More</a>
-    </article>
-    <!-- Add more articles here as needed -->
-</section>
+<div class="scroll-container">
+    <button class="scroll-btn left-btn" 
+            hx-trigger="click"
+            hx-get="/scroll-left" 
+            hx-target="#scroll-wrapper" 
+            hx-swap="none">◀</button>
+    
+    <div id="scroll-wrapper" class="scroll-wrapper">
+        <article class="grid-item">
+            <h2>Mission 3: Data exploration</h2>
+            <p>August 30, 2024</p>
+            <p>Data Scientist Training</p>
+            <p>The Public Health Agency wishes to improve the quality of Open Food Facts data....</p>
+            <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML" class="more-link">More</a>
+        </article>
+        <!-- Add more grid-items as needed -->
+    </div>
+    
+    <button class="scroll-btn right-btn" 
+            hx-trigger="click" 
+            hx-get="/scroll-right" 
+            hx-target="#scroll-wrapper" 
+            hx-swap="none">▶</button>
+</div>
