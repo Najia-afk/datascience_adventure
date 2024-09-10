@@ -38,11 +38,31 @@
             </div>
 
             <!-- Iframe Display for the Jupyter Notebook -->
-            <div class="iframe-container">
+            <div class="iframe-container" style="min-height: 600px;">
                 <iframe src="/mission3/Mission3.html" scrolling="no"></iframe>
             </div>
         </section>
     </div>
+
+    <!-- Minimal JavaScript for Handling Resizing -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var iframe = document.querySelector('.iframe-container iframe');
+            
+            iframe.onload = function() {
+                // Send a message to the iframe to report its height back
+                iframe.contentWindow.postMessage('sendHeight', '*'); // Adjust "*" to the specific origin for security if possible
+
+                // Listen for the height message from the iframe
+                window.addEventListener("message", function(event) {
+                    if (event.origin === "http://trusted-source.com") { // Update with your actual trusted origin
+                        if (event.data.height) {
+                            iframe.style.height = event.data.height + 'px';
+                        }
+                    }
+                }, false);
+            };
+        });
+    </script>
 </body>
 </html>
-
