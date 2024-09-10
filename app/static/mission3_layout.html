@@ -6,6 +6,30 @@
     <title>Mission 3: Data Exploration</title>
     <link rel="stylesheet" href="../styles/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <style>
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden; /* Ensures no internal scrollbars */
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            border: none;
+        }
+
+        /* Hidden iframe used for measuring height */
+        .hidden-iframe {
+            display: none; /* Completely hide the proxy iframe */
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 0;
+            width: 0;
+            border: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -38,30 +62,27 @@
             </div>
 
             <!-- Iframe Display for the Jupyter Notebook -->
-            <div class="iframe-container" style="min-height: 600px;">
-                <iframe src="/mission3/Mission3.html" scrolling="no"></iframe>
+            <div class="iframe-container">
+                <iframe id="main-iframe" src="/mission3/Mission3.html"></iframe>
+                <!-- Hidden iframe to measure content height -->
+                <iframe id="proxy-iframe" class="hidden-iframe" src="/mission3/Mission3.html"></iframe>
             </div>
         </section>
     </div>
 
-    <!-- Minimal JavaScript for Handling Resizing -->
+    <!-- JavaScript for Measuring and Applying Height -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var iframe = document.querySelector('.iframe-container iframe');
-            
-            iframe.onload = function() {
-                // Send a message to the iframe to request its height
-                iframe.contentWindow.postMessage('sendHeight', 'https://datascience-adventure.xyz'); // Set the correct origin
+        document.addEventListener('DOMContentLoaded', function () {
+            var mainIframe = document.getElementById('main-iframe');
+            var proxyIframe = document.getElementById('proxy-iframe');
 
-                // Listen for the height message from the iframe
-                window.addEventListener("message", function(event) {
-                    // Ensure the message is from the trusted origin
-                    if (event.origin === "https://datascience-adventure.xyz") {
-                        if (event.data && event.data.height) {
-                            iframe.style.height = event.data.height + 'px';
-                        }
-                    }
-                }, false);
+            proxyIframe.onload = function () {
+                // Measure the height of the content inside the proxy iframe
+                var proxyDocument = proxyIframe.contentDocument || proxyIframe.contentWindow.document;
+                var contentHeight = proxyDocument.body.scrollHeight;
+
+                // Set the height of the main iframe based on the measured content height
+                mainIframe.style.height = contentHeight + 'px';
             };
         });
     </script>
