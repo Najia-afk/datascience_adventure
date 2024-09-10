@@ -1,0 +1,56 @@
+/* Status Blocks */
+.status {
+    background-color: #e0f7fa;
+    color: #00796b;
+}
+
+.in-development {
+    background-color: #ede7f6;
+    color: #5e35b1;
+}
+
+.upcoming {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+/* Progress Bar */
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.progress-bar div {
+    height: 24px;
+    width: 120px;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+}
+
+.progress-bar div span {
+    height: 100%;
+    display: block;
+    border-radius: 12px;
+}
+
+.research {
+    background-color: #512da8;
+}
+
+.design {
+    background-color: #6a1b9a;
+}
+
+.implementation {
+    background-color: #388e3c;
+}
+
+.testing {
+    background-color: #f57c00;
+}
+
+.upgrade {
+    background-color: #ffca28;
+}

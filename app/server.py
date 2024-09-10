@@ -14,13 +14,11 @@ def header():
 
 @app.route('/scroll-left')
 def scroll_left():
-    # HTMX will handle the scroll action on the front-end
-    return ""
+    return {'scroll_distance': -320}  # Adjust for the width of each grid item
 
 @app.route('/scroll-right')
 def scroll_right():
-    # HTMX will handle the scroll action on the front-end
-    return ""
+    return {'scroll_distance': 320}  # Adjust for the width of each grid item
 
 @app.route('/footer')
 def footer():

@@ -1,0 +1,55 @@
+/* Responsive Layout Adjustments */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+        position: relative;
+        top: auto;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .scroll-container {
+        height: auto;
+    }
+
+    .grid-item {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .top-bar {
+        padding: 10px 15px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .logo img {
+        height: 30px;
+        margin-right: 10px;
+    }
+
+    .top-nav a,
+    .dark-mode-toggle {
+        margin-left: 10px;
+        font-size: 16px;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}

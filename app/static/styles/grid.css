@@ -1,0 +1,96 @@
+/* Grid Layout */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+/* Grid Items */
+.grid-item {
+    flex: 0 0 320px;
+    height: 400px;
+    margin-right: 20px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.grid-item h2 {
+    font-size: 18px;
+    margin: 0 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grid-item p {
+    margin: 0 0 10px;
+    font-size: 14px;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grid-item a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.grid-item a:hover {
+    text-decoration: underline;
+}
+
+/* Scrollable Container */
+.scroll-container {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    position: relative;
+    height: calc(100vh - 70px);
+    padding: 0 10px;
+}
+
+.scroll-wrapper {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    white-space: nowrap;
+    padding: 15px;
+    scroll-snap-type: x mandatory;
+}
+
+/* Scroll Buttons */
+.scroll-btn {
+    background-color: transparent;
+    color: #007bff;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    transition: background-color 0.3s, opacity 0.3s;
+    opacity: 0.5;
+}
+
+.scroll-btn:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    opacity: 1;
+}
+
+.left-btn {
+    left: 10px;
+}
+
+.right-btn {
+    right: 10px;
+}
