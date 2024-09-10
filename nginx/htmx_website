@@ -20,11 +20,16 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
-    # Serve Mission3.html
+    # Serve Mission3.html with CORS headers to allow communication
     location /mission3/ {
         alias /var/www/htmx_website/mission3/;
         expires 30d;
         add_header Cache-Control "public, no-transform";
+
+        # CORS headers to allow iframe communication
+        add_header Access-Control-Allow-Origin "https://datascience-adventure.xyz";
+        add_header Access-Control-Allow-Methods "GET, POST, OPTIONS"; # Allows GET, POST, and preflight OPTIONS
+        add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept";
     }
 
     # Proxy pass to Flask API
