@@ -284,20 +284,20 @@ convert_notebooks() {
         # Convert notebooks to HTML
         jupyter nbconvert --to html --output-dir="$output_dir" "$notebook_dir"/*.ipynb
         
-        # Append the listener script to each HTML file
+        # Append the listener script to each HTML file safely
         for html_file in "$output_dir"/*.html; do
-            cat << 'EOF' >> "$html_file"
-<script>
-    // Send the height of the document to the parent window
-    window.addEventListener('load', function() {
-        // Calculate the height of the document
-        var documentHeight = document.body.scrollHeight;
+            # Insert the script before the closing </body> tag
+            sed -i '/<\/body>/i\
+<script>\
+    // Send the height of the document to the parent window\
+    window.addEventListener("load", function() {\
+        // Calculate the height of the document\
+        var documentHeight = document.body.scrollHeight;\
+        // Send the height to the parent window\
+        window.parent.postMessage({ height: documentHeight }, "*");\
+    });\
+</script>' "$html_file"
 
-        // Send the height to the parent window
-        window.parent.postMessage({ height: documentHeight }, '*');
-    });
-</script>
-EOF
             log "Appended resize listener to $html_file" "INFO"
         done
         
