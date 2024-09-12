@@ -24,11 +24,6 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
-    # Redirect requests with trailing slashes to their non-trailing slash version
-    location ~ ^/(.+)/$ {
-        return 301 /$1;
-    }
-
     # Serve static files from the root directory
     location / {
         root /var/www/htmx_website;
@@ -38,15 +33,20 @@ server {
     }
 
     # Serve files from /mission3/ directory
-    location /mission3 {
-        alias /var/www/htmx_website/mission3;
+    location /mission3/ {
+        alias /var/www/htmx_website/mission3/;
         try_files $uri $uri/ /mission3.html;
         expires 30d;
         add_header Cache-Control "public, no-transform";
     }
 
+    # Redirect requests with trailing slashes to their non-trailing slash version
+    location ~ ^/(.+)/$ {
+        rewrite ^/(.+)/$ /$1 permanent;
+    }
+
     # Proxy pass to Flask application
-    location /api/ {
+    location / {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
