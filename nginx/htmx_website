@@ -63,3 +63,4 @@ server {
         root /var/www/htmx_website;
     }
 }
+
