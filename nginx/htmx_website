@@ -23,8 +23,6 @@ server {
     add_header X-Content-Type-Options "nosniff";
     add_header Referrer-Policy "no-referrer";
 
-    # Rate Limiting
-    limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
 
     # Serve static files
     location /styles/ {
