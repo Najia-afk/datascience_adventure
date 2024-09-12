@@ -23,7 +23,6 @@ server {
     add_header X-Content-Type-Options "nosniff";
     add_header Referrer-Policy "no-referrer";
 
-
     # Serve static files
     location /styles/ {
         alias /var/www/htmx_website/styles/;
@@ -31,17 +30,15 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
-
-    location /mission3/ {
-        alias /var/www/htmx_website/mission3/;
-        try_files $uri $uri/ =404;
+    location /templates/ {
+        alias /var/www/htmx_website/templates/;
         expires 30d;
         add_header Cache-Control "public, no-transform";
     }
 
     # Handle root and other dynamic requests
     location / {
-        root /var/www/htmx_website; 
+        root /var/www/htmx_website;
         try_files $uri $uri/ @flask;
         expires 30d;
         add_header Cache-Control "public, no-transform";
