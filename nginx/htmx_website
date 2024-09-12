@@ -41,7 +41,7 @@ server {
 
     # Handle root and other dynamic requests
     location / {
-        root /var/www/htmx_website;
+        root /var/www/htmx_website; 
         try_files $uri $uri/ @flask;
         expires 30d;
         add_header Cache-Control "public, no-transform";

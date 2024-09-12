@@ -30,12 +30,7 @@
             <a href="#">Read more</a>
         </article>
         <article class="grid-item">
-            <h2>Item 1</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="#">Read more</a>
-        </article>
-        <article class="grid-item">
-            <h2>Item 2</h2>
+            <h2>Item 3</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <a href="#">Read more</a>
         </article>
@@ -45,12 +40,17 @@
             <a href="#">Read more</a>
         </article>
         <article class="grid-item">
-            <h2>Item 1</h2>
+            <h2>Item 3</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <a href="#">Read more</a>
         </article>
         <article class="grid-item">
-            <h2>Item 2</h2>
+            <h2>Item 3</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <a href="#">Read more</a>
+        </article>
+        <article class="grid-item">
+            <h2>Item 3</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <a href="#">Read more</a>
         </article>
@@ -68,4 +68,33 @@
             hx-swap="none"
             hx-trigger="click"
             hx-on="htmx:afterOnLoad scrollLeftTo(#scroll-wrapper, 320)">▶</button>
+
+    <script>
+        document.addEventListener("htmx:afterSwap", function(event) {
+            if (event.target.id === "default-content") {
+                // Initialize smooth scrolling for the newly loaded content
+                initSmoothScrolling();
+            }
+        });
+
+        function initSmoothScrolling() {
+            document.querySelectorAll('.scroll-btn').forEach(button => {
+                button.addEventListener('click', handleScroll);
+            });
+        }
+
+        function handleScroll(event) {
+            const button = event.target;
+            const direction = button.classList.contains('right-btn') ? 1 : -1;
+            const scrollAmount = 320; // Adjust as needed
+            const scrollWrapper = document.querySelector('#scroll-wrapper');
+            
+            if (scrollWrapper) {
+                scrollWrapper.scrollBy({
+                    left: direction * scrollAmount,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    </script>
 </div>
