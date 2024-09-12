@@ -25,6 +25,22 @@ server {
 
     # Rate Limiting
     limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
+
+    # Serve static files
+    location /styles/ {
+        alias /var/www/htmx_website/styles/;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    location /mission3/ {
+        alias /var/www/htmx_website/mission3/;
+        try_files $uri $uri/ =404;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # Handle root and other dynamic requests
     location / {
         limit_req zone=mylimit burst=20;
         root /var/www/htmx_website;
@@ -33,22 +49,7 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
-    # Serve static files from /styles/
-    location /styles/ {
-        alias /var/www/htmx_website/styles/;
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
-    }
-
-    # Serve files from /mission3/ directory
-    location /mission3/ {
-        alias /var/www/htmx_website/mission3/;
-        try_files $uri $uri/ =404;
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
-    }
-
-    # Handling requests not matching static files
+    # Proxy requests not handled by static file locations
     location @flask {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
@@ -57,10 +58,9 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # Optional: Add error pages
+    # Custom 404 error page
     error_page 404 /404.html;
     location = /404.html {
         root /var/www/htmx_website;
     }
 }
-
