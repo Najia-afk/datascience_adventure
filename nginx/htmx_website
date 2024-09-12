@@ -12,10 +12,26 @@ server {
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 10m;
 
-    # CORS headers applied globally to all routes
+    # CORS headers
     add_header Access-Control-Allow-Origin "https://datascience-adventure.xyz";
     add_header Access-Control-Allow-Methods "GET, POST, OPTIONS";
     add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept";
+
+    # Security Headers
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+    add_header Referrer-Policy "no-referrer";
+
+    # Rate Limiting
+    limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
+    location / {
+        limit_req zone=mylimit burst=20;
+        root /var/www/htmx_website;
+        try_files $uri $uri/ @flask;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
 
     # Serve static files from /styles/
     location /styles/ {
@@ -24,29 +40,16 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
-    # Serve static files from the root directory
-    location / {
-        root /var/www/htmx_website;
-        try_files $uri $uri/ /index.html;
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
-    }
-
     # Serve files from /mission3/ directory
     location /mission3/ {
         alias /var/www/htmx_website/mission3/;
-        try_files $uri $uri/ /mission3.html;
+        try_files $uri $uri/ =404;
         expires 30d;
         add_header Cache-Control "public, no-transform";
     }
 
-    # Redirect requests with trailing slashes to their non-trailing slash version
-    location ~ ^/(.+)/$ {
-        rewrite ^/(.+)/$ /$1 permanent;
-    }
-
-    # Proxy pass to Flask application
-    location / {
+    # Handling requests not matching static files
+    location @flask {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
