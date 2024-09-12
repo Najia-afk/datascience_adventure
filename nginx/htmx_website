@@ -38,11 +38,6 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
-    # Redirect requests with trailing slashes to non-trailing slash
-    location ~ ^/(.+)/$ {
-        return 301 /$1;
-    }
-
     # Handle root and other dynamic requests
     location / {
         root /var/www/htmx_website;
