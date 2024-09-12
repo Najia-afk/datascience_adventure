@@ -47,7 +47,6 @@ server {
 
     # Handle root and other dynamic requests
     location / {
-        limit_req zone=mylimit burst=20;
         root /var/www/htmx_website;
         try_files $uri $uri/ @flask;
         expires 30d;
