@@ -36,21 +36,17 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
+    # Handle mission3 requests
     location /mission3 {
-        try_files $uri $uri/ /mission3/mission3.html =404;
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
+        try_files $uri @flask;
     }
 
     # Handle root and other dynamic requests
     location / {
-        root /var/www/htmx_website;
-        try_files $uri $uri/ @flask;
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
+        try_files $uri @flask;
     }
 
-    # Proxy requests not handled by static file locations
+    # Proxy requests to Flask
     location @flask {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
