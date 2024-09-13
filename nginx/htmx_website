@@ -23,6 +23,31 @@ server {
     add_header X-Content-Type-Options "nosniff";
     add_header Referrer-Policy "no-referrer";
 
+    # Serve static files
+    location /styles/ {
+        alias /var/www/htmx_website/styles/;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    location /templates/ {
+        alias /var/www/htmx_website/templates/;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    location /mission3/ {
+        alias /var/www/htmx_website/mission3/;
+        try_files $uri $uri/ =404;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # Handle /mission3 without trailing slash
+    location /mission3 {
+        rewrite ^/mission3$ /mission3/ last;
+    }
+    
     # Handle root and other dynamic requests
     location / {
         root /var/www/htmx_website;
