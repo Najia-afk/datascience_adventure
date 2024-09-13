@@ -203,9 +203,10 @@ update_static_files_and_nginx() {
 deploy_flask_app() {
     local project_dir="$1"
     local flask_app_dir="/srv/htmx_website"
+    local gunicorn_service_file="/etc/systemd/system/htmx_website.service"
     log "Stopping Flask service (htmx_website.service)..." "INFO"
 
-     sudo cp -r $project_dir/app/wsgi.py $flask_app_dir/wsgi.py
+    sudo cp -r $project_dir/app/wsgi.py $flask_app_dir/wsgi.py
 
     # Switch to the 'www-data' user to stop the service and handle file operations
     # Stop the Flask service before making changes
@@ -227,6 +228,19 @@ deploy_flask_app() {
     echo "Copying new Flask configuration..." >&2
     sudo cp -r $project_dir/app/server.py $flask_app_dir/server.py || {
         log "Failed to copy the new Flask configuration." "ERROR" >&2
+        exit 1
+    }
+
+    # Copy the Gunicorn service configuration
+    log "Updating Gunicorn service configuration..." "INFO"
+    sudo cp $project_dir/utils/gunicorn $gunicorn_service_file || {
+        log "Failed to copy the Gunicorn service configuration." "ERROR" >&2
+        exit 1
+    }
+
+    # Reload systemd to recognize the new service file
+    sudo systemctl daemon-reload || {
+        log "Failed to reload systemd daemon." "ERROR" >&2
         exit 1
     }
 
@@ -254,7 +268,9 @@ deploy_flask_app() {
 
     # Set appropriate permissions for the new configuration
     sudo chown www-data:www-data $flask_app_dir/server.py
+    sudo chown www-data:www-data $flask_app_dir/wsgi.py
     sudo chmod 644 $flask_app_dir/server.py
+    sudo chmod 644 $flask_app_dir/wsgi.py
 }
 
 # Function to restore the previous Flask configuration
