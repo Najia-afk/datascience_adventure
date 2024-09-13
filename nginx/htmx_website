@@ -37,7 +37,7 @@ server {
     }
 
     # Handle mission3 requests
-    location /mission3 {
+    location /mission3/ {
         try_files $uri @flask;
     }
 
