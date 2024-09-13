@@ -8,27 +8,27 @@ app = Flask(__name__,
 def index():
     return render_template('index.html')
 
-@app.route('/header')
+@app.route('/header/')
 def header():
     return render_template('templates/header.html')
 
-@app.route('/scroll-left')
+@app.route('/scroll-left/')
 def scroll_left():
     return {'scroll_distance': -320}  # Adjust for the width of each grid item
 
-@app.route('/scroll-right')
+@app.route('/scroll-right/')
 def scroll_right():
     return {'scroll_distance': 320}  # Adjust for the width of each grid item
 
-@app.route('/footer')
+@app.route('/footer/')
 def footer():
     return render_template('templates/footer.html')
 
-@app.route('/summary')
+@app.route('/summary/')
 def summary():
     return render_template('templates/summary.html')
 
-@app.route('/load-home')
+@app.route('/load-home/')
 def load_home():
     return render_template('templates/home.html')
 
