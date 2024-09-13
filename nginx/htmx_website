@@ -36,7 +36,7 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
-    location /mission3/ {
+    location /mission3 {
         alias /var/www/htmx_website/mission3/;
         try_files $uri $uri/ /mission3/mission3.html =404;
         expires 30d;
