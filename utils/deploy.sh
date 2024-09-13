@@ -205,6 +205,8 @@ deploy_flask_app() {
     local flask_app_dir="/srv/htmx_website"
     log "Stopping Flask service (htmx_website.service)..." "INFO"
 
+     sudo cp -r $project_dir/app/wsgi.py $flask_app_dir/wsgi.py
+
     # Switch to the 'www-data' user to stop the service and handle file operations
     # Stop the Flask service before making changes
     sudo systemctl stop htmx_website.service || {
