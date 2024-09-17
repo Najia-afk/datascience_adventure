@@ -8,7 +8,7 @@
         <div class="dropdown">
             <button class="dropbtn">Datascientist Training</button>
             <div class="dropdown-content">
-                <a href="#" hx-get="/mission3/" hx-target="#main-content" hx-swap="innerHTML" class="dropdown-link">Mission 3</a>
+                <a href="#" hx-get="/mission3" hx-target="#main-content" hx-swap="innerHTML" class="dropdown-link">Mission 3</a>
             </div>
         </div>
         <a href="#" hx-get="/load-contact" hx-target="#main-content" hx-swap="innerHTML" class="nav-link">Contact</a>
@@ -18,7 +18,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        if (window.location.pathname.includes('/mission3/')) {
+        if (window.location.pathname.includes('/mission3')) {
             document.addEventListener('scroll', function () {
                 var header = document.querySelector('.top-bar');
                 if (window.scrollY > 50) {
