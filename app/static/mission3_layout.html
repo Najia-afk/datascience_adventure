@@ -50,7 +50,7 @@
             var iframe = document.getElementById('main-iframe');
             var loadingIndicator = document.getElementById('loading');
             var iframeContainer = document.querySelector('.iframe-container');
-
+    
             window.addEventListener("message", function(event) {
                 if (event.origin === "https://datascience-adventure.xyz") {
                     if (event.data && event.data.height) {
@@ -61,20 +61,20 @@
                     }
                 }
             }, false);
-
+    
             // Ensure loading indicator is hidden when iframe is loaded
             iframe.onload = function() {
-                // Wait for a short duration to ensure content is fully rendered
-                setTimeout(function() {
-                    var documentHeight = iframe.contentWindow.document.body.scrollHeight;
-                    console.log("Iframe loaded. Document height:", documentHeight); // Log height
-                    if (documentHeight > 0) {
-                        iframe.style.height = documentHeight + 'px'; // Set height on load
-                    }
-                }, 10000); // Adjust timeout as necessary
+                // Temporarily show iframe to get the correct height
+                iframeContainer.style.display = 'block'; // Show iframe container
+                var documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                console.log("Iframe loaded. Document height:", documentHeight); // Log height
+                if (documentHeight > 0) {
+                    iframe.style.height = documentHeight + 'px'; // Set height on load
+                    loadingIndicator.style.display = 'none'; // Hide loading indicator
+                }
             };
         });
-    </script>    
+    </script>        
 </body>
 
 </html>
