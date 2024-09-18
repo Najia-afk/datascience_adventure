@@ -36,6 +36,10 @@ def load_home():
 def mission3():
     return render_template('mission3/mission3.html')
 
+@app.route('/mission3/Mission3.html')
+def mission3_notebook():
+    return render_template('mission3/Mission3.html')
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html'), 404
