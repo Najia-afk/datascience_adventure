@@ -1,49 +1,63 @@
-<!-- Sidebar -->
-<aside class="sidebar">
-    <h2>Scripts Used in This Notebook:</h2>
-    <ul>
-        <li><a href="scripts/df_filtering.html" target="_blank">df_filtering.py</a></li>
-        <li><a href="scripts/df_fuzzywuzzy.html" target="_blank">df_fuzzywuzzy.py</a></li>
-        <li><a href="scripts/plot_nutriscore.html" target="_blank">plot_nutriscore.py</a></li>
-        <li><a href="scripts/df_generator.html" target="_blank">df_generator.py</a></li>
-        <li><a href="scripts/df_business_data_integrity.html" target="_blank">df_business_data_integrity.py</a></li>
-    </ul>
-</aside>
+<!DOCTYPE html>
+<html lang="en">
 
-<!-- Main Content Area -->
-<section class="main-content">
-    <div class="project-header">
-        <h1>Mission 3: Data Exploration for a Public Health Agency</h1>
-        <p>The Public Health Agency wishes to improve the quality of Open Food Facts data, an open source database made available to individuals and organizations.</p>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission 3: Data Exploration</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
 
-    <!-- Google Colab Button -->
-    <div class="button-container">
-        <a href="https://colab.research.google.com/github/Datascience-Adventure/mission3/blob/main/Mission3.ipynb" target="_blank">
-            Run on Google Colab
-        </a>
-    </div>
+<body hx-boost="true">
 
-    <!-- Iframe Display for the Jupyter Notebook -->
-    <div class="iframe-container">
-        <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no"></iframe>
-    </div>
-</section>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>Scripts Used in This Notebook:</h2>
+        <ul>
+            <li><a href="scripts/df_filtering.html" target="_blank">df_filtering.py</a></li>
+            <li><a href="scripts/df_fuzzywuzzy.html" target="_blank">df_fuzzywuzzy.py</a></li>
+            <li><a href="scripts/plot_nutriscore.html" target="_blank">plot_nutriscore.py</a></li>
+            <li><a href="scripts/df_generator.html" target="_blank">df_generator.py</a></li>
+            <li><a href="scripts/df_business_data_integrity.html" target="_blank">df_business_data_integrity.py</a></li>
+        </ul>
+    </aside>
 
-<!-- JavaScript for Handling Iframe Resizing -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var iframe = document.getElementById('main-iframe');
+    <!-- Main Content Area -->
+    <section class="main-content">
+        <div class="project-header">
+            <h1>Mission 3: Data Exploration for a Public Health Agency</h1>
+            <p>The Public Health Agency wishes to improve the quality of Open Food Facts data, an open source database made available to individuals and organizations.</p>
+        </div>
 
-        // Listen for messages from the iframe
-        window.addEventListener("message", function(event) {
-            // Ensure the message comes from the correct origin
-            if (event.origin === "https://datascience-adventure.xyz") {
-                // Check if the message contains height information
-                if (event.data && event.data.height) {
-                    iframe.style.height = event.data.height + 'px';
+        <!-- Google Colab Button -->
+        <div class="button-container">
+            <a href="https://colab.research.google.com/github/Datascience-Adventure/mission3/blob/main/Mission3.ipynb" target="_blank">
+                Run on Google Colab
+            </a>
+        </div>
+
+        <!-- Iframe Display for the Jupyter Notebook -->
+        <div class="iframe-container">
+            <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no"></iframe>
+        </div>
+    </section>
+
+    <!-- JavaScript for Handling Iframe Resizing -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var iframe = document.getElementById('main-iframe');
+
+            // Listen for messages from the iframe
+            window.addEventListener("message", function(event) {
+                if (event.origin === "https://datascience-adventure.xyz") {
+                    if (event.data && event.data.height) {
+                        iframe.style.height = event.data.height + 'px';
+                    }
                 }
-            }
-        }, false);
-    });
-</script>
+            }, false);
+        });
+    </script>
+</body>
+
+</html>
