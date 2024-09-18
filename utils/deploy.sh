@@ -304,23 +304,24 @@ convert_notebooks() {
         
         # Safely append the listener script to each HTML notebook
         for html_nb in "$output_dir"/*.html; do
-            # Insert the script just before the closing </body> tag
-            sed -i '/<\/body>/i \
-            <script>\
-                window.addEventListener("load", function() {\
-                    var documentHeight = document.body.scrollHeight;\
-                    window.parent.postMessage({ height: documentHeight }, "*");\
-                });\
-            </script>' "$html_nb"
+        # Insert the script just before the closing </body> tag
+        sed -i '/<\/body>/i \
+                <script>\
+                    window.addEventListener("load", function() {\
+                        var documentHeight = document.body.scrollHeight;\
+                        window.parent.postMessage({ height: documentHeight }, "*");\
+                    });\
+                </script>' "$html_nb"
 
-            log "Appended resize listener to $html_nb" "INFO"
-        done
+        log "Appended resize listener to $html_nb" "INFO"
+    done
         
         log "Notebook conversion completed." "INFO"
     else
         log "Notebook directory $notebook_dir does not exist. Skipping conversion." "WARNING"
     fi
 }
+
 
 
 # Function to update Sphinx documentation
