@@ -38,7 +38,6 @@
         </div>
 
         <!-- Iframe Display for the Jupyter Notebook -->
-        <div id="loading" style="display: none;">Loading...</div>
         <div class="iframe-container">
             <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no"></iframe>
         </div>
@@ -47,31 +46,23 @@
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
         var iframe = document.getElementById('main-iframe');
-        var loadingIndicator = document.getElementById('loading');
-        var iframeContainer = document.querySelector('.iframe-container');
-    
-        // Listen for messages from the iframe
+
         window.addEventListener("message", function(event) {
             console.log("Received message:", event.data); // Log the received message
             if (event.origin === "https://datascience-adventure.xyz") {
                 if (event.data && event.data.height) {
                     console.log("Setting iframe height to:", event.data.height); // Log the height being set
                     iframe.style.height = event.data.height + 'px';
-                    loadingIndicator.style.display = 'none'; // Hide loading indicator
-                    //iframeContainer.style.display = 'block'; // Show iframe container
                 }
             }
         }, false);
-    
-        // Set iframe height on load
+
+        // Optionally, set the iframe height on load
         iframe.onload = function() {
             var documentHeight = iframe.contentWindow.document.body.scrollHeight;
-            console.log("Iframe loaded. Document height:", documentHeight); // Log the iframe's document height
-            iframe.style.height = documentHeight + 'px'; // Set height based on content
-            loadingIndicator.style.display = 'none'; // Hide loading indicator
-            //iframeContainer.style.display = 'block'; // Show iframe container
+            iframe.style.height = documentHeight + 'px';
         };
-    </script>    
+    </script>
 </body>
 
 </html>
