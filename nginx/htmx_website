@@ -38,11 +38,6 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
-    # Handle mission3 requests
-    location /mission3/ {
-        try_files $uri /mission3/mission3.html =404;
-    }
-
     # Handle root and other dynamic requests
     location / {
         try_files $uri @flask;
