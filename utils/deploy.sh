@@ -304,9 +304,9 @@ convert_notebooks() {
         
         # Safely append the listener script to each HTML notebook
         for html_nb in "$output_dir"/*.html; do
-            # Insert the script just before the closing </body> tag
-            sed -e '/<\/body>/i \
-                <script>\ 
+        # Insert the script just before the closing </body> tag
+        sed -i '/<\/body>/i \
+                <script>\
                     window.addEventListener("load", function() {\
                         var documentHeight = document.body.scrollHeight;\
                         console.log("Iframe loaded. Document height:", documentHeight);\
@@ -314,8 +314,8 @@ convert_notebooks() {
                     });\
                 </script>' "$html_nb"
 
-            log "Appended resize listener to $html_nb" "INFO"
-        done
+        log "Appended resize listener to $html_nb" "INFO"
+    done
         
         log "Notebook conversion completed." "INFO"
     else
