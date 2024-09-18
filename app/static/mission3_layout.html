@@ -38,7 +38,8 @@
         </div>
 
         <!-- Iframe Display for the Jupyter Notebook -->
-        <div class="iframe-container">
+        <div id="loading" style="display: block;">Loading...</div>
+        <div class="iframe-container" style="display: none;">
             <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no"></iframe>
         </div>
     </section>
@@ -46,23 +47,20 @@
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
         var iframe = document.getElementById('main-iframe');
-
+        var loadingIndicator = document.getElementById('loading');
+        var iframeContainer = document.querySelector('.iframe-container');
+    
         window.addEventListener("message", function(event) {
-            console.log("Received message:", event.data); // Log the received message
             if (event.origin === "https://datascience-adventure.xyz") {
                 if (event.data && event.data.height) {
-                    console.log("Setting iframe height to:", event.data.height); // Log the height being set
+                    console.log("Setting iframe height to:", event.data.height);
                     iframe.style.height = event.data.height + 'px';
+                    loadingIndicator.style.display = 'none'; // Hide loading indicator
+                    iframeContainer.style.display = 'block'; // Show iframe container
                 }
             }
         }, false);
-
-        // Optionally, set the iframe height on load
-        iframe.onload = function() {
-            var documentHeight = iframe.contentWindow.document.body.scrollHeight;
-            iframe.style.height = documentHeight + 'px';
-        };
-    </script>
+    </script>    
 </body>
 
 </html>
