@@ -58,7 +58,7 @@
                     console.log("Setting iframe height to:", event.data.height); // Log the height being set
                     iframe.style.height = event.data.height + 'px';
                     loadingIndicator.style.display = 'none'; // Hide loading indicator
-                    iframeContainer.style.display = 'block'; // Show iframe container
+                    //iframeContainer.style.display = 'block'; // Show iframe container
                 }
             }
         }, false);
@@ -69,7 +69,7 @@
             console.log("Iframe loaded. Document height:", documentHeight); // Log the iframe's document height
             iframe.style.height = documentHeight + 'px'; // Set height based on content
             loadingIndicator.style.display = 'none'; // Hide loading indicator
-            iframeContainer.style.display = 'block'; // Show iframe container
+            //iframeContainer.style.display = 'block'; // Show iframe container
         };
     </script>    
 </body>
