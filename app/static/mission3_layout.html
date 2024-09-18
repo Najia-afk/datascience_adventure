@@ -44,23 +44,31 @@
         </div>
     </section>
 
-    <!-- JavaScript for Handling Iframe Resizing -->
+
     <script>
         var iframe = document.getElementById('main-iframe');
         var loadingIndicator = document.getElementById('loading');
         var iframeContainer = document.querySelector('.iframe-container');
-    
+
         window.addEventListener("message", function(event) {
+            console.log("Received message:", event.data); // Log the received message
             if (event.origin === "https://datascience-adventure.xyz") {
                 if (event.data && event.data.height) {
-                    console.log("Setting iframe height to:", event.data.height);
+                    console.log("Setting iframe height to:", event.data.height); // Log the height being set
                     iframe.style.height = event.data.height + 'px';
                     loadingIndicator.style.display = 'none'; // Hide loading indicator
                     iframeContainer.style.display = 'block'; // Show iframe container
                 }
             }
         }, false);
-    </script>    
+
+        // Ensure loading indicator is hidden if iframe is loaded
+        iframe.onload = function() {
+            loadingIndicator.style.display = 'none'; // Hide loading indicator when iframe loads
+            iframeContainer.style.display = 'block'; // Show iframe container
+        };
+    </script>
+
 </body>
 
 </html>
