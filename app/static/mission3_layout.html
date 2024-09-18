@@ -39,7 +39,7 @@
 
         <!-- Iframe Display for the Jupyter Notebook -->
         <div id="loading" style="display: block;">Loading...</div>
-        <div class="iframe-container" style="display: none;">
+        <div class="iframe-container"> //</div> style="display: none;">
             <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no"></iframe>
         </div>
     </section>
@@ -57,7 +57,7 @@
                         console.log("Setting iframe height to:", event.data.height);
                         iframe.style.height = event.data.height + 'px'; // Set the height of the iframe
                         loadingIndicator.style.display = 'none'; // Hide loading indicator
-                        iframeContainer.style.display = 'block'; // Show iframe container
+                        //iframeContainer.style.display = 'block'; // Show iframe container
                     }
                 }
             }, false);
@@ -65,7 +65,7 @@
             // Ensure loading indicator is hidden when iframe is loaded
             iframe.onload = function() {
                 // Temporarily show iframe to get the correct height
-                iframeContainer.style.display = 'block'; // Show iframe container
+                //iframeContainer.style.display = 'block'; // Show iframe container
                 var documentHeight = iframe.contentWindow.document.body.scrollHeight;
                 console.log("Iframe loaded. Document height:", documentHeight); // Log height
                 if (documentHeight > 0) {
