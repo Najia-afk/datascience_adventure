@@ -309,6 +309,7 @@ convert_notebooks() {
                 <script>\
                     window.addEventListener("load", function() {\
                         var documentHeight = document.body.scrollHeight;\
+                        console.log("Iframe loaded. Document height:", documentHeight);\
                         window.parent.postMessage({ height: documentHeight }, "*");\
                     });\
                 </script>' "$html_nb"

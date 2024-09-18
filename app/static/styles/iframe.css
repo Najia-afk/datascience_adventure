@@ -12,7 +12,6 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: auto;  /* Set to auto to allow height adjustment */
-    min-height: 600px; /* Optional: set a minimum height */
+    height: 100%;  /* Stretch to fill container */
     border: none;
 }
