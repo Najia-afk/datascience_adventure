@@ -68,11 +68,6 @@
             hx-trigger="click">▶</button>
 
     <script>
-        // Add event listeners to buttons for scrolling
-        document.querySelectorAll('.scroll-btn').forEach(button => {
-            button.addEventListener('click', handleScroll);
-        });
-
         function handleScroll(event) {
             const button = event.target;
             const direction = button.classList.contains('right-btn') ? 1 : -1;
@@ -86,19 +81,24 @@
                 });
             }
         }
-
-        // Initialize smooth scrolling when HTMX has loaded content
-        document.addEventListener("htmx:afterSwap", function(event) {
-            if (event.target.id === "default-content") {
-                // Initialize smooth scrolling for the newly loaded content
-                initSmoothScrolling();
-            }
-        });
-
+    
         function initSmoothScrolling() {
+            // Remove existing event listeners to prevent duplicates
             document.querySelectorAll('.scroll-btn').forEach(button => {
+                button.removeEventListener('click', handleScroll);
                 button.addEventListener('click', handleScroll);
             });
         }
+    
+        // Initialize smooth scrolling when the page loads
+        document.addEventListener('DOMContentLoaded', initSmoothScrolling);
+    
+        // Initialize smooth scrolling when HTMX has loaded new content
+        document.addEventListener("htmx:afterSwap", function(event) {
+            if (event.target.id === "default-content") {
+                initSmoothScrolling();
+            }
+        });
     </script>
+            
 </div>

@@ -17,10 +17,10 @@
 </header>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        if (window.location.pathname.includes('/mission3/')) {
-            document.addEventListener('scroll', function () {
-                var header = document.querySelector('.top-bar');
+    document.addEventListener('htmx:afterSwap', function (event) {
+        if (event.target.id === "header") {
+            const header = document.querySelector('.top-bar');
+            window.addEventListener('scroll', function () {
                 if (window.scrollY > 50) {
                     header.classList.add('shrink');
                 } else {
@@ -30,3 +30,6 @@
         }
     });
 </script>
+
+
+
