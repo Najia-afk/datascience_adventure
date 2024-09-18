@@ -45,18 +45,13 @@
 
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var iframe = document.getElementById('main-iframe');
-
-            // Listen for messages from the iframe
-            window.addEventListener("message", function(event) {
-                if (event.origin === "https://datascience-adventure.xyz") {
-                    if (event.data && event.data.height) {
-                        iframe.style.height = event.data.height + 'px';
-                    }
+        window.addEventListener("message", function(event) {
+            if (event.origin === "https://datascience-adventure.xyz") {
+                if (event.data && event.data.height) {
+                    iframe.style.height = event.data.height + 'px';
                 }
-            }, false);
-        });
+            }
+        }, false);
     </script>
 </body>
 

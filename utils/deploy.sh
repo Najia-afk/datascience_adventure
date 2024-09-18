@@ -302,19 +302,22 @@ convert_notebooks() {
         # Convert notebooks to HTML
         jupyter nbconvert --to html --output-dir="$output_dir" "$notebook_dir"/*.ipynb
         
-        # Safely append the listener script to each HTML notbook
+        # Safely append the listener script to each HTML notebook
         for html_nb in "$output_dir"/*.html; do
-            # Insert the script just before the closing </body> tag
-            sed -i '/<\/body>/i \
-<script>\
-    window.addEventListener("load", function() {\
-        var documentHeight = document.body.scrollHeight;\
-        window.parent.postMessage({ height: documentHeight }, "*");\
-    });\
-</script>' "$html_nb"
+        # Insert the script just before the closing </body> tag
+        sed -i '/<\/body>/i \
+                <script>\
+                    window.addEventListener("message", function(event) {\
+                        if (event.origin === "https://datascience-adventure.xyz") {\
+                            if (event.data && event.data.height) {\
+                                window.parent.postMessage({ height: document.body.scrollHeight }, "*");\
+                            }\
+                        }\
+                    });\
+                </script>' "$html_nb"
 
-            log "Appended resize listener to $html_nb" "INFO"
-        done
+        log "Appended resize listener to $html_nb" "INFO"
+    done
         
         log "Notebook conversion completed." "INFO"
     else
