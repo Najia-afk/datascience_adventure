@@ -2,7 +2,7 @@
 .iframe-container {
     position: relative;
     width: 100%;  /* Ensures it takes full width of its parent */
-    height: auto;
+    height: auto; /* Allow height to be determined by content */
     overflow: hidden;  /* Prevents scrollbars */
 }
 
@@ -12,6 +12,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: auto;  /* Ensures it stretches to fill the container */
+    height: auto;  /* Set to auto to allow height adjustment */
+    min-height: 600px; /* Optional: set a minimum height */
     border: none;
 }
