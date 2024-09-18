@@ -32,7 +32,7 @@ def summary():
 def load_home():
     return render_template('templates/home.html')
 
-@app.route('/mission3/')
+@app.route('/mission3')
 def mission3():
     return render_template('mission3/mission3.html')
 

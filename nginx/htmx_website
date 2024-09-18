@@ -39,7 +39,7 @@ server {
     }
 
     # Handle mission3 requests
-    location /mission3/ {
+    location /mission3 {
         try_files $uri $uri/ /mission3/mission3.html =404;
     }
 
