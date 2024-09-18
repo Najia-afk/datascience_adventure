@@ -307,11 +307,9 @@ convert_notebooks() {
         # Insert the script just before the closing </body> tag
         sed -i '/<\/body>/i \
                 <script>\
-                    window.addEventListener("message", function(event) {\
-                        if (event.origin === "https://datascience-adventure.xyz") {\
-                            if (event.data && event.data.height) {\
-                                window.parent.postMessage({ height: document.body.scrollHeight }, "*");\
-                            }\
+                    window.addEventListener("load", function() {\
+                        var documentHeight = document.body.scrollHeight;\
+                        window.parent.postMessage({ height: documentHeight }, "*");\
                         }\
                     });\
                 </script>' "$html_nb"

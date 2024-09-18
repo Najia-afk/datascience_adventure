@@ -51,6 +51,7 @@
             console.log("Received message:", event.data); // Log the received message
             if (event.origin === "https://datascience-adventure.xyz") {
                 if (event.data && event.data.height) {
+                    console.log("Setting iframe height to:", event.data.height); // Log the height being set
                     iframe.style.height = event.data.height + 'px';
                 }
             }
