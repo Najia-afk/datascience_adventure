@@ -39,7 +39,7 @@
 
         <!-- Iframe Display for the Jupyter Notebook -->
         <div id="loading" style="display: block;">Loading...</div>
-        <div class="iframe-container">
+        <div class="iframe-container" style="display: none;">
             <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no"></iframe>
         </div>
     </section>
@@ -50,27 +50,26 @@
             var iframe = document.getElementById('main-iframe');
             var loadingIndicator = document.getElementById('loading');
             var iframeContainer = document.querySelector('.iframe-container');
-    
+
             window.addEventListener("message", function(event) {
                 if (event.origin === "https://datascience-adventure.xyz") {
                     if (event.data && event.data.height) {
                         console.log("Setting iframe height to:", event.data.height);
                         iframe.style.height = event.data.height + 'px'; // Set the height of the iframe
                         loadingIndicator.style.display = 'none'; // Hide loading indicator
-                        //iframeContainer.style.display = 'block'; // Show iframe container
+                        iframeContainer.style.display = 'block'; // Show iframe container
                     }
                 }
             }, false);
-    
+
             // Ensure loading indicator is hidden when iframe is loaded
             iframe.onload = function() {
-                // Temporarily show iframe to get the correct height
-                //iframeContainer.style.display = 'block'; // Show iframe container
                 var documentHeight = iframe.contentWindow.document.body.scrollHeight;
                 console.log("Iframe loaded. Document height:", documentHeight); // Log height
                 if (documentHeight > 0) {
                     iframe.style.height = documentHeight + 'px'; // Set height on load
                     loadingIndicator.style.display = 'none'; // Hide loading indicator
+                    iframeContainer.style.display = 'block'; // Show iframe container
                 }
             };
         });
