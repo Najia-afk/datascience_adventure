@@ -38,34 +38,37 @@
         </div>
 
         <!-- Iframe Display for the Jupyter Notebook -->
-        <div class="iframe-container">
+        <div id="loading" style="display: block;">Loading...</div>
+        <div class="iframe-container" style="display: none;">
             <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no"></iframe>
         </div>
     </section>
 
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
-        var iframe = document.getElementById('main-iframe');
-        var loadingIndicator = document.getElementById('loading');
-        var iframeContainer = document.querySelector('.iframe-container');
+        document.addEventListener('DOMContentLoaded', function() {
+            var iframe = document.getElementById('main-iframe');
+            var loadingIndicator = document.getElementById('loading');
+            var iframeContainer = document.querySelector('.iframe-container');
 
-        window.addEventListener("message", function(event) {
-            if (event.origin === "https://datascience-adventure.xyz") {
-                if (event.data && event.data.height) {
-                    console.log("Setting iframe height to:", event.data.height);
-                    iframe.style.height = event.data.height + 'px'; // Set the height of the iframe
-                    loadingIndicator.style.display = 'none'; // Hide loading indicator
-                    iframeContainer.style.display = 'block'; // Show iframe container
+            window.addEventListener("message", function(event) {
+                if (event.origin === "https://datascience-adventure.xyz") {
+                    if (event.data && event.data.height) {
+                        console.log("Setting iframe height to:", event.data.height);
+                        iframe.style.height = event.data.height + 'px'; // Set the height of the iframe
+                        loadingIndicator.style.display = 'none'; // Hide loading indicator
+                        iframeContainer.style.display = 'block'; // Show iframe container
+                    }
                 }
-            }
-        }, false);
+            }, false);
 
-        // Ensure loading indicator is hidden when iframe is loaded
-        iframe.onload = function() {
-            var documentHeight = iframe.contentWindow.document.body.scrollHeight;
-            console.log("Iframe loaded. Document height:", documentHeight); // Log height
-            iframe.style.height = documentHeight + 'px'; // Set height on load
-        };
+            // Ensure loading indicator is hidden when iframe is loaded
+            iframe.onload = function() {
+                var documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                console.log("Iframe loaded. Document height:", documentHeight); // Log height
+                iframe.style.height = documentHeight + 'px'; // Set height on load
+            };
+        });
     </script>    
 </body>
 
