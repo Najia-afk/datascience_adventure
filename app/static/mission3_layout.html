@@ -64,9 +64,14 @@
 
             // Ensure loading indicator is hidden when iframe is loaded
             iframe.onload = function() {
-                var documentHeight = iframe.contentWindow.document.body.scrollHeight;
-                console.log("Iframe loaded. Document height:", documentHeight); // Log height
-                iframe.style.height = documentHeight + 'px'; // Set height on load
+                // Wait for a short duration to ensure content is fully rendered
+                setTimeout(function() {
+                    var documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                    console.log("Iframe loaded. Document height:", documentHeight); // Log height
+                    if (documentHeight > 0) {
+                        iframe.style.height = documentHeight + 'px'; // Set height on load
+                    }
+                }, 100); // Adjust timeout as necessary
             };
         });
     </script>    
