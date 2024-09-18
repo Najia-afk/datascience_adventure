@@ -310,7 +310,6 @@ convert_notebooks() {
                     window.addEventListener("load", function() {\
                         var documentHeight = document.body.scrollHeight;\
                         window.parent.postMessage({ height: documentHeight }, "*");\
-                        }\
                     });\
                 </script>' "$html_nb"
 
