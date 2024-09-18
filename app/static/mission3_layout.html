@@ -45,7 +45,10 @@
 
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
+        var iframe = document.getElementById('main-iframe');
+
         window.addEventListener("message", function(event) {
+            console.log("Received message:", event.data); // Log the received message
             if (event.origin === "https://datascience-adventure.xyz") {
                 if (event.data && event.data.height) {
                     iframe.style.height = event.data.height + 'px';
