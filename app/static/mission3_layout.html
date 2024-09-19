@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mission 3: Data Exploration</title>
     <link rel="stylesheet" href="/styles/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
@@ -40,40 +39,45 @@
         <!-- Iframe Display for the Jupyter Notebook -->
         <div id="loading" style="display: block;">Loading...</div>
         <div class="iframe-container" style="display: none;">
-            <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no"></iframe>
+            <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no" style="width: 100%; border: none;"></iframe>
         </div>
     </section>
 
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('load', function () {
             var iframe = document.getElementById('main-iframe');
             var loadingIndicator = document.getElementById('loading');
             var iframeContainer = document.querySelector('.iframe-container');
 
-            window.addEventListener("message", function(event) {
+            // Listen for messages from the iframe
+            window.addEventListener("message", function (event) {
                 if (event.origin === "https://datascience-adventure.xyz") {
                     if (event.data && event.data.height) {
                         console.log("Setting iframe height to:", event.data.height);
-                        iframe.style.height = event.data.height + 'px'; // Set the height of the iframe
-                        loadingIndicator.style.display = 'none'; // Hide loading indicator
-                        iframeContainer.style.display = 'block'; // Show iframe container
+                        iframe.style.height = event.data.height + 'px';
+                        loadingIndicator.style.display = 'none';
+                        iframeContainer.style.display = 'block';
                     }
                 }
             }, false);
 
-            // Ensure loading indicator is hidden when iframe is loaded
-            iframe.onload = function() {
-                var documentHeight = iframe.contentWindow.document.body.scrollHeight;
-                console.log("Iframe loaded. Document height:", documentHeight); // Log height
-                if (documentHeight > 0) {
-                    iframe.style.height = documentHeight + 'px'; // Set height on load
-                    loadingIndicator.style.display = 'none'; // Hide loading indicator
-                    iframeContainer.style.display = 'block'; // Show iframe container
-                }
+            // Adjust iframe height when it's fully loaded
+            iframe.onload = function () {
+                // Delay to ensure all content inside iframe is loaded
+                setTimeout(function () {
+                    var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                    var documentHeight = iframeDocument.body.scrollHeight;
+                    console.log("Iframe loaded. Document height:", documentHeight);
+                    if (documentHeight > 0) {
+                        iframe.style.height = documentHeight + 'px';
+                        loadingIndicator.style.display = 'none';
+                        iframeContainer.style.display = 'block';
+                    }
+                }, 500); // Adjust the delay as needed
             };
         });
-    </script>        
+    </script>
 </body>
 
 </html>
