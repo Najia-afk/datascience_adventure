@@ -45,38 +45,30 @@
 
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
-        window.addEventListener('load', function () {
-            var iframe = document.getElementById('main-iframe');
-            var loadingIndicator = document.getElementById('loading');
-            var iframeContainer = document.querySelector('.iframe-container');
-
-            // Listen for messages from the iframe
-            window.addEventListener("message", function (event) {
-                if (event.origin === "https://datascience-adventure.xyz") {
-                    if (event.data && event.data.height) {
-                        console.log("Setting iframe height to:", event.data.height);
-                        iframe.style.height = event.data.height + 'px';
-                        loadingIndicator.style.display = 'none';
-                        iframeContainer.style.display = 'block';
-                    }
+        window.addEventListener("message", function(event) {
+            if (event.origin === "https://datascience-adventure.xyz") {
+                if (event.data && event.data.height) {
+                    console.log("Setting iframe height to:", event.data.height);
+                    iframe.style.height = event.data.height + 'px'; // Set the height of the iframe
+                    loadingIndicator.style.display = 'none'; // Hide loading indicator
+                    iframeContainer.style.display = 'block'; // Show iframe container
                 }
-            }, false);
-
-            // Adjust iframe height when it's fully loaded
-            iframe.onload = function () {
-                // Delay to ensure all content inside iframe is loaded
-                setTimeout(function () {
-                    var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                    var documentHeight = iframeDocument.body.scrollHeight;
-                    console.log("Iframe loaded. Document height:", documentHeight);
-                    if (documentHeight > 0) {
-                        iframe.style.height = documentHeight + 'px';
-                        loadingIndicator.style.display = 'none';
-                        iframeContainer.style.display = 'block';
-                    }
-                }, 500); // Adjust the delay as needed
-            };
-        });
+            } else {
+                console.error("Origin mismatch: " + event.origin);
+            }
+        }, false);
+        // Ensure loading indicator is hidden when iframe is loaded
+        iframe.onload = function() {
+            setTimeout(function() {
+                var documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                console.log("Iframe loaded. Document height:", documentHeight);
+                if (documentHeight > 0) {
+                    iframe.style.height = documentHeight + 'px'; // Set height on load
+                    loadingIndicator.style.display = 'none'; // Hide loading indicator
+                    iframeContainer.style.display = 'block'; // Show iframe container
+                }
+            }, 500); // Adjust the delay as needed
+        };
     </script>
 </body>
 
