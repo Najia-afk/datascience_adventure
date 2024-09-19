@@ -8,10 +8,12 @@
 
 /* Iframe */
 .iframe-container iframe {
+    display: block; /* Make it a block element */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;  /* Stretch to fill container */
+    height: auto;  /* Set to auto to allow height adjustment */
+    min-height: 600px; /* Optional: set a minimum height */
     border: none;
 }
