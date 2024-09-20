@@ -38,17 +38,19 @@
 
         <!-- Iframe Display for the Jupyter Notebook -->
         <div id="loading" style="display: block;">Loading...</div>
-        <div class="iframe-container" style="display: none;">
+        <div class="iframe-container" style="display: block;">
             <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no" style="width: 100%; border: none;"></iframe>
         </div>
     </section>
 
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('load ', function() {
             var iframe = document.getElementById('main-iframe');
             var loadingIndicator = document.getElementById('loading');
             var iframeContainer = document.querySelector('.iframe-container');
+
+            iframeContainer.style.display = 'none';
     
             // Listen for messages from the iframe
             window.addEventListener("message", function(event) {
@@ -67,7 +69,7 @@
                 } else {
                     console.error("Origin mismatch: " + event.origin);
                 }
-            }, false);
+            });
     
             // As a backup, handle iframe load events in case the message isn't sent or received
             iframe.onload = function() {
@@ -80,7 +82,7 @@
                         loadingIndicator.style.display = 'none';  // Hide loading indicator
                         iframeContainer.style.display = 'block';  // Show iframe container
                     }
-                }, 500);  // Adjust the delay if necessary
+                });  // Adjust the delay if necessary
             };
         });
     </script>    

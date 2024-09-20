@@ -312,17 +312,12 @@ convert_notebooks() {
                         console.log("Iframe content height:", documentHeight);\
                         window.parent.postMessage({ height: documentHeight }, "*");\
                     }\
-                    window.addEventListener("DOMContentLoaded", function() {\
-                        sendHeight();\
-                    });\
-                    window.addEventListener("load", function() {\
+                    window.addEventListener("load ", function() {\
                         sendHeight();\
                     });\
                     window.addEventListener("resize", function() {\
                         sendHeight();\
                     });\
-                    setTimeout(sendHeight, 5000);\
-                    setTimeout(sendHeight, 10000);\
                 </script>' "$html_nb"
 
             log "Appended resize listener to $html_nb" "INFO"
