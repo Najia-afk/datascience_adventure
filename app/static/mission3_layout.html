@@ -52,6 +52,9 @@
 
             // Listen for messages from the iframe
             window.addEventListener("message", function(event) {
+                // Log all received messages for debugging purposes
+                console.log("Message received from iframe:", event);
+                console.log("Iframe height data:", event.data);
                 if (event.origin === "https://datascience-adventure.xyz") {
                     if (event.data && event.data.height) {
                         console.log("Setting iframe height to:", event.data.height);

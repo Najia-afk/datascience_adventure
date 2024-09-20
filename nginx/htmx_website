@@ -15,7 +15,7 @@ server {
     ssl_session_tickets off;           # Disable session tickets for better security
 
     # CORS headers
-    add_header Access-Control-Allow-Origin "https://datascience-adventure.xyz";
+    add_header Access-Control-Allow-Origin "*";
     add_header Access-Control-Allow-Methods "GET, POST, OPTIONS";
     add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept";
 
