@@ -306,19 +306,18 @@ convert_notebooks() {
         for html_nb in "$output_dir"/*.html; do
             # Insert the script just before the closing </body> tag
             sed -i '/<\/body>/i \
-                <script>\
-                    function sendHeight() {\
-                        var documentHeight = document.body.scrollHeight;\
-                        console.log("Iframe content height:", documentHeight);\
-                        window.parent.postMessage({ height: documentHeight }, "*");\
-                    }\
-                    window.addEventListener("Load", function() {\
-                        console.log("Iframe content height2:", documentHeight);\
-                        sendHeight();\
-                    });\
-                    window.addEventListener("resize", function() {\
-                        sendHeight();\
-                    });\
+                <script>\n\
+                    function sendHeight() {\n\
+                        var documentHeight = document.body.scrollHeight;\n\
+                        console.log("Iframe content height:", documentHeight);\n\
+                        window.parent.postMessage({ height: documentHeight }, "*");\n\
+                    }\n\
+                    window.addEventListener("load", function() {\n\
+                        sendHeight();\n\
+                    });\n\
+                    window.addEventListener("resize", function() {\n\
+                        sendHeight();\n\
+                    });\n\
                 </script>' "$html_nb"
 
             log "Appended resize listener to $html_nb" "INFO"
@@ -329,7 +328,6 @@ convert_notebooks() {
         log "Notebook directory $notebook_dir does not exist. Skipping conversion." "WARNING"
     fi
 }
-
 
 
 # Function to update Sphinx documentation
