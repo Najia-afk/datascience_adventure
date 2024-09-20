@@ -308,16 +308,16 @@ convert_notebooks() {
             sed -i '/<\/body>/i \
                 <script>\
                     function sendHeight() {\
-                        var documentHeight = document.body.scrollHeight;\
-                        console.log("Iframe content height:", documentHeight);\
-                        window.parent.postMessage({ height: documentHeight }, "*");\
+                        var documentHeight = document.body.scrollHeight\
+                        console.log("Iframe content height:", documentHeight)\
+                        window.parent.postMessage({ height: documentHeight }, "*")\
                     }\
                     window.addEventListener("load", function() {\
-                        sendHeight();\n\
-                    });\
+                        sendHeight()\
+                    })\
                     window.addEventListener("resize", function() {\
-                        sendHeight();\
-                    });\
+                        sendHeight()\
+                    })\
                 </script>' "$html_nb"
 
             log "Appended resize listener to $html_nb" "INFO"
@@ -328,6 +328,7 @@ convert_notebooks() {
         log "Notebook directory $notebook_dir does not exist. Skipping conversion." "WARNING"
     fi
 }
+
 
 
 
