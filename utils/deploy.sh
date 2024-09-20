@@ -312,7 +312,8 @@ convert_notebooks() {
                         console.log("Iframe content height:", documentHeight);\
                         window.parent.postMessage({ height: documentHeight }, "*");\
                     }\
-                    window.addEventListener("load", function() {\
+                    window.addEventListener("Load", function() {\
+                        console.log("Iframe content height2:", documentHeight);\
                         sendHeight();\
                     });\
                     window.addEventListener("resize", function() {\
