@@ -315,6 +315,9 @@ convert_notebooks() {
                     window.addEventListener("DOMContentLoaded", function() {\
                         sendHeight();\
                     });\
+                    window.addEventListener("load", function() {\
+                        sendHeight();\
+                    });\
                     window.addEventListener("resize", function() {\
                         sendHeight();\
                     });\

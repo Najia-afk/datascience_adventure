@@ -49,38 +49,41 @@
             var iframe = document.getElementById('main-iframe');
             var loadingIndicator = document.getElementById('loading');
             var iframeContainer = document.querySelector('.iframe-container');
-
+    
             // Listen for messages from the iframe
             window.addEventListener("message", function(event) {
                 // Log all received messages for debugging purposes
                 console.log("Message received from iframe:", event);
                 console.log("Iframe height data:", event.data);
+    
+                // Check that the message is from the correct origin
                 if (event.origin === "https://datascience-adventure.xyz") {
                     if (event.data && event.data.height) {
                         console.log("Setting iframe height to:", event.data.height);
-                        iframe.style.height = event.data.height + 'px'; // Set the height of the iframe
-                        loadingIndicator.style.display = 'none'; // Hide loading indicator
-                        iframeContainer.style.display = 'block'; // Show iframe container
+                        iframe.style.height = event.data.height + 'px';  // Set the height of the iframe
+                        loadingIndicator.style.display = 'none';  // Hide loading indicator
+                        iframeContainer.style.display = 'block';  // Show iframe container
                     }
                 } else {
                     console.error("Origin mismatch: " + event.origin);
                 }
             }, false);
-
-            // Ensure loading indicator is hidden when iframe is loaded
+    
+            // As a backup, handle iframe load events in case the message isn't sent or received
             iframe.onload = function() {
                 setTimeout(function() {
                     var documentHeight = iframe.contentWindow.document.body.scrollHeight;
-                    console.log("Iframe loaded. Document height:", documentHeight); // Log height
+                    console.log("Iframe loaded. Document height:", documentHeight);  // Log height
+    
                     if (documentHeight > 0) {
-                        iframe.style.height = documentHeight + 'px'; // Set height on load
-                        loadingIndicator.style.display = 'none'; // Hide loading indicator
-                        iframeContainer.style.display = 'block'; // Show iframe container
+                        iframe.style.height = documentHeight + 'px';  // Set height on load
+                        loadingIndicator.style.display = 'none';  // Hide loading indicator
+                        iframeContainer.style.display = 'block';  // Show iframe container
                     }
-                }); // Adjust the delay as needed
+                }, 500);  // Adjust the delay if necessary
             };
         });
-    </script>
+    </script>    
 </body>
 
 </html>
