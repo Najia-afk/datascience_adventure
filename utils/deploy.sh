@@ -318,8 +318,8 @@ convert_notebooks() {
                     window.addEventListener("resize", function() {\
                         sendHeight();\
                     });\
-                    setTimeout(sendHeight, 1000);\
-                    setTimeout(sendHeight, 2000);\
+                    setTimeout(sendHeight, 5000);\
+                    setTimeout(sendHeight, 10000);\
                 </script>' "$html_nb"
 
             log "Appended resize listener to $html_nb" "INFO"
