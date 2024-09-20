@@ -45,40 +45,33 @@
 
     <!-- JavaScript for Handling Iframe Resizing -->
     <script>
-        window.addEventListener('load', function() {
+        // Function to handle iframe resizing and loading display
+        function handleIframeResize() {
             const iframe = document.getElementById('main-iframe');
             const loadingIndicator = document.getElementById('loading');
             const iframeContainer = document.querySelector('.iframe-container');
-
-            iframeContainer.style.display = 'none'; // Hide iframe container initially
-
-            // Handle messages from the iframe for dynamic height adjustment
-            window.addEventListener("message", function(event) {
-                if (event.origin === "https://datascience-adventure.xyz") {
-                    const { height } = event.data || {};
-                    if (height) {
-                        iframe.style.height = `${height}px`;
-                        loadingIndicator.style.display = 'none';
-                        iframeContainer.style.display = 'block';
-                    }
-                } else {
-                    console.error(`Origin mismatch: ${event.origin}`);
+    
+            setTimeout(() => {
+                const documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                if (documentHeight > 0) {
+                    iframe.style.height = `${documentHeight}px`;
+                    loadingIndicator.style.display = 'none';
+                    iframeContainer.style.display = 'block';
                 }
-            });
-
-            // Fallback: adjust iframe height if no message is received
-            iframe.onload = function() {
-                setTimeout(() => {
-                    const documentHeight = iframe.contentWindow.document.body.scrollHeight;
-                    if (documentHeight > 0) {
-                        iframe.style.height = `${documentHeight}px`;
-                        loadingIndicator.style.display = 'none';
-                        iframeContainer.style.display = 'block';
-                    }
-                }, 10000); // Delay to allow content loading, adjust as needed
-            };
+            }, 500); // Adjust this delay as needed for fallback
+        }
+    
+        // Trigger when the entire window has loaded
+        window.addEventListener('load', function() {
+            handleIframeResize(); // Call iframe resize on load
         });
-    </script>
+    
+        // Fallback timer to trigger iframe resizing after 5 seconds
+        setTimeout(() => {
+            console.warn('Fallback timer triggered.'); // Log fallback trigger
+            handleIframeResize(); // Trigger resizing in case load event is delayed
+        }, 5000); // Adjust this timing as needed
+    </script>    
 </body>
 
 </html>
