@@ -314,9 +314,6 @@ convert_notebooks() {
                     }\
                     window.addEventListener("load", function() {\
                         sendHeight();\
-                        setTimeout(sendHeight, 500);\
-                        setTimeout(sendHeight, 1000);\
-                        setTimeout(sendHeight, 2000);\
                     });\
                 </script>' "$html_nb"
 

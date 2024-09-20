@@ -38,7 +38,7 @@
 
         <!-- Iframe Display for the Jupyter Notebook -->
         <div id="loading" style="display: block;">Loading...</div>
-        <div class="iframe-container" style="display: none;">
+        <div class="iframe-container" style="display: block;">
             <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no" style="width: 100%; border: none;"></iframe>
         </div>
     </section>
@@ -74,7 +74,7 @@
                         loadingIndicator.style.display = 'none'; // Hide loading indicator
                         iframeContainer.style.display = 'block'; // Show iframe container
                     }
-                }, 50000); // Adjust the delay as needed
+                }); // Adjust the delay as needed
             };
         });
     </script>
