@@ -1,7 +1,9 @@
 <div class="scroll-container">
+    <!-- Left Scroll Button -->
     <button class="scroll-btn left-btn"
             hx-get="/scroll-left/"
             hx-trigger="click"
+            hx-swap="none"  <!-- Prevent swapping the button with the response -->
             hx-on="htmx:afterRequest: handleScroll(this, event)">◀</button>
 
     <div id="scroll-wrapper" class="scroll-wrapper">
@@ -22,41 +24,6 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <a href="#">Read more</a>
         </article>
-        <article class="grid-item">
-            <h2>Item 3</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="#">Read more</a>
-        </article>
-        <article class="grid-item">
-            <h2>Item 3</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="#">Read more</a>
-        </article>
-        <article class="grid-item">
-            <h2>Item 3</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="#">Read more</a>
-        </article>
-        <article class="grid-item">
-            <h2>Item 3</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="#">Read more</a>
-        </article>
-        <article class="grid-item">
-            <h2>Item 3</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="#">Read more</a>
-        </article>
-        <article class="grid-item">
-            <h2>Item 3</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="#">Read more</a>
-        </article>
-        <article class="grid-item">
-            <h2>Item 3</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="#">Read more</a>
-        </article>
         <!-- Add more grid-items as needed -->
     </div>
 
@@ -64,8 +31,8 @@
     <button class="scroll-btn right-btn"
             hx-get="/scroll-right/"
             hx-trigger="click"
+            hx-swap="none"
             hx-on="htmx:afterRequest: handleScroll(this, event)">▶</button>
-   
 </div>
 
 <script>
