@@ -58,7 +58,7 @@
                     loadingIndicator.style.display = 'none';
                     iframeContainer.style.display = 'block';
                 }
-            }, 500); // Adjust this delay as needed for fallback
+            }, 10000); // Adjust this delay as needed for fallback
         }
     
         // Trigger when the entire window has loaded
@@ -70,7 +70,7 @@
         setTimeout(() => {
             console.warn('Fallback timer triggered.'); // Log fallback trigger
             handleIframeResize(); // Trigger resizing in case load event is delayed
-        }, 5000); // Adjust this timing as needed
+        }, 10000); // Adjust this timing as needed
     </script>    
 </body>
 
