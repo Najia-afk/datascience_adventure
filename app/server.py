@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 app = Flask(__name__, 
             static_folder="/var/www/htmx_website/", 
@@ -14,11 +14,13 @@ def header():
 
 @app.route('/scroll-left/')
 def scroll_left():
-    return {'scroll_distance': -320}  # Adjust for the width of each grid item
+    # Return a negative scroll distance for left scrolling
+    return jsonify({'scroll_distance': -320})
 
 @app.route('/scroll-right/')
 def scroll_right():
-    return {'scroll_distance': 320}  # Adjust for the width of each grid item
+    # Return a positive scroll distance for right scrolling
+    return jsonify({'scroll_distance': 320})
 
 @app.route('/footer/')
 def footer():
