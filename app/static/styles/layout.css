@@ -32,8 +32,6 @@
     top: 70px; /* Keeps it below the header */
     left: 0; /* Sidebar stays on the left */
     z-index: 1000; /* Ensures it's above the main content */
-    height: calc(100vh - 70px); /* Full height minus the header */
-    overflow-y: auto; /* Allow scrolling if the content exceeds viewport height */
     transition: width 0.3s;
 }
 
