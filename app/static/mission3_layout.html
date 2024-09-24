@@ -13,7 +13,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <h2>Scripts Used in This Notebook:</h2>
-        <ul>
+        <ul id="sidebar-list">
             <li><a href="scripts/df_filtering.html" target="_blank">df_filtering.py</a></li>
             <li><a href="scripts/df_fuzzywuzzy.html" target="_blank">df_fuzzywuzzy.py</a></li>
             <li><a href="scripts/plot_nutriscore.html" target="_blank">plot_nutriscore.py</a></li>
@@ -59,12 +59,23 @@
                     iframeContainer.style.visibility = 'visible'; // Show iframe container
                     iframeContainer.style.height = 'auto'; // Remove the 1px height restriction
                 }
-            }); // Adjust this delay as needed for fallback
+            }, 1000); // Adjust this delay as needed for fallback
         }
     
+        // Function to adjust sidebar height based on its content
+        function adjustSidebarHeight() {
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarList = document.querySelector('#sidebar-list');
+            const listHeight = sidebarList.offsetHeight;
+
+            // Set the height of the sidebar dynamically based on the content
+            sidebar.style.height = listHeight + 'px';
+        }
+
         // Trigger when the entire window has loaded
         window.addEventListener('load', function() {
             handleIframeResize(); // Call iframe resize on load
+            adjustSidebarHeight(); // Adjust sidebar height on load
         });
     
         // Fallback timer to trigger iframe resizing after 10 seconds
