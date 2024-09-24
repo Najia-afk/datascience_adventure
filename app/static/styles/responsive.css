@@ -14,14 +14,17 @@
 
     .main-content {
         margin-left: 0;
+        padding: 15px; /* Adjusted padding for smaller screens */
     }
 
-    .scroll-container {
-        height: auto;
+    .button-container {
+        text-align: center; /* Center button on smaller screens */
+        margin-top: 10px;
     }
 
-    .grid-item {
-        width: 100%;
+    .button-colab {
+        width: 100%; /* Full-width button on smaller screens */
+        padding: 12px 0;
     }
 }
 
@@ -49,7 +52,15 @@
         margin-bottom: 15px;
     }
 
+    .main-content {
+        padding: 15px; /* Adjusted padding for mobile screens */
+    }
+
+    .button-container {
+        margin-bottom: 20px;
+    }
+
     .grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Stack grid items */
     }
 }

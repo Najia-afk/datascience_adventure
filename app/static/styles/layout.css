@@ -59,4 +59,40 @@
     border-radius: 8px;
     min-width: 0;
     overflow: hidden;
+    margin-top: 20px; /* Moved content higher */
+}
+
+/* Project Header */
+.project-header h1 {
+    font-size: 28px;
+    margin-bottom: 10px; /* Reduce margin below title */
+}
+
+.project-header p {
+    font-size: 18px;
+    margin-bottom: 20px; /* Compact description margin */
+}
+
+/* Google Colab Button Container */
+.button-container {
+    text-align: right; /* Align button to the right */
+    margin-bottom: 20px; /* Add space below the button */
+}
+
+/* Google Colab Button Style */
+.button-colab {
+    display: inline-block;
+    background-color: #ffcc00;
+    color: #000;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.button-colab:hover {
+    background-color: #ff9900;
+    color: #fff;
 }
