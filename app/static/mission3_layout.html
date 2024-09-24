@@ -65,9 +65,9 @@
         // Trigger when the entire window has loaded
         window.addEventListener('load', function() {
             handleIframeResize(); // Call iframe resize on load
-        }, 10000);
+        });
     
-        // Fallback timer to trigger iframe resizing after 5 seconds
+        // Fallback timer to trigger iframe resizing after 10 seconds
         setTimeout(() => {
             console.warn('Fallback timer triggered.'); // Log fallback trigger
             handleIframeResize(); // Trigger resizing in case load event is delayed
