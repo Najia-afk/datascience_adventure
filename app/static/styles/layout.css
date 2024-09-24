@@ -29,7 +29,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-right: 1px solid #e9ecef;
     position: fixed; /* Make the sidebar fixed and float */
-    top: 70px; /* Keeps it below the header */
+    top: 140px; /* Keeps it below the header */
     left: 0; /* Sidebar stays on the left */
     z-index: 1000; /* Ensures it's above the main content */
     transition: width 0.3s;

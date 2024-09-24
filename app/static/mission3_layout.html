@@ -43,7 +43,7 @@
         </div>
     </section>
 
-    <!-- JavaScript for Handling Iframe Resizing -->
+    <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
         // Function to handle iframe resizing and loading display
         function handleIframeResize() {
@@ -61,7 +61,7 @@
                 }
             }, 1000); // Adjust this delay as needed for fallback
         }
-    
+
         // Function to adjust sidebar height based on its content
         function adjustSidebarHeight() {
             const sidebar = document.querySelector('.sidebar');
@@ -72,12 +72,30 @@
             sidebar.style.height = listHeight + 'px';
         }
 
+        // Function to adjust the sidebar position after the header is dynamically loaded
+        function adjustSidebarPosition() {
+            const header = document.getElementById('header');
+            const sidebar = document.querySelector('.sidebar');
+
+            if (header) {
+                const headerHeight = header.offsetHeight;
+                sidebar.style.top = `${headerHeight}px`; // Set sidebar position below header
+            }
+        }
+
+        // Listen for HTMX event to adjust sidebar after header is loaded
+        document.body.addEventListener("htmx:afterOnLoad", function(evt) {
+            if (evt.detail.target.id === "header") {
+                adjustSidebarPosition(); // Adjust sidebar after the header is loaded
+            }
+        });
+
         // Trigger when the entire window has loaded
         window.addEventListener('load', function() {
             handleIframeResize(); // Call iframe resize on load
             adjustSidebarHeight(); // Adjust sidebar height on load
         });
-    
+
         // Fallback timer to trigger iframe resizing after 10 seconds
         setTimeout(() => {
             console.warn('Fallback timer triggered.'); // Log fallback trigger
