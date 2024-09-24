@@ -2,9 +2,22 @@
 .main-container {
     display: flex;
     flex: 1;
-    padding: 0 20px; /* Padding on the sides only */
+    padding: 20px;
     flex-direction: row;
     overflow: hidden;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 0 20px;
+    margin-left: 270px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    min-width: 0;
+    overflow: hidden;
+    margin-top: 0; /* Moved content higher */
 }
 
 /* Sidebar Styles */
@@ -13,17 +26,15 @@
     padding: 20px;
     background-color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: fit-content;
     border-right: 1px solid #e9ecef;
     position: sticky;
-    top: 0; /* Stick to the top of the viewport */
-    align-self: flex-start; /* Align at the top of the main container */
-    height: 100vh; /* Full height to avoid overlap */
-    overflow-y: auto; /* Enable scrolling if content exceeds screen height */
+    top: 70px;
     transition: width 0.3s;
 }
 
 .sidebar.expanded {
-    width: 320px;
+    width: 300px;
 }
 
 .sidebar h2 {
@@ -51,34 +62,23 @@
     text-decoration: underline;
 }
 
-/* Main Content Area */
-.main-content {
-    flex: 1;
-    background-color: #ffffff;
-    padding: 20px;
-    margin-left: 20px; /* Just a small space from sidebar */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    min-width: 0;
-    overflow: hidden;
-    margin-top: 0; /* Aligned with the header */
-}
+
 
 /* Project Header */
 .project-header h1 {
     font-size: 28px;
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Reduce margin below title */
 }
 
 .project-header p {
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Compact description margin */
 }
 
 /* Google Colab Button Container */
 .button-container {
     text-align: right; /* Align button to the right */
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Add space below the button */
 }
 
 /* Google Colab Button Style */
