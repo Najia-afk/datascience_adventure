@@ -59,13 +59,13 @@
                     iframeContainer.style.visibility = 'visible'; // Show iframe container
                     iframeContainer.style.height = 'auto'; // Remove the 1px height restriction
                 }
-            }); // Adjust this delay as needed for fallback
+            } 5000); // Adjust this delay as needed for fallback
         }
     
         // Trigger when the entire window has loaded
         window.addEventListener('load', function() {
             handleIframeResize(); // Call iframe resize on load
-        });
+        } 5000);
     
         // Fallback timer to trigger iframe resizing after 5 seconds
         setTimeout(() => {
