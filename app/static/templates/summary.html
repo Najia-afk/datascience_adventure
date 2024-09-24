@@ -3,7 +3,7 @@
     <button class="scroll-btn left-btn"
             hx-get="/scroll-left/"
             hx-trigger="click"
-            hx-swap="none"  <!-- Prevent swapping the button with the response -->
+            hx-swap="none"
             hx-on="htmx:afterRequest: handleScroll(this, event)">◀</button>
 
     <div id="scroll-wrapper" class="scroll-wrapper">
