@@ -38,7 +38,7 @@
 
         <!-- Iframe Display for the Jupyter Notebook -->
         <div id="loading" style="display: block;">Loading...</div>
-        <div class="iframe-container" style="display: none;">
+        <div class="iframe-container" style="visibility: hidden; height: 1px; overflow: hidden;">
             <iframe id="main-iframe" src="/mission3/Mission3.html" scrolling="no" style="width: 100%; border: none;"></iframe>
         </div>
     </section>
@@ -56,7 +56,8 @@
                 if (documentHeight > 0) {
                     iframe.style.height = `${documentHeight}px`;
                     loadingIndicator.style.display = 'none';
-                    iframeContainer.style.display = 'block';
+                    iframeContainer.style.visibility = 'visible'; // Show iframe container
+                    iframeContainer.style.height = 'auto'; // Remove the 1px height restriction
                 }
             }, 10000); // Adjust this delay as needed for fallback
         }
