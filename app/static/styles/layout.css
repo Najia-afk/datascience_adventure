@@ -18,6 +18,7 @@
     min-width: 0;
     overflow: hidden;
     margin-top: 0; /* Moved content higher */
+    top: 20px;
 }
 
 /* Sidebar Styles */
