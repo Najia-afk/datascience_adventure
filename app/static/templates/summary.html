@@ -62,18 +62,23 @@
 </div>
 
 <script>
-    function handleScroll(button, event) {
-        // Check if we got a valid response from HTMX
-        if (event.detail.xhr) {
-            const scrollData = JSON.parse(event.detail.xhr.responseText); // Get the scroll distance from the response
-            const scrollWrapper = document.getElementById('scroll-wrapper');
-            if (scrollWrapper && scrollData.scroll_distance) {
-                // Scroll by the returned distance
-                scrollWrapper.scrollBy({
-                    left: scrollData.scroll_distance,
-                    behavior: 'smooth'
-                });
-            }
+    function handleScroll(direction) {
+        const scrollWrapper = document.getElementById('scroll-wrapper');
+        const scrollAmount = 320; // Adjust as needed for grid-item width
+
+        if (scrollWrapper) {
+            scrollWrapper.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
         }
     }
+
+    document.querySelector('.left-btn').addEventListener('click', function() {
+        handleScroll(-1); // Scroll left
+    });
+
+    document.querySelector('.right-btn').addEventListener('click', function() {
+        handleScroll(1); // Scroll right
+    });
 </script>

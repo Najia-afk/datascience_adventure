@@ -12,16 +12,6 @@ def index():
 def header():
     return render_template('templates/header.html')
 
-@app.route('/scroll-left/')
-def scroll_left():
-    # Return a negative scroll distance for left scrolling
-    return jsonify({'scroll_distance': -320})
-
-@app.route('/scroll-right/')
-def scroll_right():
-    # Return a positive scroll distance for right scrolling
-    return jsonify({'scroll_distance': 320})
-
 @app.route('/footer/')
 def footer():
     return render_template('templates/footer.html')

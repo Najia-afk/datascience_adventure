@@ -3,6 +3,7 @@
     .main-container {
         flex-direction: column;
         overflow-y: auto;
+        padding: 10px; /* Add padding to the entire container */
     }
 
     .sidebar {
@@ -10,21 +11,46 @@
         margin-bottom: 20px;
         position: relative;
         top: auto;
+        padding: 20px; /* Consistent padding with main content */
     }
 
     .main-content {
         margin-left: 0;
-        padding: 15px; /* Adjusted padding for smaller screens */
+        padding: 20px; /* Consistent padding for better readability */
     }
 
     .button-container {
-        text-align: center; /* Center button on smaller screens */
-        margin-top: 10px;
+        text-align: center; /* Center the button on smaller screens */
+        margin-top: 20px; /* Increase space above the button */
     }
 
     .button-colab {
         width: 100%; /* Full-width button on smaller screens */
-        padding: 12px 0;
+        padding: 14px 0; /* Increased padding for better touch interaction */
+        font-size: 18px; /* Slightly larger font for better readability */
+    }
+
+    .grid {
+        grid-template-columns: 1fr; /* Stack grid items vertically */
+        gap: 15px; /* Reduce gap between grid items */
+    }
+
+    .grid-item {
+        flex: 0 0 100%; /* Full width on mobile */
+        height: auto; /* Auto height for grid items */
+    }
+
+    .grid-item h2 {
+        font-size: 20px; /* Slightly larger headings */
+    }
+
+    .grid-item p {
+        font-size: 14px; /* Maintain readability with a decent font size */
+    }
+
+    .scroll-btn {
+        width: 35px; /* Slightly smaller buttons for better UI on mobile */
+        height: 35px;
     }
 }
 
@@ -48,19 +74,74 @@
 
     .sidebar {
         width: 100%;
-        padding: 10px;
+        padding: 20px; /* Consistent padding */
         margin-bottom: 15px;
     }
 
     .main-content {
-        padding: 15px; /* Adjusted padding for mobile screens */
+        padding: 20px; /* Increase padding for better readability */
     }
 
     .button-container {
         margin-bottom: 20px;
+        margin-top: 20px; /* Add margin for spacing around button */
+    }
+
+    .button-colab {
+        width: 100%; /* Full-width button */
+        padding: 16px 0; /* More padding for ease of use on touch screens */
+        font-size: 18px; /* Maintain larger font size */
     }
 
     .grid {
-        grid-template-columns: 1fr; /* Stack grid items */
+        grid-template-columns: 1fr; /* Stack grid items in one column */
+        gap: 10px; /* Reduce gap between items on mobile */
+    }
+
+    .grid-item {
+        flex: 0 0 100%; /* Full width for grid items */
+        height: auto; /* Let the height adjust based on content */
+    }
+
+    .grid-item h2 {
+        font-size: 18px; /* Font size for mobile screens */
+    }
+
+    .grid-item p {
+        font-size: 14px; /* Keep text readable but compact */
+    }
+
+    .scroll-btn {
+        width: 30px; /* Slightly smaller scroll button */
+        height: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-item h2 {
+        font-size: 16px; /* Smaller font for smaller screens */
+    }
+
+    .grid-item p {
+        font-size: 12px; /* Make paragraph text more compact for very small screens */
+    }
+
+    .button-colab {
+        padding: 18px 0; /* Increase padding for touch devices */
+        font-size: 16px; /* Slightly smaller font size for very small screens */
+    }
+
+    .button-container {
+        margin-top: 15px; /* Adjust margin around the button */
+    }
+
+    .scroll-btn {
+        width: 25px; /* Further reduce scroll button size for very small screens */
+        height: 25px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr; /* Ensure grid items stack on small screens */
+        gap: 8px; /* Reduce gap between items for small screens */
     }
 }
