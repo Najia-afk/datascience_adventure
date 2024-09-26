@@ -38,6 +38,11 @@ server {
         add_header Cache-Control "public, no-transform";
     }
 
+    location /logos/ {
+        alias /var/www/htmx_website/logos/;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
     # Handle root and other dynamic requests
     location / {
         try_files $uri @flask;
