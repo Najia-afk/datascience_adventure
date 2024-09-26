@@ -6,6 +6,9 @@
     background-color: #343a40;
     color: white;
     padding: 15px 30px;
+    display: flex;
+    justify-content: space-between; /* Ensures content is spaced between left and right */
+    align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
@@ -30,6 +33,8 @@
 .top-nav {
     display: flex;
     align-items: center;
+    justify-content: flex-end; /* Moves the navigation to the right */
+    flex: 1; /* Ensures the nav takes the remaining space */
 }
 
 .top-nav a,
