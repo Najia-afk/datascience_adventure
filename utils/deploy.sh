@@ -118,12 +118,14 @@ process_project() {
     mkdir -p "$website_html_dir"
     sudo mkdir -p "/var/www/htmx_website/templates"
     sudo mkdir -p "/var/www/htmx_website/styles"
+    sudo mkdir -p "/var/www/htmx_website/logos"
     
 
     log "Copying static files from $html_dir to $website_html_dir" "INFO"
     
     sudo cp -r "$project_dir/app/static/templates/"* "/var/www/htmx_website/templates"
     sudo cp -r "$project_dir/app/static/styles/"* "/var/www/htmx_website/styles"
+    sudo cp -r "$project_dir/app/static/logos/"* "/var/www/htmx_website/logos"
 
     # Copy static files and update Nginx configuration
     update_static_files_and_nginx "$project_dir" "$nginx_html_dir"
