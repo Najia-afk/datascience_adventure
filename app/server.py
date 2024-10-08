@@ -3,7 +3,8 @@ from dash import Dash, html, dcc
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.serving import run_simple
 import pandas as pd
-from var.www.htmx_website.mission3.scripts.plot_nutriscore import create_layout, update_graph_callback, update_nutriscore_legend
+from /var/www/htmx_website/mission3/scripts/plot_nutriscore import create_layout, update_graph_callback, update_nutriscore_legend
+
 
 app = Flask(__name__, 
             static_folder="/var/www/htmx_website/", 
@@ -84,4 +85,4 @@ def create_app():
 if __name__ == "__main__":
     # Run combined Flask and Dash apps
     application = create_app()
-    run_simple('0.0.0.0', 8000, application, use_reloader=True, use_debugger=False)
+    run_simple('0.0.0.0', 8000, application)
