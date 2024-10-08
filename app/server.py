@@ -3,12 +3,17 @@ from dash import Dash, html, dcc
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.serving import run_simple
 import pandas as pd
-from /var/www/htmx_website/mission3/scripts/plot_nutriscore import create_layout, update_graph_callback, update_nutriscore_legend
+import importlib.util
+import sys
 
+# Dynamically import the plot_nutriscore script only when needed
+plot_nutriscore_spec = importlib.util.spec_from_file_location("plot_nutriscore", "/var/www/htmx_website/mission3/scripts/plot_nutriscore.py")
+plot_nutriscore = importlib.util.module_from_spec(plot_nutriscore_spec)
+sys.modules["plot_nutriscore"] = plot_nutriscore
+plot_nutriscore_spec.loader.exec_module(plot_nutriscore)
 
-app = Flask(__name__, 
-            static_folder="/var/www/htmx_website/", 
-            template_folder="/var/www/htmx_website/")
+# Flask App
+app = Flask(__name__, static_folder="/var/www/htmx_website/", template_folder="/var/www/htmx_website/")
 
 # Route for main website pages
 @app.route('/')
@@ -44,7 +49,6 @@ def mission3_notebook():
 def not_found(e):
     return render_template('404.html'), 404
 
-
 # Function to create the Dash application
 def create_dash_mission3(flask_app):
     # Load the necessary data
@@ -53,17 +57,15 @@ def create_dash_mission3(flask_app):
 
     # Create Dash app
     dash_app = Dash(__name__, server=flask_app, url_base_pathname='/mission3/nutriscore/')
-    dash_app.layout = create_layout()  # Use the layout from the plot_nutriscore script
+    dash_app.layout = plot_nutriscore.create_layout()  # Use the layout from the plot_nutriscore script
 
     # Set up Dash callbacks (from plot_nutriscore.py)
     dash_app.callback(
-        Output('cluster-bubble-chart', 'figure'),
-        Output('nutriscore-legend', 'children'),
+        [Output('cluster-bubble-chart', 'figure'), Output('nutriscore-legend', 'children')],
         [Input('frequency-slider', 'value'), Input('display-options', 'value')]
-    )(lambda frequency_threshold, display_options: update_graph_callback(frequency_threshold, display_options, df))
+    )(lambda frequency_threshold, display_options: plot_nutriscore.update_graph_callback(frequency_threshold, display_options, df))
 
     return dash_app
-
 
 # Setting up DispatcherMiddleware to mount multiple Dash apps
 def create_app():
@@ -76,11 +78,9 @@ def create_app():
     # Use DispatcherMiddleware to combine Flask and Dash apps
     application = DispatcherMiddleware(flask_app.wsgi_app, {
         '/mission3/nutriscore': dash_mission3.server,  # Mount Dash app
-        # You can add more Dash apps here if needed in the future
     })
 
     return application
-
 
 if __name__ == "__main__":
     # Run combined Flask and Dash apps
