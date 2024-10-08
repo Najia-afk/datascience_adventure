@@ -84,4 +84,4 @@ def create_app():
 if __name__ == "__main__":
     # Run combined Flask and Dash apps
     application = create_app()
-    run_simple('0.0.0.0', 8000, application, use_reloader=True, use_debugger=True)
+    run_simple('0.0.0.0', 8000, application, use_reloader=True, use_debugger=False)
