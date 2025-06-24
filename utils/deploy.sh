@@ -159,13 +159,15 @@ process_mission_with_layout() {
             echo '<ul id="sidebar-list">' > "$script_list_file"
             
             # Find all Python files
-            find "$src_dir" -name "*.py" | sort | while read script_path; do
+            find "$src_dir" -type f -name "*.py" | sort | while read script_path; do
                 local script_name=$(basename "$script_path")
                 local script_url="${repo_name}_src/$(basename "$script_path" .py).html"
                 echo "<li><a href=\"$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
             done
             
             echo '</ul>' >> "$script_list_file"
+            
+            # Read the script list file as a variable with proper escaping
             script_list=$(cat "$script_list_file")
         else
             echo "No src directory found for $repo_name"
@@ -177,30 +179,60 @@ process_mission_with_layout() {
         local modified_layout="$tmp_dir/modified_layout.html"
         cp "$layout_file" "$modified_layout"
         
-        # Replace mission name and script list placeholders
-        sed -i "s/Mission [0-9]\+:/Mission ${mission_name#mission}:/g" "$modified_layout"
-        sed -i "s|<ul id=\"sidebar-list\">.*</ul>|$script_list|" "$modified_layout"
+        # Use more robust method to update mission number
+        local mission_number=${mission_name#mission}
+        # Update mission number in title tag
+        sed -i "s/Mission: Data/Mission $mission_number: Data/g" "$modified_layout"
+        # Update mission number in h1 tag
+        sed -i "s/<h1>Mission: /<h1>Mission $mission_number: /g" "$modified_layout"
         
-        # Update GitHub repo link if needed
+        # Create a script list placeholder file to avoid sed escaping issues
+        echo "$script_list" > "$tmp_dir/script_list_content.html"
+        
+        # Use awk to replace the sidebar list - more reliable than sed for complex HTML
+        awk '{
+            if ($0 ~ /<ul id="sidebar-list">/) {
+                system("cat '"$tmp_dir/script_list_content.html"'");
+                in_list = 1;
+            } else if (in_list && $0 ~ /<\/ul>/) {
+                in_list = 0;
+            } else if (!in_list) {
+                print $0;
+            }
+        }' "$modified_layout" > "$tmp_dir/layout_with_scripts.html"
+        
+        # Move the modified file back
+        mv "$tmp_dir/layout_with_scripts.html" "$modified_layout"
+        
+        # Update GitHub repo link
         local github_repo=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')
-        sed -i "s|github.com/Najia-afk/mission[0-9]\+|github.com/Najia-afk/$github_repo|g" "$modified_layout"
+        sed -i "s|github.com/Najia-afk/mission|github.com/Najia-afk/$github_repo|g" "$modified_layout"
+        
+        # Update iframe src to point to the correct content file
+        sed -i "s|id=\"main-iframe\" src=\"\"|id=\"main-iframe\" src=\"/${mission_name}_content.html\"|g" "$modified_layout"
         
         # Add resize listener script to the merged file if not already present
         if ! grep -q "sendHeight" "$modified_layout"; then
-            sed -i '/<\/body>/i \
-            <script>\
-                function sendHeight() {\
-                    var documentHeight = document.body.scrollHeight;\
-                    console.log("Iframe content height:", documentHeight);\
-                    window.parent.postMessage({ height: documentHeight }, "*");\
-                }\
-                window.addEventListener("load", function() {\
-                    sendHeight();\
-                });\
-                window.addEventListener("resize", function() {\
-                    sendHeight();\
-                });\
-            </script>' "$modified_layout"
+            cat <<EOF >> "$modified_layout"
+<script>
+    function sendHeight() {
+        var documentHeight = document.body.scrollHeight;
+        console.log("Iframe content height:", documentHeight);
+        window.parent.postMessage({ height: documentHeight }, "*");
+    }
+    window.addEventListener("load", function() {
+        sendHeight();
+    });
+    window.addEventListener("resize", function() {
+        sendHeight();
+    });
+</script>
+</body>
+EOF
+            # Remove the original closing body tag to avoid duplicates
+            sed -i 's|</body>||g' "$modified_layout"
+            # Add back the closing HTML tag if needed
+            echo "</html>" >> "$modified_layout"
             echo "Added resize listener script to merged file"
         fi
         
