@@ -50,9 +50,8 @@
 .sidebar-toggle {
     position: absolute;
     right: 0;
-    top: 50%;
-    height: 20%;
-    width: 20px;
+    height: 5%;
+    width: 15px;
     cursor: pointer;
     background-color: #343a40;
     color: white;
