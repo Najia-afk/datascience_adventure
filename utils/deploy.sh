@@ -349,18 +349,45 @@ convert_py_to_html() {
         # Read Python file
         py_content=$(cat "$py_file")
         
-        # Generate HTML with Pygments using Python
+        # Generate HTML with Pygments using Python - with error handling
         html_content=$(sudo -u www-data /srv/htmx_website/venv/bin/python3 -c "
 import pygments
 import os
+import sys
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
 code = '''$py_content'''
-formatter = HtmlFormatter(style='default', linenos=True, full=True)
-html = highlight(code, PythonLexer(), formatter)
-css = formatter.get_style_defs('.highlight')
+
+# Try to parse the Python code first to check for syntax errors
+try:
+    compile(code, '<string>', 'exec')
+    is_valid = True
+except SyntaxError as e:
+    is_valid = False
+    error_line = e.lineno
+    error_msg = str(e)
+
+if is_valid:
+    # Code is valid, proceed with highlighting
+    formatter = HtmlFormatter(style='default', linenos=True, full=True)
+    html = highlight(code, PythonLexer(), formatter)
+    css = formatter.get_style_defs('.highlight')
+else:
+    # Code has syntax errors, create a simpler display with error highlighted
+    lines = code.split('\\n')
+    html_lines = []
+    
+    for i, line in enumerate(lines, 1):
+        if i == error_line:
+            # Highlight the error line
+            html_lines.append(f'<div class=\"error-line\">{i}: {line}</div>')
+        else:
+            html_lines.append(f'<div class=\"code-line\">{i}: {line}</div>')
+    
+    html = f'<div class=\"syntax-error\">SYNTAX ERROR: {error_msg}</div><pre>{\"\".join(html_lines)}</pre>'
+    css = '.error-line { background-color: #ffcccc; color: #990000; } .syntax-error { color: red; font-weight: bold; margin-bottom: 10px; }'
 
 print(f'''<!DOCTYPE html>
 <html>
@@ -370,7 +397,8 @@ print(f'''<!DOCTYPE html>
         body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; }}
         .back-link {{ margin-bottom: 20px; }}
         .back-link a {{ text-decoration: none; color: #0066cc; }}
-        .code-container {{ border: 1px solid #ddd; border-radius: 5px; overflow: auto; }}
+        .code-container {{ border: 1px solid #ddd; border-radius: 5px; overflow: auto; padding: 10px; }}
+        .code-line {{ font-family: monospace; white-space: pre; }}
         {css}
     </style>
 </head>
@@ -384,7 +412,33 @@ print(f'''<!DOCTYPE html>
     </div>
 </body>
 </html>''')
-")
+" 2>/dev/null) || {
+            # If Python script fails, create a simple error HTML file
+            echo "⚠️ Error processing $py_file - syntax error detected"
+            error_html="<!DOCTYPE html>
+<html>
+<head>
+    <title>$(basename "$py_file") - Syntax Error</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .error { color: red; font-weight: bold; }
+        .back-link { margin-bottom: 20px; }
+        .back-link a { text-decoration: none; color: #0066cc; }
+        pre { background-color: #f5f5f5; padding: 10px; border: 1px solid #ddd; border-radius: 5px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <div class='back-link'>
+        <a href='javascript:history.back()'>&lt; Back to mission</a>
+    </div>
+    <h2>$(basename "$py_file")</h2>
+    <div class='error'>This file contains syntax errors and cannot be properly displayed.</div>
+    <p>Please check the original source code for errors.</p>
+    <pre>$(cat "$py_file" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g')</pre>
+</body>
+</html>"
+            echo "$error_html" | sudo tee "$html_file" > /dev/null
+        }
         
         # Write HTML to file
         echo "$html_content" | sudo tee "$html_file" > /dev/null
