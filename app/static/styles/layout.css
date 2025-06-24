@@ -81,9 +81,10 @@
 
 /* Vertical title for collapsed sidebar */
 .vertical-title {
-    position: absolute;  /* Change to fixed to keep it visible */
+    position: absolute;
+    top: 50%; /* Add this to match the toggle button */
     right: 40px;
-    transform:rotate(-90deg);
+    transform: translateY(-50%) rotate(-90deg); /* Add translateY to center vertically */
     transform-origin: right center;
     white-space: nowrap;
     display: none;

@@ -114,18 +114,36 @@
         document.addEventListener('DOMContentLoaded', function () {
             const iframe = document.getElementById('main-iframe');
             const colabButton = document.getElementById('colab-button');
-            const currentPath = window.location.pathname;
-            const missionName = currentPath.replace(/\/$/, ''); // Remove trailing slash if any
-
+            let currentPath = window.location.pathname;
+            
+            // Remove trailing slash if any
+            currentPath = currentPath.replace(/\/$/, '');
+            
+            // If at root or empty path, default to the current page ID or a fallback
+            if (!currentPath || currentPath === '/') {
+                // Try to determine mission from the page content or document title
+                const titleText = document.title;
+                const missionMatch = titleText.match(/Mission\s+(\d+)/i);
+                
+                if (missionMatch && missionMatch[1]) {
+                    currentPath = '/mission' + missionMatch[1];
+                } else {
+                    console.error("Could not determine mission number from URL or title");
+                    // Disable Colab button if we can't determine the mission
+                    colabButton.style.display = 'none';
+                    return;
+                }
+            }
+            
             // Set iframe source
-            iframe.src = missionName + '_content.html';
-
+            iframe.src = currentPath + '_content.html';
+            
             // Extract just the mission name without the leading slash for the Colab URL
-            const repoName = missionName.replace(/^\//, ''); // Remove leading slash
-
-            // Set Colab button link with proper GitHub repo format
-            colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/' + repoName + '.ipynb';
-
+            const repoName = currentPath.replace(/^\//, '');
+            
+            // Set Colab button link with proper GitHub repo format - add 'main/' path
+            colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/main/' + repoName + '.ipynb';
+            
             // Log for debugging
             console.log("Setting Colab URL to:", colabButton.href);
         });
