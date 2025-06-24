@@ -1,10 +1,6 @@
-from flask import Flask, render_template, send_from_directory, abort, Response
+from flask import Flask, render_template, send_from_directory, abort
 import os
 import re
-import pygments
-from pygments import highlight
-from pygments.lexers import PythonLexer
-from pygments.formatters import HtmlFormatter
 
 # Function to create the Flask app
 def create_app():
@@ -14,53 +10,93 @@ def create_app():
     # Route for main website pages
     @app.route('/')
     def index():
-        return render_template('index.html')
+        try:
+            return render_template('index.html')
+        except Exception as e:
+            app.logger.error(f"Error rendering index: {str(e)}")
+            abort(500)
 
     @app.route('/header/')
     def header():
-        return render_template('templates/header.html')
+        try:
+            return render_template('templates/header.html')
+        except Exception as e:
+            app.logger.error(f"Error rendering header: {str(e)}")
+            abort(404)
 
     @app.route('/footer/')
     def footer():
-        return render_template('templates/footer.html')
+        try:
+            return render_template('templates/footer.html')
+        except Exception as e:
+            app.logger.error(f"Error rendering footer: {str(e)}")
+            abort(404)
 
     @app.route('/summary/')
     def summary():
-        return render_template('templates/summary.html')
+        try:
+            return render_template('templates/summary.html')
+        except Exception as e:
+            app.logger.error(f"Error rendering summary: {str(e)}")
+            abort(404)
 
     @app.route('/load-home/')
     def load_home():
-        return render_template('templates/home.html')
+        try:
+            return render_template('templates/home.html')
+        except Exception as e:
+            app.logger.error(f"Error rendering home: {str(e)}")
+            abort(404)
     
     # Dynamic route for mission pages
     @app.route('/<path:mission_path>/')
     def mission_page(mission_path):
-        return render_template(f'{mission_path}.html')
+        try:
+            return render_template(f'{mission_path}.html')
+        except Exception as e:
+            app.logger.error(f"Error rendering {mission_path}: {str(e)}")
+            abort(404)
 
-    
     # Dynamic route for mission content HTML files
     @app.route('/<path:mission_path>_content.html')
     def mission_content(mission_path):
         content_file = f'{mission_path}_content.html'
-        if os.path.exists(os.path.join('/var/www/htmx_website', content_file)):
+        file_path = os.path.join('/var/www/htmx_website', content_file)
+        if os.path.exists(file_path):
             return send_from_directory('/var/www/htmx_website', content_file)
+        abort(404)
 
-    # Generic route for static files - simplified version
+    # Generic route for static files - fixed version
     @app.route('/<path:filename>')
     def serve_static(filename):
         # Clean up the filename
         filename = re.sub(r'/+', '/', filename).rstrip('/')
         file_path = os.path.join('/var/www/htmx_website', filename)
         
-        # For non-Python files or fallback to .html version
-        for path in [file_path, file_path + '.html']:
-            return send_from_directory('/var/www/htmx_website', os.path.relpath(path, '/var/www/htmx_website'))
+        # Check if the file exists
+        if os.path.exists(file_path):
+            return send_from_directory('/var/www/htmx_website', filename)
         
+        # Try with .html extension
+        html_path = file_path + '.html'
+        if os.path.exists(html_path):
+            return send_from_directory('/var/www/htmx_website', filename + '.html')
+        
+        # File not found
+        abort(404)
+    
     # Error handler for 404
     @app.errorhandler(404)
     def not_found(e):
         return render_template('404.html'), 404
-        
+    
+    # Error handler for 500
+    @app.errorhandler(500)
+    def server_error(e):
+        app.logger.error(f"Server error: {str(e)}")
+        return "Internal server error. Please check server logs.", 500
+
+    return app
 
 if __name__ == "__main__":
     # Run the app
