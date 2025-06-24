@@ -75,8 +75,15 @@ sudo chown -R www-data:www-data "$FLASK_DIR"
 sudo chmod -R 755 "$WWW_DIR"
 sudo chmod -R 755 "$FLASK_DIR"
 
+# Ensure gunicorn is executable
+if [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    sudo chmod +x /srv/htmx_website/venv/bin/python3
+    echo "Set executable permissions for gunicorn and python"
+fi
+
 # Reload Nginx and restart Flask service
-sudo systemctl reload nginx
+sudo systemctl daemon-reload
 sudo systemctl restart htmx_website.service || true
 
 echo "Deployment complete."

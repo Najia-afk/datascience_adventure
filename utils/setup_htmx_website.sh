@@ -160,7 +160,8 @@ After=network.target
 User=www-data
 Group=www-data
 WorkingDirectory=/srv/htmx_website
-ExecStart=/srv/htmx_website/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 wsgi:application
+Environment="PATH=/srv/htmx_website/venv/bin"
+ExecStart=/srv/htmx_website/venv/bin/python3 /srv/htmx_website/venv/bin/gunicorn --workers 5 --bind 127.0.0.1:8000 --timeout 120 wsgi:application
 Restart=always
 
 [Install]
@@ -171,8 +172,12 @@ EOF
     if [ ! -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
         echo "Warning: Gunicorn executable not found. Reinstalling..."
         sudo -u www-data /srv/htmx_website/venv/bin/pip install --force-reinstall gunicorn
-        sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
     fi
+    
+    # Explicitly set permissions on all required files
+    sudo chmod +x /srv/htmx_website/venv/bin/python3
+    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    sudo chmod 644 /etc/systemd/system/htmx_website.service
 
     sudo systemctl daemon-reload
     sudo systemctl start htmx_website.service
