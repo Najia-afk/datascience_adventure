@@ -185,11 +185,11 @@ process_mission_with_layout() {
                     # Find Python files in this subdirectory, excluding __init__.py
                     find "$subdir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
                         local script_name=$(basename "$script_path")
-                        # FIXED: Create path without src directory in the URL
+                        # FIXED: Create path without src directory in the URL and ensure no trailing slash
                         local subdirectory=$(basename "$subdir")
                         local script_url="${repo_name}_src/${subdirectory}/${script_name}"
-                        # Clean up the URL path
-                        script_url=$(echo "$script_url" | sed 's|//*|/|g')
+                        # Clean up the URL path and ensure no trailing slash
+                        script_url=$(echo "$script_url" | sed 's|//*|/|g' | sed 's|/$||')
                         echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
                     done
                     
@@ -204,12 +204,13 @@ process_mission_with_layout() {
                 echo "<li class='subdir-heading'><strong>root/</strong>" >> "$script_list_file"
                 echo "<ul>" >> "$script_list_file"
                 
+                # Also for root directory files
                 find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
                     local script_name=$(basename "$script_path")
-                    # FIXED: Create correct URL path for root directory files
+                    # FIXED: Create correct URL path for root directory files with no trailing slash
                     local script_url="${repo_name}_src/${script_name}"
-                    # Clean up the URL path
-                    script_url=$(echo "$script_url" | sed 's|//*|/|g')
+                    # Clean up the URL path and ensure no trailing slash
+                    script_url=$(echo "$script_url" | sed 's|//*|/|g' | sed 's|/$||')
                     echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
                 done
                 

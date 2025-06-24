@@ -30,6 +30,9 @@ def create_app():
     def load_home():
         return render_template('templates/home.html')
 
+    @app.route('/contact/')
+    def contact():
+        return render_template('templates/contact.html')
     
     # Dynamic route for mission pages
     @app.route('/<path:mission_path>/')
@@ -45,16 +48,21 @@ def create_app():
             return send_from_directory('/var/www/htmx_website', content_file)
         abort(404)
 
-    # Generic route for static files - fixed version
+    # Generic route for static files - fixed version to handle trailing slashes
     @app.route('/<path:filename>')
     def serve_static(filename):
-        # Clean up the filename
+        # Clean up the filename - ensure trailing slashes are removed
         filename = re.sub(r'/+', '/', filename).rstrip('/')
         file_path = os.path.join('/var/www/htmx_website', filename)
         
         # Check if the file exists
         if os.path.exists(file_path):
             return send_from_directory('/var/www/htmx_website', filename)
+        
+        # Check with .py extension (since URLs might be missing it)
+        py_path = file_path + '.py'
+        if os.path.exists(py_path):
+            return send_from_directory('/var/www/htmx_website', filename + '.py')
         
         # Try with .html extension
         html_path = file_path + '.html'
