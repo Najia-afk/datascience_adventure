@@ -145,7 +145,7 @@ echo "✅ Reloaded Nginx"
 echo "===== Deployment complete! ====="
 echo "Website should now be accessible."
     echo "Set executable permissions for gunicorn and python"
-fi
+
 
 # Reload Nginx and restart Flask service
 sudo systemctl daemon-reload
