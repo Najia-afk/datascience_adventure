@@ -103,14 +103,11 @@
 
             if (sidebar.classList.contains('collapsed')) {
                 toggleBtn.innerHTML = '▶';
-                toggleBtn.style.left = '20px'; // Update to match CSS
+                toggleBtn.style.right = '0';
             } else {
                 toggleBtn.innerHTML = '◀';
-                toggleBtn.style.left = '250px'; // Update to match CSS
+                toggleBtn.style.right = '0';
             }
-            
-            // Force layout recalculation
-            window.dispatchEvent(new Event('resize'));
         }
 
         // Set the iframe src and Colab link based on the current URL
