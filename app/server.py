@@ -49,7 +49,7 @@ def create_app():
         abort(404)
 
     # Generic route for static files - properly fixed version
-    @app.route('/<path:filename>')
+    @app.route('/<path:filename>.py')
     def serve_static(filename):
         # Clean up the filename - ensure trailing slashes are removed
         filename = re.sub(r'/+', '/', filename).rstrip('/')
