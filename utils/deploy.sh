@@ -29,36 +29,27 @@ mkdir -p "$WORKDIR"
 
 echo "===== Deploying local app files ====="
 
-# Copy template files
+# Copy template files using the proven manual approach that works
 echo "Copying template files..."
 if [ -d "$LOCAL_STATIC_DIR/templates" ]; then
-    # First, ensure the templates directory exists and is writable
+    # Create the templates directory
     sudo mkdir -p "$WWW_DIR/templates"
-    sudo chmod 755 "$WWW_DIR/templates"
     
-    # Copy all templates to the templates directory
-    sudo cp -rv "$LOCAL_STATIC_DIR/templates/"* "$WWW_DIR/templates/" 2>/dev/null || true
-    echo "✅ Copied templates to $WWW_DIR/templates/"
+    # Copy templates using the same command that works manually
+    sudo cp -rv "$LOCAL_STATIC_DIR/templates/"* "$WWW_DIR/templates/"
     
-    # Also copy templates directly to the web root
-    for file in "$LOCAL_STATIC_DIR/templates/"*; do
-        if [ -f "$file" ]; then
-            sudo cp -v "$file" "$WWW_DIR/"
-            echo "✅ Also copied $(basename "$file") to $WWW_DIR/ for direct access"
-        fi
-    done
+    # Set permissions immediately after copy (important)
+    sudo chown -R www-data:www-data "$WWW_DIR/templates/"
+    sudo chmod -R 755 "$WWW_DIR/templates/"
     
-    # Verify template files were copied
-    echo "Verifying template files..."
-    if [ -z "$(ls -A "$WWW_DIR/templates/" 2>/dev/null)" ]; then
-        echo "⚠️ Warning: Templates directory is empty after copy! Trying again with different method..."
-        sudo cp -rv $LOCAL_STATIC_DIR/templates/* "$WWW_DIR/templates/"
-    else
-        echo "✅ Templates directory contains files"
-        ls -la "$WWW_DIR/templates/"
-    fi
+    echo "✅ Copied templates to $WWW_DIR/templates/ and set permissions"
+    
+    # Verify templates were copied
+    echo "Templates in $WWW_DIR/templates/:"
+    ls -la "$WWW_DIR/templates/"
 else
-    echo "⚠️ WARNING: Templates directory not found at $LOCAL_STATIC_DIR/templates"
+    echo "⚠️ ERROR: Templates directory not found at $LOCAL_STATIC_DIR/templates"
+    exit 1
 fi
 
 # Copy style files
