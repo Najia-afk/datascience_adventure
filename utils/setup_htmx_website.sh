@@ -89,70 +89,18 @@ remove_existing_setup() {
 configure_nginx_ssl() {
     read -p "Enter your email address for SSL certificate notifications: " EMAIL
 
-    echo "Configuring Nginx for SSL (step 1: HTTP only)..."
-    # Write only the HTTP server block first
-    cat <<EOF | sudo tee /etc/nginx/sites-available/htmx_website
-server {
-    listen 80;
-    listen [::]:80;
-    server_name $DOMAIN;
+    echo "Copying Nginx config from nginx/htmx_website..."
+    sudo cp nginx/htmx_website /etc/nginx/sites-available/htmx_website
+    sudo ln -sf /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/htmx_website
 
-    location /.well-known/acme-challenge/ {
-        root /var/www/html;
-    }
-
-    # Serve static files
-    location /styles/ {
-        alias /var/www/htmx_website/styles/;
-    }
-}
-EOF
-
-    sudo ln -sf /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+    echo "Testing Nginx configuration..."
     sudo nginx -t
     sudo systemctl reload nginx
 
     echo "Obtaining SSL certificates with Certbot..."
     sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
 
-    echo "Configuring Nginx for SSL (step 2: add HTTPS)..."
-    # Now write the full config with SSL
-    cat <<EOF | sudo tee /etc/nginx/sites-available/htmx_website
-server {
-    listen 80;
-    listen [::]:80;
-    server_name $DOMAIN;
-
-    location /.well-known/acme-challenge/ {
-        root /var/www/html;
-    }
-
-    # Serve static files
-    location /styles/ {
-        alias /var/www/htmx_website/styles/;
-    }
-}
-
-server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name $DOMAIN;
-
-    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_prefer_server_ciphers on;
-
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-}
-EOF
-
+    echo "Reloading Nginx with SSL certificates..."
     sudo nginx -t
     sudo systemctl reload nginx
 
@@ -227,6 +175,58 @@ configure_firewall_and_security() {
         sudo systemctl restart ssh
     elif systemctl list-units --type=service | grep -q '^sshd\.service'; then
         sudo systemctl restart sshd
+    else
+        echo "Warning: SSH service not found to restart. Please restart SSH manually if needed."
+    fi
+
+    echo "Setting up the virtual environment..."
+    # Create the virtual environment if it doesn't exist
+    if [ ! -d "/srv/htmx_website/venv" ]; then
+        sudo mkdir -p /srv/htmx_website/venv
+        sudo python3 -m venv /srv/htmx_website/venv
+        echo "Virtual environment created at /srv/htmx_website/venv."
+    else
+        echo "Virtual environment already exists at /srv/htmx_website/venv."
+    fi
+
+    echo "Activating the virtual environment and installing dependencies..."
+    sudo /srv/htmx_website/venv/bin/pip install --upgrade pip
+    sudo /srv/htmx_website/venv/bin/pip install Flask gunicorn
+
+    echo "Setting secure permissions for /srv/htmx_website..."
+    sudo chown -R www-data:www-data /srv/htmx_website
+    sudo chmod -R 755 /srv/htmx_website
+}
+
+# Main logic for the setup script
+main() {
+    check_internet_access
+    check_required_files
+    install_packages
+    install_python_dependencies
+    remove_existing_setup
+
+    if [[ "$OPTION" == "SSL Only" ]]; then
+        configure_nginx_ssl
+        exit 0
+    fi
+
+    setup_flask_app
+    create_gunicorn_service
+
+    if [[ "$OPTION" == "SSL" ]]; then
+        configure_nginx_ssl
+    else
+        configure_nginx
+    fi
+
+    configure_firewall_and_security
+
+    echo "Setup complete! Your HTMX website is now running on http://$DOMAIN or https://$DOMAIN if SSL is configured."
+}
+
+# Run the main function
+main
     else
         echo "Warning: SSH service not found to restart. Please restart SSH manually if needed."
     fi

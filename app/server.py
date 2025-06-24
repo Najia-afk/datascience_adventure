@@ -2,6 +2,7 @@ from flask import Flask, render_template
 
 # Function to create the Flask app
 def create_app():
+    # Use the root as template_folder, but you must reference templates as 'templates/xxx.html'
     app = Flask(__name__, static_folder="/var/www/htmx_website/", template_folder="/var/www/htmx_website/")
     
     # Route for main website pages
