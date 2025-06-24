@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Improved deployment script for public mission repos
-# Version: 1.1.0
+# Version: 1.2.0
 
 set -e
 
@@ -17,6 +17,16 @@ WORKDIR="$HOME/missions"
 WWW_DIR="/var/www/htmx_website"
 FLASK_DIR="/srv/htmx_website"
 LOG_FILE="$HOME/deploy_log.txt"
+
+# User/group config
+WEB_USER="www-data"
+WEB_GROUP="www-data"
+HTML_USER="ubuntu"
+
+# Ensure HTML_USER is in WEB_GROUP for collaborative editing
+if ! id -nG "$HTML_USER" | grep -qw "$WEB_GROUP"; then
+    sudo usermod -aG "$WEB_GROUP" "$HTML_USER"
+fi
 
 # Logging function
 log() {
@@ -128,14 +138,12 @@ for REPO_URL in "${REPOS[@]}"; do
     fi
 done
 
-# Set permissions for web files
-log "Setting proper permissions..."
-sudo chown -R www-data:www-data "$WWW_DIR"
-sudo chown -R www-data:www-data "$FLASK_DIR"
-sudo find "$WWW_DIR" -type d -exec chmod 755 {} \;
-sudo find "$WWW_DIR" -type f -exec chmod 644 {} \;
-sudo find "$FLASK_DIR" -type d -exec chmod 755 {} \;
-sudo find "$FLASK_DIR" -type f -exec chmod 644 {} \;
+# Set permissions for web files and collaborative editing
+log "Setting proper permissions and group ownership..."
+sudo chown -R $WEB_USER:$WEB_GROUP "$WWW_DIR" "$FLASK_DIR"
+sudo chmod -R 2775 "$WWW_DIR" "$FLASK_DIR"   # Directories: setgid, group-writable
+sudo find "$WWW_DIR" "$FLASK_DIR" -type d -exec chmod 2775 {} \;
+sudo find "$WWW_DIR" "$FLASK_DIR" -type f -exec chmod 664 {} \;
 
 # Make scripts executable if present
 if [ -d "$FLASK_DIR/scripts" ]; then
@@ -171,9 +179,9 @@ Description=HTMX Website using Gunicorn and Flask
 After=network.target
 
 [Service]
-User=www-data
-Group=www-data
-WorkingDirectory=/srv/htmx_website
+User=$WEB_USER
+Group=$WEB_GROUP
+WorkingDirectory=$FLASK_DIR
 ExecStart=$GUNICORN_PATH --workers 5 --bind 127.0.0.1:8000 --timeout 120 $WSGI_ENTRY
 Restart=always
 Environment="PYTHONUNBUFFERED=1"
