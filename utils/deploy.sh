@@ -150,28 +150,37 @@ if [ -d "$FLASK_DIR/scripts" ]; then
     sudo find "$FLASK_DIR/scripts" -name "*.sh" -exec chmod +x {} \;
 fi
 
+VENV_DIR="$FLASK_DIR/venv"
+
+# Create Python virtual environment if not exists
+if [ ! -d "$VENV_DIR" ]; then
+    log "Creating Python virtual environment in $VENV_DIR..."
+    sudo python3 -m venv "$VENV_DIR"
+    sudo chown -R $WEB_USER:$WEB_GROUP "$VENV_DIR"
+fi
+
+# Install/update Python dependencies in venv (latest versions, ignore requirements.txt)
+log "Installing latest Python dependencies in venv..."
+sudo -u $WEB_USER $VENV_DIR/bin/pip install --upgrade pip
+sudo -u $WEB_USER $VENV_DIR/bin/pip install flask gunicorn dash
+
 # Update Gunicorn service file with correct WSGI entry
 if [ -f "$FLASK_DIR/.wsgi_entry" ]; then
     WSGI_ENTRY=$(cat "$FLASK_DIR/.wsgi_entry")
     log "Using WSGI entry point: $WSGI_ENTRY"
     
-    # Locate gunicorn - ensure we find the system one
-    GUNICORN_PATH=$(command -v gunicorn || echo "/usr/bin/gunicorn")
+    GUNICORN_PATH="$VENV_DIR/bin/gunicorn"
     log "Using Gunicorn at: $GUNICORN_PATH"
     
-    # Verify gunicorn exists and is executable
     if [ ! -x "$GUNICORN_PATH" ]; then
         log "ERROR: Gunicorn not found or not executable at $GUNICORN_PATH. Installing..."
-        sudo apt-get update && sudo apt-get install -y gunicorn
-        GUNICORN_PATH=$(command -v gunicorn || echo "/usr/bin/gunicorn")
-        
+        sudo -u $WEB_USER $VENV_DIR/bin/pip install gunicorn
         if [ ! -x "$GUNICORN_PATH" ]; then
-            log "ERROR: Failed to install gunicorn. Exiting."
+            log "ERROR: Failed to install gunicorn in venv. Exiting."
             exit 1
         fi
     fi
     
-    # Create a new service file rather than trying to modify the existing one
     log "Creating new systemd service file..."
     cat <<EOF | sudo tee /etc/systemd/system/htmx_website.service
 [Unit]
