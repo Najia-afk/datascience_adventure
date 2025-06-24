@@ -352,6 +352,7 @@ convert_py_to_html() {
         # Generate HTML with Pygments using Python
         html_content=$(sudo -u www-data /srv/htmx_website/venv/bin/python3 -c "
 import pygments
+import os
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
