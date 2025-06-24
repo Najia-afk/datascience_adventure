@@ -34,7 +34,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-right: 1px solid #e9ecef;
     position: fixed;
-    top: 50%;
+    top: 140px;
     left: 0;
     z-index: 1000;
     transition: transform 0.3s ease;
@@ -81,7 +81,7 @@
 
 /* Vertical title for collapsed sidebar */
 .vertical-title {
-    position: fixed;  /* Change to fixed to keep it visible */
+    position: absolute;  /* Change to fixed to keep it visible */
     right: 25px;
     transform: translateY(-50%) rotate(-90deg);
     transform-origin: right center;
