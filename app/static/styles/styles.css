@@ -7,3 +7,41 @@
 @import url('responsive.css');
 @import url('footer.css');
 @import url('iframe.css');
+
+/* Sidebar styling for script categories */
+.subdir-heading {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.subdir-heading ul {
+    margin-left: 15px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.subdir-heading strong {
+    color: #0066cc;
+    font-size: 1.1em;
+}
+
+#sidebar-list {
+    list-style-type: none;
+    padding-left: 5px;
+}
+
+#sidebar-list li {
+    margin-bottom: 5px;
+}
+
+#sidebar-list li a {
+    text-decoration: none;
+    color: #444;
+    transition: color 0.2s;
+}
+
+#sidebar-list li a:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}

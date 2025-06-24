@@ -158,16 +158,57 @@ process_mission_with_layout() {
             local script_list_file="$tmp_dir/script_list.html"
             echo '<ul id="sidebar-list">' > "$script_list_file"
             
-            # Find all Python files
-            find "$src_dir" -type f -name "*.py" | sort | while read script_path; do
-                local script_name=$(basename "$script_path")
-                local script_url="${repo_name}_src/$(basename "$script_path" .py).html"
-                echo "<li><a href=\"$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
+            # Get all subdirectories in the src directory
+            local subdirs=$(find "$src_dir" -type d | sort)
+            
+            # Process each subdirectory
+            for subdir in $subdirs; do
+                # Skip the src directory itself
+                if [ "$subdir" = "$src_dir" ]; then
+                    continue
+                fi
+                
+                # Get the relative path from src
+                local rel_path=${subdir#"$src_dir/"}
+                # Only add subdir heading if files exist in this directory
+                local has_py_files=$(find "$subdir" -maxdepth 1 -name "*.py" ! -name "__init__.py" | wc -l)
+                
+                if [ "$has_py_files" -gt 0 ]; then
+                    # Add subdirectory heading
+                    echo "<li class='subdir-heading'><strong>$(basename "$subdir")/</strong>" >> "$script_list_file"
+                    echo "<ul>" >> "$script_list_file"
+                    
+                    # Find Python files in this subdirectory, excluding __init__.py
+                    find "$subdir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
+                        local script_name=$(basename "$script_path")
+                        # Create path relative to the mission directory
+                        local rel_script_path=${script_path#"$WORKDIR/$repo_name/"}
+                        # Remove .py extension for HTML URL
+                        local script_url="${repo_name}_src/${rel_script_path%.py}.html"
+                        echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
+                    done
+                    
+                    echo "</ul></li>" >> "$script_list_file"
+                fi
             done
             
-            echo '</ul>' >> "$script_list_file"
+            # Also add Python files directly in the src directory
+            local root_has_py_files=$(find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | wc -l)
             
-            # Read the script list file as a variable with proper escaping
+            if [ "$root_has_py_files" -gt 0 ]; then
+                echo "<li class='subdir-heading'><strong>root/</strong>" >> "$script_list_file"
+                echo "<ul>" >> "$script_list_file"
+                
+                find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
+                    local script_name=$(basename "$script_path")
+                    local script_url="${repo_name}_src/$(basename "$script_path" .py).html"
+                    echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
+                done
+                
+                echo "</ul></li>" >> "$script_list_file"
+            fi
+            
+            echo '</ul>' >> "$script_list_file"
             script_list=$(cat "$script_list_file")
         else
             echo "No src directory found for $repo_name"
