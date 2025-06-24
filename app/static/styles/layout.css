@@ -82,7 +82,7 @@
 /* Vertical title for collapsed sidebar */
 .vertical-title {
     position: absolute;  /* Change to fixed to keep it visible */
-    right: 25px;
+    right: 35px;
     transform: translateY(-50%) rotate(-90deg);
     transform-origin: right center;
     white-space: nowrap;
