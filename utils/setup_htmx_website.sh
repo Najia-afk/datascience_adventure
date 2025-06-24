@@ -89,7 +89,34 @@ remove_existing_setup() {
 configure_nginx_ssl() {
     read -p "Enter your email address for SSL certificate notifications: " EMAIL
 
-    echo "Configuring Nginx for SSL..."
+    echo "Configuring Nginx for SSL (step 1: HTTP only)..."
+    # Write only the HTTP server block first
+    cat <<EOF | sudo tee /etc/nginx/sites-available/htmx_website
+server {
+    listen 80;
+    listen [::]:80;
+    server_name $DOMAIN;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+
+    # Serve static files
+    location /styles/ {
+        alias /var/www/htmx_website/styles/;
+    }
+}
+EOF
+
+    sudo ln -sf /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
+    sudo nginx -t
+    sudo systemctl reload nginx
+
+    echo "Obtaining SSL certificates with Certbot..."
+    sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
+
+    echo "Configuring Nginx for SSL (step 2: add HTTPS)..."
+    # Now write the full config with SSL
     cat <<EOF | sudo tee /etc/nginx/sites-available/htmx_website
 server {
     listen 80;
@@ -126,12 +153,8 @@ server {
 }
 EOF
 
-    sudo ln -s /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/
     sudo nginx -t
-    sudo systemctl restart nginx
-
-    echo "Obtaining SSL certificates with Certbot..."
-    sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
+    sudo systemctl reload nginx
 
     echo "Setting up automatic SSL certificate renewal..."
     echo "0 3 * * * /usr/bin/certbot renew --quiet" | sudo tee -a /etc/crontab > /dev/null
