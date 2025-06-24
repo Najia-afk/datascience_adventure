@@ -63,7 +63,12 @@ def create_app():
         # Remove any trailing slash
         filename = filename.rstrip('/')
         
+        # Check if file exists in the static directory
         if os.path.exists(os.path.join('/var/www/htmx_website', filename)):
+            # For Python files, set the correct MIME type
+            if filename.endswith('.py'):
+                return send_from_directory('/var/www/htmx_website', filename, 
+                                           mimetype='text/x-python')
             return send_from_directory('/var/www/htmx_website', filename)
         
         # Try adding .html if the file without extension doesn't exist
