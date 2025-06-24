@@ -38,8 +38,8 @@
     left: 0; /* Sidebar stays on the left */
     z-index: 1000; /* Ensures it's above the main content */
     transition: transform 0.3s ease;
-    height: calc(100vh - 140px); /* Full height minus header */
-    overflow-y: auto;
+    overflow-y: auto; /* Keep auto overflow for scrolling if needed */
+    /* Height will be set dynamically by JavaScript */
 }
 
 .sidebar.collapsed {

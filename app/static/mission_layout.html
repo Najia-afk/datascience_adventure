@@ -176,10 +176,20 @@
             const sidebar = document.querySelector('.sidebar');
             const sidebarList = document.querySelector('#sidebar-list');
             if (sidebar && sidebarList) {
-                const listHeight = sidebarList.offsetHeight;
+                // Add some padding to the list height
+                const listHeight = sidebarList.offsetHeight + 100; // Add padding for header and margins
                 sidebar.style.height = listHeight + 'px';
+                console.log("Adjusted sidebar height to:", listHeight, "px");
             }
         }
+
+        // Make sure this function is called after the page loads and whenever content changes
+        window.addEventListener('load', adjustSidebarHeight);
+        // Also call it when the sidebar content might change
+        document.addEventListener('DOMContentLoaded', function() {
+            // Call after a short delay to ensure all content is loaded
+            setTimeout(adjustSidebarHeight, 500);
+        });
 
         // Function to adjust the sidebar position after the header is dynamically loaded
         function adjustSidebarPosition() {
