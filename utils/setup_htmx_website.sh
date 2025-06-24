@@ -51,6 +51,7 @@ install_python_dependencies() {
 
     # Create the virtual environment if it doesn't exist
     if [ ! -d "/srv/htmx_website/venv" ]; then
+        sudo mkdir -p /srv/htmx_website
         sudo python3 -m venv /srv/htmx_website/venv
         sudo chown -R www-data:www-data /srv/htmx_website/venv
         echo "Virtual environment created at /srv/htmx_website/venv."
@@ -70,6 +71,9 @@ install_python_dependencies() {
     # Install latest Flask and Gunicorn in the venv
     sudo -u www-data /srv/htmx_website/venv/bin/pip install --upgrade pip
     sudo -u www-data /srv/htmx_website/venv/bin/pip install Flask gunicorn
+    
+    # Ensure gunicorn is executable
+    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
 }
 
 # Function to remove existing setup if it exists
@@ -179,23 +183,13 @@ configure_firewall_and_security() {
         echo "Warning: SSH service not found to restart. Please restart SSH manually if needed."
     fi
 
-    echo "Setting up the virtual environment..."
-    # Create the virtual environment if it doesn't exist
-    if [ ! -d "/srv/htmx_website/venv" ]; then
-        sudo mkdir -p /srv/htmx_website/venv
-        sudo python3 -m venv /srv/htmx_website/venv
-        echo "Virtual environment created at /srv/htmx_website/venv."
-    else
-        echo "Virtual environment already exists at /srv/htmx_website/venv."
-    fi
-
-    echo "Activating the virtual environment and installing dependencies..."
-    sudo /srv/htmx_website/venv/bin/pip install --upgrade pip
-    sudo /srv/htmx_website/venv/bin/pip install Flask gunicorn
+    # Removed duplicate virtual environment setup
 
     echo "Setting secure permissions for /srv/htmx_website..."
     sudo chown -R www-data:www-data /srv/htmx_website
     sudo chmod -R 755 /srv/htmx_website
+    # Make sure gunicorn is executable
+    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
 }
 
 # Main logic for the setup script
