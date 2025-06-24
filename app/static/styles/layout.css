@@ -48,13 +48,14 @@
 
 /* Toggle button for sidebar */
 .sidebar-toggle {
-    position: absolute;
+    position: fixed;  /* Change to fixed to keep it visible when scrolling */
     right: 0;
-    top: 1%;
-    height: 15px;
+    top: 50%;  /* Keep vertical centering */
+    height: 60px;  /* Use absolute height instead of percentage */
     width: 15px;
+    transform: translateY(-50%);  /* Ensure perfect centering */
     cursor: pointer;
-    background-color: #343a40;
+    background-color: #0066cc;  /* Match the blue color theme */
     color: white;
     border: none;
     font-size: 14px;
@@ -63,24 +64,27 @@
     align-items: center;
     justify-content: center;
     z-index: 101;
+    border-radius: 3px 0 0 3px;  /* Round left corners only */
 }
 
 .sidebar-toggle:hover {
-    background-color: #343a40;
+    background-color: #0055aa;
     color: white;
 }
 
 /* Vertical title for collapsed sidebar */
 .vertical-title {
-    position: absolute;
-    top: 5%;
+    position: fixed;  /* Change to fixed to keep it visible */
+    top: 50%;
     right: 25px;
     transform: translateY(-50%) rotate(-90deg);
     transform-origin: right center;
     white-space: nowrap;
     display: none;
     font-weight: bold;
-    color: #343a40;
+    color: #333;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);  /* Add text shadow for readability */
+    z-index: 100;  /* Ensure it's below the toggle button */
 }
 
 .sidebar.collapsed .vertical-title {
