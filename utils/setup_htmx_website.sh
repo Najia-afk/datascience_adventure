@@ -221,8 +221,15 @@ configure_firewall_and_security() {
     sudo ufw status
 
     echo "Disabling root login for SSH..."
+    # Use correct service name for Ubuntu (usually 'ssh', not 'sshd')
     sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
-    sudo systemctl restart sshd
+    if systemctl list-units --type=service | grep -q '^ssh\.service'; then
+        sudo systemctl restart ssh
+    elif systemctl list-units --type=service | grep -q '^sshd\.service'; then
+        sudo systemctl restart sshd
+    else
+        echo "Warning: SSH service not found to restart. Please restart SSH manually if needed."
+    fi
 
     echo "Setting up the virtual environment..."
     # Create the virtual environment if it doesn't exist
