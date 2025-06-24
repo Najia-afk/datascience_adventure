@@ -6,7 +6,7 @@ After=network.target
 User=www-data
 Group=www-data
 WorkingDirectory=/srv/htmx_website
-# ExecStart will be updated by deploy.sh based on detected gunicorn path and WSGI entry
+# Using system gunicorn instead of venv
 ExecStart=/usr/bin/gunicorn --workers 5 --bind 127.0.0.1:8000 --timeout 120 wsgi:app
 Restart=always
 Environment="PYTHONUNBUFFERED=1"

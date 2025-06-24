@@ -147,12 +147,44 @@ if [ -f "$FLASK_DIR/.wsgi_entry" ]; then
     WSGI_ENTRY=$(cat "$FLASK_DIR/.wsgi_entry")
     log "Using WSGI entry point: $WSGI_ENTRY"
     
-    # Locate gunicorn
+    # Locate gunicorn - ensure we find the system one
     GUNICORN_PATH=$(command -v gunicorn || echo "/usr/bin/gunicorn")
+    log "Using Gunicorn at: $GUNICORN_PATH"
     
-    # Update the service file
-    sudo sed -i "s|ExecStart=.*|ExecStart=$GUNICORN_PATH --workers 5 --bind 127.0.0.1:8000 --timeout 120 $WSGI_ENTRY|" /etc/systemd/system/htmx_website.service
+    # Verify gunicorn exists and is executable
+    if [ ! -x "$GUNICORN_PATH" ]; then
+        log "ERROR: Gunicorn not found or not executable at $GUNICORN_PATH. Installing..."
+        sudo apt-get update && sudo apt-get install -y gunicorn
+        GUNICORN_PATH=$(command -v gunicorn || echo "/usr/bin/gunicorn")
+        
+        if [ ! -x "$GUNICORN_PATH" ]; then
+            log "ERROR: Failed to install gunicorn. Exiting."
+            exit 1
+        fi
+    fi
+    
+    # Create a new service file rather than trying to modify the existing one
+    log "Creating new systemd service file..."
+    cat <<EOF | sudo tee /etc/systemd/system/htmx_website.service
+[Unit]
+Description=HTMX Website using Gunicorn and Flask
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/htmx_website
+ExecStart=$GUNICORN_PATH --workers 5 --bind 127.0.0.1:8000 --timeout 120 $WSGI_ENTRY
+Restart=always
+Environment="PYTHONUNBUFFERED=1"
+LimitNOFILE=4096
+TimeoutStartSec=30
+
+[Install]
+WantedBy=multi-user.target
+EOF
     sudo systemctl daemon-reload
+    log "Systemd service file updated with correct gunicorn path: $GUNICORN_PATH"
 fi
 
 # Reload services
