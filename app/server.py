@@ -29,19 +29,6 @@ def create_app():
     def mission3():
         return render_template('mission3/mission3.html')
 
-    @app.route('/mission3/Mission3.html')
-    def mission3_notebook():
-        return render_template('mission3/Mission3.html')
-
-    # Route to embed NutriScore Dash app
-    @app.route('/mission3/nutriscore')
-    def mission3_nutriscore():
-        return render_template('dash_app.html', dash_app_url="/mission3/nutriscore/")
-
-    # Route to embed Cluster Dash app
-    @app.route('/mission3/cluster')
-    def mission3_cluster():
-        return render_template('dash_app.html', dash_app_url="/mission3/cluster/")
 
     # Error handler for 404
     @app.errorhandler(404)
