@@ -155,6 +155,12 @@ VENV_DIR="$FLASK_DIR/venv"
 # Create Python virtual environment if not exists
 if [ ! -d "$VENV_DIR" ]; then
     log "Creating Python virtual environment in $VENV_DIR..."
+    # Ensure python3-venv is installed
+    if ! dpkg -s python3-venv >/dev/null 2>&1; then
+        log "python3-venv not found. Installing..."
+        sudo apt-get update
+        sudo apt-get install -y python3-venv
+    fi
     sudo python3 -m venv "$VENV_DIR"
     sudo chown -R $WEB_USER:$WEB_GROUP "$VENV_DIR"
 fi
