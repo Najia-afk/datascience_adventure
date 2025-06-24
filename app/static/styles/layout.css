@@ -50,7 +50,8 @@
 .sidebar-toggle {
     position: absolute;
     right: 0;
-    height: 5%;
+    top: 50%;
+    height: 15px;
     width: 15px;
     cursor: pointer;
     background-color: #343a40;
@@ -72,6 +73,7 @@
 /* Vertical title for collapsed sidebar */
 .vertical-title {
     position: absolute;
+    top: 50%;
     right: 25px;
     transform: translateY(-50%) rotate(-90deg);
     transform-origin: right center;
