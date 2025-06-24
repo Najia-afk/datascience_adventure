@@ -33,12 +33,12 @@
     background-color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-right: 1px solid #e9ecef;
-    position: fixed; /* Make the sidebar fixed and float */
-    top: 140px; /* Keeps it below the header */
-    left: 0; /* Sidebar stays on the left */
-    z-index: 1000; /* Ensures it's above the main content */
+    position: fixed;
+    top: 140px;
+    left: 0;
+    z-index: 1000;
     transition: transform 0.3s ease;
-    overflow-y: auto; /* Keep auto overflow for scrolling if needed */
+    overflow-y: auto;
     /* Height will be set dynamically by JavaScript */
 }
 
@@ -50,7 +50,7 @@
 .sidebar-toggle {
     position: absolute;
     right: 0;
-    top: 50%;
+    top: 1%;
     height: 15px;
     width: 15px;
     cursor: pointer;
@@ -73,7 +73,7 @@
 /* Vertical title for collapsed sidebar */
 .vertical-title {
     position: absolute;
-    top: 50%;
+    top: 5%;
     right: 25px;
     transform: translateY(-50%) rotate(-90deg);
     transform-origin: right center;

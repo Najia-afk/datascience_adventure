@@ -16,14 +16,18 @@
 }
 
 .subdir-heading ul {
-    margin-left: 15px;
-    margin-top: 5px;
+    margin-left: 5px; /* Reduce left margin from 15px to 5px */
+    margin-top: 2px; /* Reduce top margin */
     margin-bottom: 10px;
+    list-style-type: none; /* Remove bullets/dots from nested list */
+    padding-left: 0; /* Remove default padding */
 }
 
 .subdir-heading strong {
     color: #0066cc;
     font-size: 1.1em;
+    display: block; /* Make category heading its own block */
+    margin-bottom: 2px; /* Add small space after heading */
 }
 
 #sidebar-list {
