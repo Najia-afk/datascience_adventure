@@ -123,6 +123,109 @@ fi
 
 echo "===== Deploying remote repository files ====="
 
+# Function to process mission HTML with layout template
+process_mission_with_layout() {
+    local html_file=$1
+    local mission_name=$(basename "$html_file" .html)
+    echo "Processing $mission_name HTML with layout template..."
+    
+    # Check if we have a specific layout template for this mission
+    local layout_file="$LOCAL_STATIC_DIR/${mission_name}_layout.html"
+    
+    # If no specific layout exists, use the generic one
+    if [ ! -f "$layout_file" ] && [ -f "$LOCAL_STATIC_DIR/mission_layout.html" ]; then
+        echo "Using generic mission layout for $mission_name"
+        layout_file="$LOCAL_STATIC_DIR/mission_layout.html"
+    fi
+    
+    if [ -f "$layout_file" ]; then
+        echo "Found layout template for $mission_name"
+        
+        # Create temporary directory
+        local tmp_dir=$(mktemp -d)
+        
+        # Copy the mission HTML to temp dir
+        cp "$html_file" "$tmp_dir/mission_content.html"
+        
+        # Look for scripts in the src directory for this mission
+        local script_list=""
+        local repo_name=$(basename $(dirname "$html_file"))
+        local src_dir="$WORKDIR/$repo_name/src"
+        
+        if [ -d "$src_dir" ]; then
+            echo "Generating script list from $src_dir"
+            # Create a temporary script list file
+            local script_list_file="$tmp_dir/script_list.html"
+            echo '<ul id="sidebar-list">' > "$script_list_file"
+            
+            # Find all Python files
+            find "$src_dir" -name "*.py" | sort | while read script_path; do
+                local script_name=$(basename "$script_path")
+                local script_url="${repo_name}_src/$(basename "$script_path" .py).html"
+                echo "<li><a href=\"$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
+            done
+            
+            echo '</ul>' >> "$script_list_file"
+            script_list=$(cat "$script_list_file")
+        else
+            echo "No src directory found for $repo_name"
+            # Default empty list
+            script_list='<ul id="sidebar-list"><li>No scripts available</li></ul>'
+        fi
+        
+        # Create a modified layout with the correct mission name and script list
+        local modified_layout="$tmp_dir/modified_layout.html"
+        cp "$layout_file" "$modified_layout"
+        
+        # Replace mission name and script list placeholders
+        sed -i "s/Mission [0-9]\+:/Mission ${mission_name#mission}:/g" "$modified_layout"
+        sed -i "s|<ul id=\"sidebar-list\">.*</ul>|$script_list|" "$modified_layout"
+        
+        # Update GitHub repo link if needed
+        local github_repo=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')
+        sed -i "s|github.com/Najia-afk/mission[0-9]\+|github.com/Najia-afk/$github_repo|g" "$modified_layout"
+        
+        # Add resize listener script to the merged file if not already present
+        if ! grep -q "sendHeight" "$modified_layout"; then
+            sed -i '/<\/body>/i \
+            <script>\
+                function sendHeight() {\
+                    var documentHeight = document.body.scrollHeight;\
+                    console.log("Iframe content height:", documentHeight);\
+                    window.parent.postMessage({ height: documentHeight }, "*");\
+                }\
+                window.addEventListener("load", function() {\
+                    sendHeight();\
+                });\
+                window.addEventListener("resize", function() {\
+                    sendHeight();\
+                });\
+            </script>' "$modified_layout"
+            echo "Added resize listener script to merged file"
+        fi
+        
+        # Copy the modified layout and content to the web directory
+        sudo cp "$modified_layout" "$WWW_DIR/${mission_name}.html"
+        sudo cp "$html_file" "$WWW_DIR/${mission_name}_content.html"
+        
+        # Set proper permissions for both files
+        sudo chown www-data:www-data "$WWW_DIR/${mission_name}.html"
+        sudo chown www-data:www-data "$WWW_DIR/${mission_name}_content.html"
+        sudo chmod 644 "$WWW_DIR/${mission_name}.html"
+        sudo chmod 644 "$WWW_DIR/${mission_name}_content.html"
+        
+        # Clean up
+        rm -rf "$tmp_dir"
+        
+        echo "✅ Created merged ${mission_name}.html with layout in $WWW_DIR/"
+        return 0
+    else
+        # No layout template found
+        echo "No layout template found for $mission_name"
+        return 1
+    fi
+}
+
 # Process remote repositories
 for REPO_URL in "${REPOS[@]}"; do
     REPO_NAME=$(basename "$REPO_URL")
@@ -139,62 +242,9 @@ for REPO_URL in "${REPOS[@]}"; do
     # Copy missionX.html
     HTML_FILE=$(find "$REPO_DIR" -maxdepth 1 -iname "mission*.html" | head -n 1)
     if [ -f "$HTML_FILE" ]; then
-        # Instead of just copying, we need to merge with the layout
-        MISSION_NAME=$(basename "$HTML_FILE" .html)
-        echo "Processing $MISSION_NAME HTML with layout template..."
-        
-        # Check if we have a layout template for this mission
-        LAYOUT_FILE="$LOCAL_STATIC_DIR/${MISSION_NAME}_layout.html"
-        if [ -f "$LAYOUT_FILE" ]; then
-            echo "Found layout template for $MISSION_NAME"
-            
-            # Create temporary directory
-            TMP_DIR=$(mktemp -d)
-            
-            # Copy the mission HTML to temp dir
-            cp "$HTML_FILE" "$TMP_DIR/mission_content.html"
-            
-            # Extract the content from the mission HTML (between <body> and </body>)
-            CONTENT=$(sed -n '/<body/,/<\/body>/p' "$TMP_DIR/mission_content.html")
-            
-            # Create the merged file by inserting content into iframe
-            cat "$LAYOUT_FILE" > "$TMP_DIR/merged.html"
-            
-            # Add resize listener script to the merged file if not already present
-            if ! grep -q "sendHeight" "$TMP_DIR/merged.html"; then
-                sed -i '/<\/body>/i \
-                <script>\
-                    function sendHeight() {\
-                        var documentHeight = document.body.scrollHeight;\
-                        console.log("Iframe content height:", documentHeight);\
-                        window.parent.postMessage({ height: documentHeight }, "*");\
-                    }\
-                    window.addEventListener("load", function() {\
-                        sendHeight();\
-                    });\
-                    window.addEventListener("resize", function() {\
-                        sendHeight();\
-                    });\
-                </script>' "$TMP_DIR/merged.html"
-                echo "Added resize listener script to merged file"
-            fi
-            
-            # Copy the merged file to the web directory
-            sudo cp "$TMP_DIR/merged.html" "$WWW_DIR/${MISSION_NAME}.html"
-            sudo cp "$HTML_FILE" "$WWW_DIR/${MISSION_NAME}_content.html"
-            
-            # Set proper permissions for both files
-            sudo chown www-data:www-data "$WWW_DIR/${MISSION_NAME}.html"
-            sudo chown www-data:www-data "$WWW_DIR/${MISSION_NAME}_content.html"
-            sudo chmod 644 "$WWW_DIR/${MISSION_NAME}.html"
-            sudo chmod 644 "$WWW_DIR/${MISSION_NAME}_content.html"
-            
-            # Clean up
-            rm -rf "$TMP_DIR"
-            
-            echo "✅ Created merged ${MISSION_NAME}.html with layout in $WWW_DIR/"
-        else
-            # No layout template found, just copy the file as before
+        # Use the function to process the mission with layout
+        if ! process_mission_with_layout "$HTML_FILE"; then
+            # If function returns non-zero (failed), fall back to simple copy
             sudo cp "$HTML_FILE" "$WWW_DIR/"
             echo "✅ Copied $(basename "$HTML_FILE") to $WWW_DIR/ (no layout template found)"
         fi

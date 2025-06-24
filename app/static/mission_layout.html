@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission: Data Exploration</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+
+<body hx-boost="true">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>Scripts Used in This Notebook:</h2>
+        <ul id="sidebar-list">
+            <!-- This will be dynamically populated by the deploy script -->
+            <li>No scripts available</li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <section class="main-content">
+        <header class="project-header">
+            <h1>Mission: Data Science Project</h1>
+            <p>Exploring data science concepts and techniques.</p>
+        </header>
+
+        <!-- Google Colab Button -->
+        <div class="button-container">
+            <a href="https://colab.research.google.com/github/Najia-afk/mission/blob/main/mission.ipynb" target="_blank" class="button-colab">
+                Run on Google Colab
+            </a>
+        </div>
+
+        <!-- Iframe Display for the Jupyter Notebook -->
+        <div id="loading">
+            <p>Loading large notebook...</p>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-indicator"></div>
+                </div>
+            </div>
+            <p class="loading-message">This may take a minute or two for large notebooks. Please wait...</p>
+        </div>
+        <div class="iframe-container" style="visibility: hidden; height: 1px; overflow: hidden;">
+            <iframe id="main-iframe" src="" scrolling="no" style="width: 100%; border: none;"></iframe>
+        </div>
+    </section>
+
+    <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
+    <script>
+        // Set the iframe src based on the current URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const iframe = document.getElementById('main-iframe');
+            const currentPath = window.location.pathname;
+            const missionName = currentPath.replace(/\/$/, ''); // Remove trailing slash if any
+            iframe.src = missionName + '_content.html';
+        });
+
+        // Function to handle iframe resizing and loading display
+        function handleIframeResize() {
+            const iframe = document.getElementById('main-iframe');
+            const loadingIndicator = document.getElementById('loading');
+            const iframeContainer = document.querySelector('.iframe-container');
+    
+            try {
+                const documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                if (documentHeight > 0) {
+                    iframe.style.height = `${documentHeight}px`;
+                    loadingIndicator.style.display = 'none';
+                    iframeContainer.style.visibility = 'visible'; // Show iframe container
+                    iframeContainer.style.height = 'auto'; // Remove the 1px height restriction
+                    return true;
+                }
+            } catch (e) {
+                console.error("Error accessing iframe content:", e);
+            }
+            return false;
+        }
+
+        // Function to simulate loading progress
+        function simulateProgress() {
+            const progressIndicator = document.querySelector('.progress-indicator');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 90) {
+                    clearInterval(interval);
+                } else {
+                    width += Math.random() * 2;
+                    progressIndicator.style.width = width + '%';
+                }
+            }, 500);
+            
+            // After 60 seconds, set to 100% regardless
+            setTimeout(() => {
+                progressIndicator.style.width = '100%';
+                document.querySelector('.loading-message').textContent = 'Almost done...';
+            }, 60000);
+        }
+
+        // Function to adjust sidebar height based on its content
+        function adjustSidebarHeight() {
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarList = document.querySelector('#sidebar-list');
+            if (sidebar && sidebarList) {
+                const listHeight = sidebarList.offsetHeight;
+                sidebar.style.height = listHeight + 'px';
+            }
+        }
+
+        // Function to adjust the sidebar position after the header is dynamically loaded
+        function adjustSidebarPosition() {
+            const header = document.getElementById('header');
+            const sidebar = document.querySelector('.sidebar');
+            if (header && sidebar) {
+                const headerHeight = header.offsetHeight;
+                sidebar.style.top = `${headerHeight}px`; // Set sidebar position below header
+            }
+        }
+
+        // Listen for HTMX event to adjust sidebar after header is loaded
+        document.body.addEventListener("htmx:afterOnLoad", function(evt) {
+            if (evt.detail.target.id === "header") {
+                adjustSidebarPosition(); // Adjust sidebar after the header is loaded
+            }
+        });
+
+        // Handle iframe load event
+        document.getElementById('main-iframe').addEventListener('load', function() {
+            if (!handleIframeResize()) {
+                // If resize fails, try again after a short delay
+                setTimeout(handleIframeResize, 1000);
+            }
+        });
+
+        // Start simulating progress
+        simulateProgress();
+
+        // Trigger when the entire window has loaded
+        window.addEventListener('load', function() {
+            handleIframeResize(); // Call iframe resize on load
+            adjustSidebarHeight(); // Adjust sidebar height on load
+        });
+
+        // Try resizing every 10 seconds for up to 2 minutes
+        let attempts = 0;
+        const maxAttempts = 12; // 2 minutes (12 * 10 seconds)
+        const resizeInterval = setInterval(() => {
+            attempts++;
+            if (handleIframeResize() || attempts >= maxAttempts) {
+                clearInterval(resizeInterval);
+                if (attempts >= maxAttempts) {
+                    // After 2 minutes, show the iframe anyway
+                    const loadingIndicator = document.getElementById('loading');
+                    const iframeContainer = document.querySelector('.iframe-container');
+                    loadingIndicator.style.display = 'none';
+                    iframeContainer.style.visibility = 'visible';
+                    iframeContainer.style.height = 'auto';
+                }
+            }
+        }, 10000);
+    </script>    
+</body>
+</html>

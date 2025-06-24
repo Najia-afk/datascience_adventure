@@ -1,5 +1,6 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, abort
 import os
+import re
 
 # Function to create the Flask app
 def create_app():
@@ -26,15 +27,40 @@ def create_app():
     @app.route('/load-home/')
     def load_home():
         return render_template('templates/home.html')
-
-    @app.route('/mission3/')
-    def mission3():
-        return render_template('mission3.html')
     
-    # Add route for mission3_content.html - this is what was missing
-    @app.route('/mission3_content.html')
-    def mission3_content():
-        return send_from_directory('/var/www/htmx_website', 'mission3_content.html')
+    # Dynamic route for mission pages
+    @app.route('/<path:mission_path>/')
+    def mission_page(mission_path):
+        # Check if this is a mission route
+        if re.match(r'^mission\d+$', mission_path):
+            # Try to serve the mission HTML file
+            try:
+                return render_template(f'{mission_path}.html')
+            except:
+                abort(404)
+        # Otherwise, try to handle other paths
+        else:
+            try:
+                return render_template(mission_path)
+            except:
+                abort(404)
+    
+    # Dynamic route for mission content HTML files
+    @app.route('/<path:mission_path>_content.html')
+    def mission_content(mission_path):
+        # Check if this is a mission content path
+        if re.match(r'^mission\d+$', mission_path):
+            content_file = f'{mission_path}_content.html'
+            if os.path.exists(os.path.join('/var/www/htmx_website', content_file)):
+                return send_from_directory('/var/www/htmx_website', content_file)
+        abort(404)
+    
+    # Generic route for static files
+    @app.route('/<path:filename>')
+    def serve_static(filename):
+        if os.path.exists(os.path.join('/var/www/htmx_website', filename)):
+            return send_from_directory('/var/www/htmx_website', filename)
+        abort(404)
 
     # Error handler for 404
     @app.errorhandler(404)
