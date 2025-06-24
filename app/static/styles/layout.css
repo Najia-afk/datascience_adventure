@@ -17,8 +17,13 @@
     border-radius: 8px;
     min-width: 0;
     overflow: hidden;
-    margin-top: 0; /* Moved content higher */
-    z-index: 1; /* Ensure content is underneath the sidebar */
+    margin-top: 0;
+    z-index: 1;
+    transition: margin-left 0.3s ease; /* Add transition for smooth resize */
+}
+
+.main-content.expanded {
+    margin-left: 40px; /* Reduced margin when sidebar is collapsed */
 }
 
 /* Sidebar Styles - Make it float above the main content */
@@ -32,39 +37,79 @@
     top: 140px; /* Keeps it below the header */
     left: 0; /* Sidebar stays on the left */
     z-index: 1000; /* Ensures it's above the main content */
-    transition: width 0.3s;
+    transition: transform 0.3s ease;
+    height: calc(100vh - 140px); /* Full height minus header */
+    overflow-y: auto;
 }
 
-.sidebar.expanded {
-    width: 300px;
+.sidebar.collapsed {
+    transform: translateX(-230px); /* Move sidebar left, keeping toggle visible */
 }
 
-.sidebar h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
-    color: #343a40;
-}
-
-.sidebar ul {
-    list-style: none;
+/* Toggle button for sidebar */
+.sidebar-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 20px;
+    cursor: pointer;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    font-size: 14px;
     padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 101;
 }
 
-.sidebar ul li {
-    margin-bottom: 12px;
+.sidebar-toggle:hover {
+    background-color: #0055aa;
+    color: white;
 }
 
-.sidebar ul li a {
-    color: #007bff;
-    text-decoration: none;
-    font-size: 15px;
+/* Vertical title for collapsed sidebar */
+.vertical-title {
+    position: absolute;
+    top: 50%;
+    right: 25px;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: right center;
+    white-space: nowrap;
+    display: none;
+    font-weight: bold;
+    color: #333;
 }
 
-.sidebar ul li a:hover {
-    text-decoration: underline;
+.sidebar.collapsed .vertical-title {
+    display: block;
 }
 
+/* Hide content when sidebar is collapsed */
+.sidebar.collapsed h2,
+.sidebar.collapsed #sidebar-list {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
 
+.sidebar h2,
+.sidebar #sidebar-list,
+.sidebar .vertical-title {
+    transition: opacity 0.2s ease;
+}
+
+.sidebar .vertical-title {
+    opacity: 0;
+}
+
+.sidebar.collapsed .vertical-title {
+    opacity: 1;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: #0066cc;
+}
 
 /* Project Header */
 .project-header h1 {

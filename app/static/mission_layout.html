@@ -7,75 +7,7 @@
     <title>Mission: Data Exploration</title>
     <link rel="stylesheet" href="/styles/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-    <style>
-        /* Sidebar toggle styles */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 250px;
-            height: 100%;
-            background-color: #f8f9fa;
-            padding: 20px;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            z-index: 100;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar.collapsed {
-            transform: translateX(-230px);
-        }
-
-        .sidebar-toggle {
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-            width: 20px;
-            cursor: pointer;
-            background-color: #0066cc;
-            /* Blue color to match summary */
-            color: white;
-            border: none;
-            font-size: 14px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 101;
-        }
-
-        .sidebar-toggle:hover {
-            background-color: #0055aa;
-            color: white;
-        }
-
-        .vertical-title {
-            position: absolute;
-            top: 50%;
-            right: 25px;
-            transform: translateY(-50%) rotate(-90deg);
-            transform-origin: right center;
-            white-space: nowrap;
-            display: none;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .sidebar.collapsed .vertical-title {
-            display: block;
-        }
-
-        .main-content {
-            margin-left: 270px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.expanded {
-            margin-left: 40px;
-        }
-    </style>
+    <!-- Removed inline CSS styles - now using layout.css -->
 </head>
 
 <body hx-boost="true">
