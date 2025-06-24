@@ -32,20 +32,33 @@ echo "===== Deploying local app files ====="
 # Copy template files
 echo "Copying template files..."
 if [ -d "$LOCAL_STATIC_DIR/templates" ]; then
-    # Copy to templates subdirectory (for paths like 'templates/header.html')
+    # First, ensure the templates directory exists and is writable
     sudo mkdir -p "$WWW_DIR/templates"
-    sudo cp -r "$LOCAL_STATIC_DIR/templates/"* "$WWW_DIR/templates/" 2>/dev/null || true
+    sudo chmod 755 "$WWW_DIR/templates"
+    
+    # Copy all templates to the templates directory
+    sudo cp -rv "$LOCAL_STATIC_DIR/templates/"* "$WWW_DIR/templates/" 2>/dev/null || true
     echo "✅ Copied templates to $WWW_DIR/templates/"
     
-    # Also copy directly to www directory (for paths like 'header.html')
+    # Also copy templates directly to the web root
     for file in "$LOCAL_STATIC_DIR/templates/"*; do
         if [ -f "$file" ]; then
-            sudo cp "$file" "$WWW_DIR/"
+            sudo cp -v "$file" "$WWW_DIR/"
             echo "✅ Also copied $(basename "$file") to $WWW_DIR/ for direct access"
         fi
     done
+    
+    # Verify template files were copied
+    echo "Verifying template files..."
+    if [ -z "$(ls -A "$WWW_DIR/templates/" 2>/dev/null)" ]; then
+        echo "⚠️ Warning: Templates directory is empty after copy! Trying again with different method..."
+        sudo cp -rv $LOCAL_STATIC_DIR/templates/* "$WWW_DIR/templates/"
+    else
+        echo "✅ Templates directory contains files"
+        ls -la "$WWW_DIR/templates/"
+    fi
 else
-    echo "WARNING: Templates directory not found at $LOCAL_STATIC_DIR/templates"
+    echo "⚠️ WARNING: Templates directory not found at $LOCAL_STATIC_DIR/templates"
 fi
 
 # Copy style files
@@ -143,6 +156,10 @@ if [ -f "$FLASK_DIR/venv/bin/gunicorn" ]; then
     sudo chmod +x "$FLASK_DIR/venv/bin/gunicorn"
     sudo chmod +x "$FLASK_DIR/venv/bin/python3"
     echo "✅ Set executable permissions for gunicorn and python"
+elif [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    sudo chmod +x /srv/htmx_website/venv/bin/python3
+    echo "✅ Set executable permissions for gunicorn and python (alternate path)"
 fi
 
 # Reload services
@@ -157,27 +174,3 @@ echo "✅ Reloaded Nginx"
 
 echo "===== Deployment complete! ====="
 echo "Website should now be accessible."
-    echo "Set executable permissions for gunicorn and python"
-
-
-# Reload Nginx and restart Flask service
-sudo systemctl daemon-reload
-sudo systemctl restart htmx_website.service || true
-
-
-echo "Deployment complete! Website should be accessible now."
-sudo chmod -R 755 "$FLASK_DIR"
-
-# Ensure gunicorn is executable
-if [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
-    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
-    sudo chmod +x /srv/htmx_website/venv/bin/python3
-    echo "Set executable permissions for gunicorn and python"
-fi
-
-# Reload Nginx and restart Flask service
-sudo systemctl daemon-reload
-sudo systemctl restart htmx_website.service || true
-
-
-echo "Deployment complete! Website should be accessible now."
