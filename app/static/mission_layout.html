@@ -28,7 +28,7 @@
 
         <!-- Google Colab Button -->
         <div class="button-container">
-            <a href="https://colab.research.google.com/github/Najia-afk/mission/blob/main/mission.ipynb" target="_blank" class="button-colab">
+            <a href="#" id="colab-button" class="button-colab">
                 Run on Google Colab
             </a>
         </div>
@@ -50,12 +50,18 @@
 
     <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
-        // Set the iframe src based on the current URL
+        // Set the iframe src and Colab link based on the current URL
         document.addEventListener('DOMContentLoaded', function() {
             const iframe = document.getElementById('main-iframe');
+            const colabButton = document.getElementById('colab-button');
             const currentPath = window.location.pathname;
             const missionName = currentPath.replace(/\/$/, ''); // Remove trailing slash if any
+            
+            // Set iframe source
             iframe.src = missionName + '_content.html';
+            
+            // Set Colab button link
+            colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + missionName + '/blob/main/' + missionName + '.ipynb';
         });
 
         // Function to handle iframe resizing and loading display

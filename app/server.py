@@ -10,52 +10,31 @@ def create_app():
     # Route for main website pages
     @app.route('/')
     def index():
-        try:
-            return render_template('index.html')
-        except Exception as e:
-            app.logger.error(f"Error rendering index: {str(e)}")
-            abort(500)
+        return render_template('index.html')
+
 
     @app.route('/header/')
     def header():
-        try:
-            return render_template('templates/header.html')
-        except Exception as e:
-            app.logger.error(f"Error rendering header: {str(e)}")
-            abort(404)
+        return render_template('templates/header.html')
+
 
     @app.route('/footer/')
     def footer():
-        try:
-            return render_template('templates/footer.html')
-        except Exception as e:
-            app.logger.error(f"Error rendering footer: {str(e)}")
-            abort(404)
+        return render_template('templates/footer.html')
 
     @app.route('/summary/')
     def summary():
-        try:
-            return render_template('templates/summary.html')
-        except Exception as e:
-            app.logger.error(f"Error rendering summary: {str(e)}")
-            abort(404)
+        return render_template('templates/summary.html')
 
     @app.route('/load-home/')
     def load_home():
-        try:
-            return render_template('templates/home.html')
-        except Exception as e:
-            app.logger.error(f"Error rendering home: {str(e)}")
-            abort(404)
+        return render_template('templates/home.html')
+
     
     # Dynamic route for mission pages
     @app.route('/<path:mission_path>/')
     def mission_page(mission_path):
-        try:
-            return render_template(f'{mission_path}.html')
-        except Exception as e:
-            app.logger.error(f"Error rendering {mission_path}: {str(e)}")
-            abort(404)
+        return render_template(f'{mission_path}.html')
 
     # Dynamic route for mission content HTML files
     @app.route('/<path:mission_path>_content.html')
@@ -89,12 +68,6 @@ def create_app():
     @app.errorhandler(404)
     def not_found(e):
         return render_template('404.html'), 404
-    
-    # Error handler for 500
-    @app.errorhandler(500)
-    def server_error(e):
-        app.logger.error(f"Server error: {str(e)}")
-        return "Internal server error. Please check server logs.", 500
 
     return app
 
