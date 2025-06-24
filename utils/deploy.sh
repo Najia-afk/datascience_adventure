@@ -16,11 +16,52 @@ REPOS=(
 WORKDIR="$HOME/missions"
 WWW_DIR="/var/www/htmx_website"
 FLASK_DIR="/srv/htmx_website"
+LOCAL_STATIC_DIR="$HOME/datascience_adventure/app/static"
 
 sudo mkdir -p "$WWW_DIR"
 sudo mkdir -p "$FLASK_DIR"
 mkdir -p "$WORKDIR"
 
+# First copy local template and static files
+if [ -d "$LOCAL_STATIC_DIR" ]; then
+    echo "Copying local template and static files..."
+    
+    # Create necessary directories
+    sudo mkdir -p "$WWW_DIR/templates"
+    sudo mkdir -p "$WWW_DIR/styles"
+    sudo mkdir -p "$WWW_DIR/logos"
+    
+    # Copy template files
+    if [ -d "$LOCAL_STATIC_DIR/templates" ]; then
+        sudo cp -r "$LOCAL_STATIC_DIR/templates/"* "$WWW_DIR/templates/" 2>/dev/null || true
+        echo "Copied templates to $WWW_DIR/templates/"
+    fi
+    
+    # Copy style files
+    if [ -d "$LOCAL_STATIC_DIR/styles" ]; then
+        sudo cp -r "$LOCAL_STATIC_DIR/styles/"* "$WWW_DIR/styles/" 2>/dev/null || true
+        echo "Copied styles to $WWW_DIR/styles/"
+    fi
+    
+    # Copy logo files
+    if [ -d "$LOCAL_STATIC_DIR/logos" ]; then
+        sudo cp -r "$LOCAL_STATIC_DIR/logos/"* "$WWW_DIR/logos/" 2>/dev/null || true
+        echo "Copied logos to $WWW_DIR/logos/"
+    fi
+    
+    # Copy important HTML files
+    if [ -f "$LOCAL_STATIC_DIR/404.html" ]; then
+        sudo cp "$LOCAL_STATIC_DIR/404.html" "$WWW_DIR/"
+        echo "Copied 404.html to $WWW_DIR/"
+    fi
+    
+    if [ -f "$LOCAL_STATIC_DIR/index.html" ]; then
+        sudo cp "$LOCAL_STATIC_DIR/index.html" "$WWW_DIR/"
+        echo "Copied index.html to $WWW_DIR/"
+    fi
+fi
+
+# Then process remote repositories
 for REPO_URL in "${REPOS[@]}"; do
     REPO_NAME=$(basename "$REPO_URL")
     REPO_DIR="$WORKDIR/$REPO_NAME"
