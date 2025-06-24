@@ -83,7 +83,6 @@
 .vertical-title {
     position: absolute;  /* Change to fixed to keep it visible */
     right: 40px;
-    top: 50%;
     transform:rotate(-90deg);
     transform-origin: right center;
     white-space: nowrap;
