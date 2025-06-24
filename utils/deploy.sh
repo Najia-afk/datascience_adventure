@@ -183,6 +183,12 @@ for REPO_URL in "${REPOS[@]}"; do
             sudo cp "$TMP_DIR/merged.html" "$WWW_DIR/${MISSION_NAME}.html"
             sudo cp "$HTML_FILE" "$WWW_DIR/${MISSION_NAME}_content.html"
             
+            # Set proper permissions for both files
+            sudo chown www-data:www-data "$WWW_DIR/${MISSION_NAME}.html"
+            sudo chown www-data:www-data "$WWW_DIR/${MISSION_NAME}_content.html"
+            sudo chmod 644 "$WWW_DIR/${MISSION_NAME}.html"
+            sudo chmod 644 "$WWW_DIR/${MISSION_NAME}_content.html"
+            
             # Clean up
             rm -rf "$TMP_DIR"
             

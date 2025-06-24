@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 import os
 
 # Function to create the Flask app
@@ -30,6 +30,11 @@ def create_app():
     @app.route('/mission3/')
     def mission3():
         return render_template('mission3.html')
+    
+    # Add route for mission3_content.html - this is what was missing
+    @app.route('/mission3_content.html')
+    def mission3_content():
+        return send_from_directory('/var/www/htmx_website', 'mission3_content.html')
 
     # Error handler for 404
     @app.errorhandler(404)
