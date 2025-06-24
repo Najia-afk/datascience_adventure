@@ -29,7 +29,6 @@ def create_app():
     def mission3():
         return render_template('mission3/mission3.html')
 
-
     # Error handler for 404
     @app.errorhandler(404)
     def not_found(e):

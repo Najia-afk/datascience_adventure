@@ -39,7 +39,13 @@ read -p "Enter 'SSL' for full setup with SSL, 'SSL Only' to only configure SSL, 
 install_packages() {
     echo "Installing Nginx, Python3, pip, Gunicorn, and Certbot..."
     sudo apt update && sudo apt upgrade -y
-    sudo apt install -y nginx python3 python3-pip certbot python3-certbot-nginx ufw
+    sudo apt install -y nginx python3 python3-pip certbot python3-certbot-nginx ufw python3-venv
+}
+
+# Function to install Python dependencies
+install_python_dependencies() {
+    echo "Installing Flask and Gunicorn..."
+    pip3 install Flask gunicorn
 }
 
 # Function to remove existing setup if it exists
@@ -132,29 +138,6 @@ setup_flask_app() {
 # Function to create the Gunicorn systemd service
 create_gunicorn_service() {
     echo "Creating systemd service file for Gunicorn..."
-
-    # Detect gunicorn path
-    GUNICORN_PATH=$(command -v gunicorn)
-    if [ -z "$GUNICORN_PATH" ]; then
-        echo "Error: gunicorn not found in PATH."
-        exit 1
-    fi
-
-    # Detect WSGI entry point (default: wsgi:app)
-    if [ -f /srv/htmx_website/wsgi.py ]; then
-        WSGI_ENTRY="wsgi:app"
-    elif [ -f /srv/htmx_website/server.py ]; then
-        WSGI_ENTRY="server:app"
-    else
-        echo "Error: Could not find wsgi.py or server.py in /srv/htmx_website."
-        exit 1
-    fi
-
-    # Allow override via WSGI_ENTRY environment variable
-    if [ ! -z "$WSGI_ENTRY_OVERRIDE" ]; then
-        WSGI_ENTRY="$WSGI_ENTRY_OVERRIDE"
-    fi
-
     cat <<EOF | sudo tee /etc/systemd/system/htmx_website.service
 [Unit]
 Description=HTMX Website using Gunicorn and Flask
@@ -164,7 +147,7 @@ After=network.target
 User=www-data
 Group=www-data
 WorkingDirectory=/srv/htmx_website
-ExecStart=$GUNICORN_PATH --workers 3 --bind 127.0.0.1:8000 $WSGI_ENTRY
+ExecStart=/srv/htmx_website/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 wsgi:application
 Restart=always
 
 [Install]
@@ -194,6 +177,20 @@ configure_firewall_and_security() {
     sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
     sudo systemctl restart sshd
 
+    echo "Setting up the virtual environment..."
+    # Create the virtual environment if it doesn't exist
+    if [ ! -d "/srv/htmx_website/venv" ]; then
+        sudo mkdir -p /srv/htmx_website/venv
+        sudo python3 -m venv /srv/htmx_website/venv
+        echo "Virtual environment created at /srv/htmx_website/venv."
+    else
+        echo "Virtual environment already exists at /srv/htmx_website/venv."
+    fi
+
+    echo "Activating the virtual environment and installing dependencies..."
+    sudo /srv/htmx_website/venv/bin/pip install --upgrade pip
+    sudo /srv/htmx_website/venv/bin/pip install Flask gunicorn
+
     echo "Setting secure permissions for /srv/htmx_website..."
     sudo chown -R www-data:www-data /srv/htmx_website
     sudo chmod -R 755 /srv/htmx_website
@@ -204,6 +201,7 @@ main() {
     check_internet_access
     check_required_files
     install_packages
+    install_python_dependencies
     remove_existing_setup
 
     if [[ "$OPTION" == "SSL Only" ]]; then

@@ -6,13 +6,8 @@ After=network.target
 User=www-data
 Group=www-data
 WorkingDirectory=/srv/htmx_website
-# Using system gunicorn instead of venv
-ExecStart=/usr/bin/gunicorn --workers 5 --bind 127.0.0.1:8000 --timeout 120 wsgi:app
+ExecStart=/srv/htmx_website/venv/bin/gunicorn --workers 5 --bind 127.0.0.1:8000 --timeout 120 wsgi:application
 Restart=always
-Environment="PYTHONUNBUFFERED=1"
-# Set reasonable resource limits
-LimitNOFILE=4096
-TimeoutStartSec=30
 
 [Install]
 WantedBy=multi-user.target
