@@ -165,6 +165,14 @@ if [ ! -d "$VENV_DIR" ]; then
     sudo chown -R $WEB_USER:$WEB_GROUP "$VENV_DIR"
 fi
 
+# Ensure pip is installed in the venv (fix for missing pip)
+if [ ! -x "$VENV_DIR/bin/pip" ]; then
+    log "pip not found in venv, installing ensurepip..."
+    sudo $VENV_DIR/bin/python3 -m ensurepip --upgrade
+    sudo $VENV_DIR/bin/pip install --upgrade pip
+    sudo chown $WEB_USER:$WEB_GROUP "$VENV_DIR/bin/pip"
+fi
+
 # Install/update Python dependencies in venv (latest versions, ignore requirements.txt)
 log "Installing latest Python dependencies in venv..."
 sudo -u $WEB_USER $VENV_DIR/bin/pip install --upgrade pip
