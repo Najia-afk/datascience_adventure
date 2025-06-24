@@ -403,9 +403,6 @@ print(f'''<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <div class='back-link'>
-        <a href='javascript:history.back()'>&lt; Back to mission</a>
-    </div>
     <h2>{os.path.basename('$py_file')}</h2>
     <div class='code-container'>
         {html}
@@ -428,9 +425,6 @@ print(f'''<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <div class='back-link'>
-        <a href='javascript:history.back()'>&lt; Back to mission</a>
-    </div>
     <h2>$(basename "$py_file")</h2>
     <div class='error'>This file contains syntax errors and cannot be properly displayed.</div>
     <p>Please check the original source code for errors.</p>

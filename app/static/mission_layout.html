@@ -29,19 +29,33 @@
 
         .sidebar-toggle {
             position: absolute;
-            right: 10px;
+            left: 10px;
             top: 10px;
             cursor: pointer;
             background: none;
             border: none;
-            font-size: 20px;
+            font-size: 14px;
             color: #555;
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-toggle:hover {
+            background-color: #e0e0e0;
+            color: #333;
         }
 
         .vertical-title {
             position: absolute;
             top: 50%;
-            right: 15px;
+            right: 20px;
             transform: translateY(-50%) rotate(-90deg);
             transform-origin: right center;
             white-space: nowrap;
@@ -123,8 +137,10 @@
                 // Change toggle button direction
                 if (sidebar.classList.contains('collapsed')) {
                     toggleBtn.innerHTML = '▶';
+                    toggleBtn.style.left = '5px'; /* Adjust position when collapsed */
                 } else {
                     toggleBtn.innerHTML = '◀';
+                    toggleBtn.style.left = '10px'; /* Reset position when expanded */
                 }
             });
         });
@@ -139,8 +155,14 @@
             // Set iframe source
             iframe.src = missionName + '_content.html';
 
-            // Set Colab button link
-            colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + missionName + '/blob/main/' + missionName + '.ipynb';
+            // Extract just the mission name without the leading slash for the Colab URL
+            const repoName = missionName.replace(/^\//, ''); // Remove leading slash
+
+            // Set Colab button link with proper GitHub repo format
+            colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/main/' + repoName + '.ipynb';
+
+            // Log for debugging
+            console.log("Setting Colab URL to:", colabButton.href);
         });
 
         // Function to handle iframe resizing and loading display
