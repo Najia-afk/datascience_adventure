@@ -9,27 +9,27 @@ def create_app():
     # Route for main website pages
     @app.route('/')
     def index():
-        return render_with_fallback('index.html')
+        return render_template('index.html')
 
     @app.route('/header/')
     def header():
-        return render_with_fallback('templates/header.html')
+        return render_template('templates/header.html')
 
     @app.route('/footer/')
     def footer():
-        return render_with_fallback('templates/footer.html')
+        return render_template('templates/footer.html')
 
     @app.route('/summary/')
     def summary():
-        return render_with_fallback('templates/summary.html')
+        return render_template('templates/summary.html')
 
     @app.route('/load-home/')
     def load_home():
-        return render_with_fallback( 'templates/home.html')
+        return render_template('templates/home.html')
 
     @app.route('/mission3/')
     def mission3():
-        return render_with_fallback('mission3.html')
+        return render_template('mission3.html')
 
     # Error handler for 404
     @app.errorhandler(404)
