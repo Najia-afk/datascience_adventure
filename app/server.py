@@ -2,7 +2,7 @@ from flask import Flask, render_template
 
 # Function to create the Flask app
 def create_app():
-    # Use the root as template_folder, but you must reference templates as 'templates/xxx.html'
+    # Use the root as template_folder
     app = Flask(__name__, static_folder="/var/www/htmx_website/", template_folder="/var/www/htmx_website/")
     
     # Route for main website pages
@@ -12,23 +12,48 @@ def create_app():
 
     @app.route('/header/')
     def header():
-        return render_template('templates/header.html')
+        try:
+            # Try without 'templates/' prefix first
+            return render_template('header.html')
+        except:
+            # Fallback to with 'templates/' prefix
+            return render_template('templates/header.html')
 
     @app.route('/footer/')
     def footer():
-        return render_template('templates/footer.html')
+        try:
+            # Try without 'templates/' prefix first
+            return render_template('footer.html')
+        except:
+            # Fallback to with 'templates/' prefix
+            return render_template('templates/footer.html')
 
     @app.route('/summary/')
     def summary():
-        return render_template('templates/summary.html')
+        try:
+            # Try without 'templates/' prefix first
+            return render_template('summary.html')
+        except:
+            # Fallback to with 'templates/' prefix
+            return render_template('templates/summary.html')
 
     @app.route('/load-home/')
     def load_home():
-        return render_template('templates/home.html')
+        try:
+            # Try without 'templates/' prefix first
+            return render_template('home.html')
+        except:
+            # Fallback to with 'templates/' prefix
+            return render_template('templates/home.html')
 
     @app.route('/mission3/')
     def mission3():
-        return render_template('mission3/mission3.html')
+        try:
+            # Try without 'templates/' prefix first
+            return render_template('mission3.html')
+        except:
+            # Fallback to with 'templates/' prefix
+            return render_template('mission3/mission3.html')
 
     # Error handler for 404
     @app.errorhandler(404)

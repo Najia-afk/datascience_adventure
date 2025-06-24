@@ -30,9 +30,22 @@ mkdir -p "$WORKDIR"
 echo "===== Deploying local app files ====="
 
 # Copy template files
+echo "Copying template files..."
 if [ -d "$LOCAL_STATIC_DIR/templates" ]; then
+    # Copy to templates subdirectory (for paths like 'templates/header.html')
+    sudo mkdir -p "$WWW_DIR/templates"
     sudo cp -r "$LOCAL_STATIC_DIR/templates/"* "$WWW_DIR/templates/" 2>/dev/null || true
-    echo "✅ Copied templates from $LOCAL_STATIC_DIR/templates/"
+    echo "✅ Copied templates to $WWW_DIR/templates/"
+    
+    # Also copy directly to www directory (for paths like 'header.html')
+    for file in "$LOCAL_STATIC_DIR/templates/"*; do
+        if [ -f "$file" ]; then
+            sudo cp "$file" "$WWW_DIR/"
+            echo "✅ Also copied $(basename "$file") to $WWW_DIR/ for direct access"
+        fi
+    done
+else
+    echo "WARNING: Templates directory not found at $LOCAL_STATIC_DIR/templates"
 fi
 
 # Copy style files
