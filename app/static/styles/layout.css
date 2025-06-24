@@ -72,14 +72,13 @@
 /* Vertical title for collapsed sidebar */
 .vertical-title {
     position: absolute;
-    top: 50%;
     right: 25px;
     transform: translateY(-50%) rotate(-90deg);
     transform-origin: right center;
     white-space: nowrap;
     display: none;
     font-weight: bold;
-    color: #333;
+    color: #343a40;
 }
 
 .sidebar.collapsed .vertical-title {
