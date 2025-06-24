@@ -139,8 +139,61 @@ for REPO_URL in "${REPOS[@]}"; do
     # Copy missionX.html
     HTML_FILE=$(find "$REPO_DIR" -maxdepth 1 -iname "mission*.html" | head -n 1)
     if [ -f "$HTML_FILE" ]; then
-        sudo cp "$HTML_FILE" "$WWW_DIR/"
-        echo "✅ Copied $(basename "$HTML_FILE") to $WWW_DIR/"
+        # Instead of just copying, we need to merge with the layout
+        MISSION_NAME=$(basename "$HTML_FILE" .html)
+        echo "Processing $MISSION_NAME HTML with layout template..."
+        
+        # Check if we have a layout template for this mission
+        LAYOUT_FILE="$LOCAL_STATIC_DIR/${MISSION_NAME}_layout.html"
+        if [ -f "$LAYOUT_FILE" ]; then
+            echo "Found layout template for $MISSION_NAME"
+            
+            # Create temporary directory
+            TMP_DIR=$(mktemp -d)
+            
+            # Copy the mission HTML to temp dir
+            cp "$HTML_FILE" "$TMP_DIR/mission_content.html"
+            
+            # Extract the content from the mission HTML (between <body> and </body>)
+            CONTENT=$(sed -n '/<body/,/<\/body>/p' "$TMP_DIR/mission_content.html")
+            
+            # Create the merged file by inserting content into iframe
+            cat "$LAYOUT_FILE" > "$TMP_DIR/merged.html"
+            
+            # Add resize listener script to the merged file if not already present
+            if ! grep -q "sendHeight" "$TMP_DIR/merged.html"; then
+                sed -i '/<\/body>/i \
+                <script>\
+                    function sendHeight() {\
+                        var documentHeight = document.body.scrollHeight;\
+                        console.log("Iframe content height:", documentHeight);\
+                        window.parent.postMessage({ height: documentHeight }, "*");\
+                    }\
+                    window.addEventListener("load", function() {\
+                        sendHeight();\
+                    });\
+                    window.addEventListener("resize", function() {\
+                        sendHeight();\
+                    });\
+                </script>' "$TMP_DIR/merged.html"
+                echo "Added resize listener script to merged file"
+            fi
+            
+            # Copy the merged file to the web directory
+            sudo cp "$TMP_DIR/merged.html" "$WWW_DIR/${MISSION_NAME}.html"
+            sudo cp "$HTML_FILE" "$WWW_DIR/${MISSION_NAME}_content.html"
+            
+            # Clean up
+            rm -rf "$TMP_DIR"
+            
+            echo "✅ Created merged ${MISSION_NAME}.html with layout in $WWW_DIR/"
+        else
+            # No layout template found, just copy the file as before
+            sudo cp "$HTML_FILE" "$WWW_DIR/"
+            echo "✅ Copied $(basename "$HTML_FILE") to $WWW_DIR/ (no layout template found)"
+        fi
+    else
+        echo "No missionX.html found in $REPO_NAME"
     fi
 
     # Copy src directory
