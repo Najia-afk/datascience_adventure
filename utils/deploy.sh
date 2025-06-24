@@ -181,10 +181,12 @@ process_mission_with_layout() {
                     # Find Python files in this subdirectory, excluding __init__.py
                     find "$subdir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
                         local script_name=$(basename "$script_path")
-                        # Create path relative to the mission directory
+                        # Fix the path to remove src/ and properly format URL
                         local rel_script_path=${script_path#"$WORKDIR/$repo_name/"}
-                        # Remove .py extension for HTML URL
+                        # Remove .py extension for HTML URL and fix the path structure
                         local script_url="${repo_name}_src/${rel_script_path%.py}.html"
+                        # Remove trailing slashes and ensure clean URL path
+                        script_url=$(echo "$script_url" | sed 's|//*|/|g')
                         echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
                     done
                     
@@ -201,7 +203,10 @@ process_mission_with_layout() {
                 
                 find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
                     local script_name=$(basename "$script_path")
+                    # Create correct URL without src/ in the path
                     local script_url="${repo_name}_src/$(basename "$script_path" .py).html"
+                    # Clean up the URL path
+                    script_url=$(echo "$script_url" | sed 's|//*|/|g')
                     echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
                 done
                 

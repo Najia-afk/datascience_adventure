@@ -58,8 +58,19 @@ def create_app():
     # Generic route for static files
     @app.route('/<path:filename>')
     def serve_static(filename):
+        # Clean up the filename (remove multiple slashes)
+        filename = re.sub(r'/+', '/', filename)
+        # Remove any trailing slash
+        filename = filename.rstrip('/')
+        
         if os.path.exists(os.path.join('/var/www/htmx_website', filename)):
             return send_from_directory('/var/www/htmx_website', filename)
+        
+        # Try adding .html if the file without extension doesn't exist
+        if not os.path.exists(os.path.join('/var/www/htmx_website', filename)) and not filename.endswith('.html'):
+            if os.path.exists(os.path.join('/var/www/htmx_website', filename + '.html')):
+                return send_from_directory('/var/www/htmx_website', filename + '.html')
+        
         abort(404)
 
     # Error handler for 404
