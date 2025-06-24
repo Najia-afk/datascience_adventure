@@ -44,8 +44,32 @@ install_packages() {
 
 # Function to install Python dependencies
 install_python_dependencies() {
-    echo "Installing Flask and Gunicorn..."
-    pip3 install Flask gunicorn
+    echo "Installing Flask and Gunicorn in a virtual environment..."
+    # Ensure python3-venv is installed
+    sudo apt-get update
+    sudo apt-get install -y python3-venv
+
+    # Create the virtual environment if it doesn't exist
+    if [ ! -d "/srv/htmx_website/venv" ]; then
+        sudo python3 -m venv /srv/htmx_website/venv
+        sudo chown -R www-data:www-data /srv/htmx_website/venv
+        echo "Virtual environment created at /srv/htmx_website/venv."
+    else
+        echo "Virtual environment already exists at /srv/htmx_website/venv."
+    fi
+
+    # Ensure pip is available in the venv
+    if [ ! -x "/srv/htmx_website/venv/bin/pip" ]; then
+        echo "pip not found in venv, attempting to bootstrap pip with get-pip.py..."
+        curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+        sudo /srv/htmx_website/venv/bin/python3 /tmp/get-pip.py
+        sudo chown www-data:www-data /srv/htmx_website/venv/bin/pip
+        rm /tmp/get-pip.py
+    fi
+
+    # Install latest Flask and Gunicorn in the venv
+    sudo -u www-data /srv/htmx_website/venv/bin/pip install --upgrade pip
+    sudo -u www-data /srv/htmx_website/venv/bin/pip install Flask gunicorn
 }
 
 # Function to remove existing setup if it exists
