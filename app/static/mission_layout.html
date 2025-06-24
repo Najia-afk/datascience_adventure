@@ -7,11 +7,71 @@
     <title>Mission: Data Exploration</title>
     <link rel="stylesheet" href="/styles/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <style>
+        /* Sidebar toggle styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f8f9fa;
+            padding: 20px;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 100;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-230px);
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #555;
+        }
+
+        .vertical-title {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: right center;
+            white-space: nowrap;
+            display: none;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .sidebar.collapsed .vertical-title {
+            display: block;
+        }
+
+        .main-content {
+            margin-left: 270px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 40px;
+        }
+    </style>
 </head>
 
 <body hx-boost="true">
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle">
+            ◀
+        </button>
+        <div class="vertical-title">Scripts Used</div>
         <h2>Scripts Used in This Notebook:</h2>
         <ul id="sidebar-list">
             <!-- This will be dynamically populated by the deploy script -->
@@ -20,7 +80,7 @@
     </aside>
 
     <!-- Main Content Area -->
-    <section class="main-content">
+    <section class="main-content" id="main-content">
         <header class="project-header">
             <h1>Mission: Data Science Project</h1>
             <p>Exploring data science concepts and techniques.</p>
@@ -50,16 +110,35 @@
 
     <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
+        // Toggle sidebar functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+
+            toggleBtn.addEventListener('click', function () {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+
+                // Change toggle button direction
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleBtn.innerHTML = '▶';
+                } else {
+                    toggleBtn.innerHTML = '◀';
+                }
+            });
+        });
+
         // Set the iframe src and Colab link based on the current URL
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const iframe = document.getElementById('main-iframe');
             const colabButton = document.getElementById('colab-button');
             const currentPath = window.location.pathname;
             const missionName = currentPath.replace(/\/$/, ''); // Remove trailing slash if any
-            
+
             // Set iframe source
             iframe.src = missionName + '_content.html';
-            
+
             // Set Colab button link
             colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + missionName + '/blob/main/' + missionName + '.ipynb';
         });
@@ -69,7 +148,7 @@
             const iframe = document.getElementById('main-iframe');
             const loadingIndicator = document.getElementById('loading');
             const iframeContainer = document.querySelector('.iframe-container');
-    
+
             try {
                 const documentHeight = iframe.contentWindow.document.body.scrollHeight;
                 if (documentHeight > 0) {
@@ -97,7 +176,7 @@
                     progressIndicator.style.width = width + '%';
                 }
             }, 500);
-            
+
             // After 60 seconds, set to 100% regardless
             setTimeout(() => {
                 progressIndicator.style.width = '100%';
@@ -126,14 +205,14 @@
         }
 
         // Listen for HTMX event to adjust sidebar after header is loaded
-        document.body.addEventListener("htmx:afterOnLoad", function(evt) {
+        document.body.addEventListener("htmx:afterOnLoad", function (evt) {
             if (evt.detail.target.id === "header") {
                 adjustSidebarPosition(); // Adjust sidebar after the header is loaded
             }
         });
 
         // Handle iframe load event
-        document.getElementById('main-iframe').addEventListener('load', function() {
+        document.getElementById('main-iframe').addEventListener('load', function () {
             if (!handleIframeResize()) {
                 // If resize fails, try again after a short delay
                 setTimeout(handleIframeResize, 1000);
@@ -144,7 +223,7 @@
         simulateProgress();
 
         // Trigger when the entire window has loaded
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             handleIframeResize(); // Call iframe resize on load
             adjustSidebarHeight(); // Adjust sidebar height on load
         });
@@ -166,6 +245,6 @@
                 }
             }
         }, 10000);
-    </script>    
+    </script>
 </body>
 </html>

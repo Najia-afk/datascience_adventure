@@ -45,3 +45,50 @@
     color: #0066cc;
     text-decoration: underline;
 }
+
+/* Collapsible sidebar enhancements */
+.sidebar-toggle:hover {
+    color: #0066cc;
+}
+
+.sidebar.collapsed .sidebar-toggle {
+    right: 5px;
+}
+
+.sidebar.collapsed h2,
+.sidebar.collapsed #sidebar-list {
+    opacity: 0;
+}
+
+.sidebar h2,
+.sidebar #sidebar-list,
+.sidebar .vertical-title {
+    transition: opacity 0.2s ease;
+}
+
+.sidebar .vertical-title {
+    opacity: 0;
+}
+
+.sidebar.collapsed .vertical-title {
+    opacity: 1;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: #0066cc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+    .sidebar.collapsed {
+        transform: translateX(-180px);
+    }
+    .main-content {
+        margin-left: 220px;
+    }
+    .main-content.expanded {
+        margin-left: 40px;
+    }
+}

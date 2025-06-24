@@ -185,11 +185,10 @@ process_mission_with_layout() {
                     # Find Python files in this subdirectory, excluding __init__.py
                     find "$subdir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
                         local script_name=$(basename "$script_path")
-                        # Create path relative to the mission directory - keep .py extension
-                        local rel_script_path=${script_path#"$WORKDIR/$repo_name/"}
-                        # Create proper URL to the Python file (not HTML)
-                        local script_url="${repo_name}_src/${rel_script_path}"
-                        # Remove trailing slashes and ensure clean URL path
+                        # FIXED: Create path without src directory in the URL
+                        local subdirectory=$(basename "$subdir")
+                        local script_url="${repo_name}_src/${subdirectory}/${script_name}"
+                        # Clean up the URL path
                         script_url=$(echo "$script_url" | sed 's|//*|/|g')
                         echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
                     done
@@ -207,8 +206,8 @@ process_mission_with_layout() {
                 
                 find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
                     local script_name=$(basename "$script_path")
-                    # Create correct URL to the Python file (not HTML)
-                    local script_url="${repo_name}_src/$(basename "$script_path")"
+                    # FIXED: Create correct URL path for root directory files
+                    local script_url="${repo_name}_src/${script_name}"
                     # Clean up the URL path
                     script_url=$(echo "$script_url" | sed 's|//*|/|g')
                     echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
@@ -544,4 +543,5 @@ sudo systemctl reload nginx || echo "⚠️ Warning: Failed to reload nginx"
 echo "✅ Reloaded Nginx"
 
 echo "===== Deployment complete! ====="
+echo "Website should now be accessible."
 echo "Website should now be accessible."
