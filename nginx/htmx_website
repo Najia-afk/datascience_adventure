@@ -52,15 +52,6 @@ server {
         add_header Cache-Control "public, no-transform";
     }
     
-    # Handle mission routes and other paths for direct navigation
-    location ~ ^/mission[0-9]+(/?|/.+)$ {
-        try_files $uri @flask;
-    }
-    
-    location /contact/ {
-        try_files $uri @flask;
-    }
-    
     # Handle other dynamic requests
     location / {
         try_files $uri @flask;

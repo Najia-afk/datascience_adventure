@@ -48,26 +48,18 @@ def create_app():
             return send_from_directory('/var/www/htmx_website', content_file)
         abort(404)
 
-    # Generic route for static files - fixed version to handle trailing slashes
+    # Generic route for static files - properly fixed version
     @app.route('/<path:filename>')
     def serve_static(filename):
         # Clean up the filename - ensure trailing slashes are removed
         filename = re.sub(r'/+', '/', filename).rstrip('/')
         file_path = os.path.join('/var/www/htmx_website', filename)
         
-        # Check if the file exists
-        if os.path.exists(file_path):
-            return send_from_directory('/var/www/htmx_website', filename)
-        
-        # Check with .py extension (since URLs might be missing it)
-        py_path = file_path + '.py'
-        if os.path.exists(py_path):
-            return send_from_directory('/var/www/htmx_website', filename + '.py')
-        
-        # Try with .html extension
-        html_path = file_path + '.html'
+        # Check for HTML version (for Python files that were converted to HTML)
+        html_path = os.path.splitext(file_path)[0] + '.html'
         if os.path.exists(html_path):
-            return send_from_directory('/var/www/htmx_website', filename + '.html')
+            html_filename = os.path.splitext(filename)[0] + '.html'
+            return send_from_directory('/var/www/htmx_website', html_filename)
         
         # File not found
         abort(404)
