@@ -1,6 +1,10 @@
-from flask import Flask, render_template, send_from_directory, abort
+from flask import Flask, render_template, send_from_directory, abort, Response
 import os
 import re
+import pygments
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
 
 # Function to create the Flask app
 def create_app():
@@ -65,10 +69,48 @@ def create_app():
         
         # Check if file exists in the static directory
         if os.path.exists(os.path.join('/var/www/htmx_website', filename)):
-            # For Python files, set the correct MIME type
+            # For Python files, convert to syntax highlighted HTML
             if filename.endswith('.py'):
-                return send_from_directory('/var/www/htmx_website', filename, 
-                                           mimetype='text/x-python')
+                # Read the Python file
+                with open(os.path.join('/var/www/htmx_website', filename), 'r') as f:
+                    code = f.read()
+                
+                # Generate syntax highlighted HTML
+                lexer = PythonLexer()
+                formatter = HtmlFormatter(style='default', linenos=True, full=True)
+                highlighted_code = highlight(code, lexer, formatter)
+                
+                # Get the CSS styles for the highlighting
+                css = formatter.get_style_defs('.highlight')
+                
+                # Add the CSS and a back button to the highlighted code
+                html = f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>{os.path.basename(filename)}</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; }}
+                        .back-link {{ margin-bottom: 20px; }}
+                        .back-link a {{ text-decoration: none; color: #0066cc; }}
+                        .code-container {{ border: 1px solid #ddd; border-radius: 5px; overflow: auto; }}
+                        {css}
+                    </style>
+                </head>
+                <body>
+                    <div class="back-link">
+                        <a href="javascript:history.back()">&lt; Back to mission</a>
+                    </div>
+                    <h2>{os.path.basename(filename)}</h2>
+                    <div class="code-container">
+                        {highlighted_code}
+                    </div>
+                </body>
+                </html>
+                """
+                
+                return Response(html, mimetype='text/html')
+            
             return send_from_directory('/var/www/htmx_website', filename)
         
         # Try adding .html if the file without extension doesn't exist

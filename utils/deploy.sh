@@ -114,6 +114,10 @@ fi
 if [ -f "$LOCAL_APP_DIR/server.py" ]; then
     sudo cp "$LOCAL_APP_DIR/server.py" "$FLASK_DIR/"
     echo "✅ Copied server.py from app directory"
+    
+    # Install Pygments for syntax highlighting
+    sudo -u www-data /srv/htmx_website/venv/bin/pip install pygments
+    echo "✅ Installed Pygments for Python syntax highlighting"
 fi
 
 if [ -f "$LOCAL_APP_DIR/wsgi.py" ]; then
