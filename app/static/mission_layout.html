@@ -16,7 +16,7 @@
         <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
             ◀
         </button>
-        <div class="vertical-title">Scripts Used</div>
+        <div class="vertical-title">Scripts Used in This Notebook</div>
         <h2>Scripts Used in This Notebook:</h2>
         <ul id="sidebar-list">
             <!-- This will be dynamically populated by the deploy script -->
@@ -124,7 +124,7 @@
             const repoName = missionName.replace(/^\//, ''); // Remove leading slash
 
             // Set Colab button link with proper GitHub repo format
-            colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/main/' + repoName + '.ipynb';
+            colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/' + repoName + '.ipynb';
 
             // Log for debugging
             console.log("Setting Colab URL to:", colabButton.href);
