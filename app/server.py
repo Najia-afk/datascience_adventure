@@ -53,17 +53,18 @@ def create_app():
     def serve_static(filename):
         # Clean up the filename - ensure trailing slashes are removed
         filename = re.sub(r'/+', '/', filename).rstrip('/')
-        file_path = os.path.join('/var/www/htmx_website', filename)
         
-        # Check for HTML version (for Python files that were converted to HTML)
-        html_path = os.path.splitext(file_path)[0] + '.html'
+    
+        base_name, ext = os.path.splitext(filename)
+        html_filename = base_name + '.html'
+        html_path = os.path.join('/var/www/htmx_website', html_filename)
+        
         if os.path.exists(html_path):
-            html_filename = os.path.splitext(filename)[0] + '.html'
             return send_from_directory('/var/www/htmx_website', html_filename)
         
-        # File not found
+        # If not found, return 404
         abort(404)
-    
+
     # Error handler for 404
     @app.errorhandler(404)
     def not_found(e):
