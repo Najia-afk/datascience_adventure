@@ -73,7 +73,21 @@ install_python_dependencies() {
     sudo -u www-data /srv/htmx_website/venv/bin/pip install Flask gunicorn
     
     # Ensure gunicorn is executable
-    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    if [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+        sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+        echo "Gunicorn executable permissions set."
+    else
+        echo "Warning: Gunicorn executable not found after installation!"
+        echo "Attempting to install gunicorn again..."
+        sudo -u www-data /srv/htmx_website/venv/bin/pip install --force-reinstall gunicorn
+        if [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+            sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+            echo "Gunicorn executable permissions set after reinstall."
+        else
+            echo "ERROR: Failed to install gunicorn. Check your Python environment."
+            exit 1
+        fi
+    fi
 }
 
 # Function to remove existing setup if it exists
@@ -153,6 +167,13 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
+    # Verify gunicorn exists before starting service
+    if [ ! -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+        echo "Warning: Gunicorn executable not found. Reinstalling..."
+        sudo -u www-data /srv/htmx_website/venv/bin/pip install --force-reinstall gunicorn
+        sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    fi
+
     sudo systemctl daemon-reload
     sudo systemctl start htmx_website.service
     sudo systemctl enable htmx_website.service
@@ -183,13 +204,18 @@ configure_firewall_and_security() {
         echo "Warning: SSH service not found to restart. Please restart SSH manually if needed."
     fi
 
-    # Removed duplicate virtual environment setup
-
     echo "Setting secure permissions for /srv/htmx_website..."
     sudo chown -R www-data:www-data /srv/htmx_website
     sudo chmod -R 755 /srv/htmx_website
-    # Make sure gunicorn is executable
-    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    
+    # Make sure gunicorn is executable (with safe check)
+    if [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+        sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+        echo "Ensured gunicorn is executable."
+    else
+        echo "Warning: Gunicorn executable not found at expected location."
+        echo "This may indicate an installation problem with the virtual environment."
+    fi
 }
 
 # Main logic for the setup script
@@ -197,9 +223,9 @@ main() {
     check_internet_access
     check_required_files
     install_packages
-    install_python_dependencies
     remove_existing_setup
-
+    install_python_dependencies  # Install dependencies after removing existing setup
+    
     if [[ "$OPTION" == "SSL Only" ]]; then
         configure_nginx_ssl
         exit 0
@@ -215,6 +241,14 @@ main() {
     fi
 
     configure_firewall_and_security
+
+    # Final verification that gunicorn is executable
+    if [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+        sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    else
+        echo "ERROR: Gunicorn executable still not found after setup!"
+        echo "Check the Flask application setup and Python environment."
+    fi
 
     echo "Setup complete! Your HTMX website is now running on http://$DOMAIN or https://$DOMAIN if SSL is configured."
 }
