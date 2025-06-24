@@ -5,6 +5,13 @@
 
 set -e
 
+# Get the correct user's home directory, even when running with sudo
+if [ -n "$SUDO_USER" ]; then
+    USER_HOME=$(eval echo ~$SUDO_USER)
+else
+    USER_HOME=$HOME
+fi
+
 # List of public GitHub repos to deploy
 REPOS=(
     "https://github.com/Najia-afk/mission2"
@@ -14,11 +21,16 @@ REPOS=(
 )
 
 # Directory to clone/pull repos
-WORKDIR="$HOME/missions"
+WORKDIR="$USER_HOME/missions"
 WWW_DIR="/var/www/htmx_website"
 FLASK_DIR="/srv/htmx_website"
-LOCAL_APP_DIR="$HOME/datascience_adventure/app"
+LOCAL_APP_DIR="$USER_HOME/datascience_adventure/app"
 LOCAL_STATIC_DIR="$LOCAL_APP_DIR/static"
+
+echo "Using directories:"
+echo "- User home: $USER_HOME"
+echo "- App directory: $LOCAL_APP_DIR"
+echo "- Static directory: $LOCAL_STATIC_DIR"
 
 # Create necessary directories
 sudo mkdir -p "$WWW_DIR/templates"
@@ -49,6 +61,29 @@ if [ -d "$LOCAL_STATIC_DIR/templates" ]; then
     ls -la "$WWW_DIR/templates/"
 else
     echo "⚠️ ERROR: Templates directory not found at $LOCAL_STATIC_DIR/templates"
+    # List the directories that exist to help with troubleshooting
+    echo "Checking directory structure:"
+    if [ -d "$USER_HOME/datascience_adventure" ]; then
+        echo "✓ $USER_HOME/datascience_adventure exists"
+        ls -la "$USER_HOME/datascience_adventure"
+    else
+        echo "✗ $USER_HOME/datascience_adventure does not exist"
+    fi
+    
+    if [ -d "$LOCAL_APP_DIR" ]; then
+        echo "✓ $LOCAL_APP_DIR exists"
+        ls -la "$LOCAL_APP_DIR"
+    else
+        echo "✗ $LOCAL_APP_DIR does not exist"
+    fi
+    
+    if [ -d "$LOCAL_STATIC_DIR" ]; then
+        echo "✓ $LOCAL_STATIC_DIR exists"
+        ls -la "$LOCAL_STATIC_DIR"
+    else
+        echo "✗ $LOCAL_STATIC_DIR does not exist"
+    fi
+    
     exit 1
 fi
 
