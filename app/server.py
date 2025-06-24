@@ -35,99 +35,35 @@ def create_app():
     # Dynamic route for mission pages
     @app.route('/<path:mission_path>/')
     def mission_page(mission_path):
-        # Check if this is a mission route
-        if re.match(r'^mission\d+$', mission_path):
-            # Try to serve the mission HTML file
-            try:
-                return render_template(f'{mission_path}.html')
-            except:
-                abort(404)
-        # Otherwise, try to handle other paths
-        else:
-            try:
-                return render_template(mission_path)
-            except:
-                abort(404)
+        return render_template(f'{mission_path}.html')
+
     
     # Dynamic route for mission content HTML files
     @app.route('/<path:mission_path>_content.html')
     def mission_content(mission_path):
-        # Check if this is a mission content path
-        if re.match(r'^mission\d+$', mission_path):
-            content_file = f'{mission_path}_content.html'
-            if os.path.exists(os.path.join('/var/www/htmx_website', content_file)):
-                return send_from_directory('/var/www/htmx_website', content_file)
-        abort(404)
-    
-    # Generic route for static files
+        content_file = f'{mission_path}_content.html'
+        if os.path.exists(os.path.join('/var/www/htmx_website', content_file)):
+            return send_from_directory('/var/www/htmx_website', content_file)
+
+    # Generic route for static files - simplified version
     @app.route('/<path:filename>')
     def serve_static(filename):
-        # Clean up the filename (remove multiple slashes)
-        filename = re.sub(r'/+', '/', filename)
-        # Remove any trailing slash
-        filename = filename.rstrip('/')
+        # Clean up the filename
+        filename = re.sub(r'/+', '/', filename).rstrip('/')
+        file_path = os.path.join('/var/www/htmx_website', filename)
         
-        # Check if file exists in the static directory
-        if os.path.exists(os.path.join('/var/www/htmx_website', filename)):
-            # For Python files, convert to syntax highlighted HTML
-            if filename.endswith('.py'):
-                # Read the Python file
-                with open(os.path.join('/var/www/htmx_website', filename), 'r') as f:
-                    code = f.read()
-                
-                # Generate syntax highlighted HTML
-                lexer = PythonLexer()
-                formatter = HtmlFormatter(style='default', linenos=True, full=True)
-                highlighted_code = highlight(code, lexer, formatter)
-                
-                # Get the CSS styles for the highlighting
-                css = formatter.get_style_defs('.highlight')
-                
-                # Add the CSS and a back button to the highlighted code
-                html = f"""
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>{os.path.basename(filename)}</title>
-                    <style>
-                        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; }}
-                        .back-link {{ margin-bottom: 20px; }}
-                        .back-link a {{ text-decoration: none; color: #0066cc; }}
-                        .code-container {{ border: 1px solid #ddd; border-radius: 5px; overflow: auto; }}
-                        {css}
-                    </style>
-                </head>
-                <body>
-                    <div class="back-link">
-                        <a href="javascript:history.back()">&lt; Back to mission</a>
-                    </div>
-                    <h2>{os.path.basename(filename)}</h2>
-                    <div class="code-container">
-                        {highlighted_code}
-                    </div>
-                </body>
-                </html>
-                """
-                
-                return Response(html, mimetype='text/html')
-            
-            return send_from_directory('/var/www/htmx_website', filename)
+        # For non-Python files or fallback to .html version
+        for path in [file_path, file_path + '.html']:
+            return send_from_directory('/var/www/htmx_website', os.path.relpath(path, '/var/www/htmx_website'))
         
-        # Try adding .html if the file without extension doesn't exist
-        if not os.path.exists(os.path.join('/var/www/htmx_website', filename)) and not filename.endswith('.html'):
-            if os.path.exists(os.path.join('/var/www/htmx_website', filename + '.html')):
-                return send_from_directory('/var/www/htmx_website', filename + '.html')
-        
-        abort(404)
-
     # Error handler for 404
     @app.errorhandler(404)
     def not_found(e):
         return render_template('404.html'), 404
-
-    return app
+        
 
 if __name__ == "__main__":
     # Run the app
     app = create_app()
     app.run(host='0.0.0.0', port=8000)
+

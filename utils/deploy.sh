@@ -308,6 +308,94 @@ EOF
     fi
 }
 
+# Add this new function to convert Python files to HTML
+convert_py_to_html() {
+    local src_dir="$1"
+    local dest_dir="$2"
+    local repo_name="$3"
+    
+    echo "Converting Python files to HTML in $src_dir..."
+    
+    # Install pygments if not already installed
+    if ! sudo -u www-data /srv/htmx_website/venv/bin/pip list | grep -q pygments; then
+        sudo -u www-data /srv/htmx_website/venv/bin/pip install pygments
+        echo "✅ Installed Pygments for Python syntax highlighting"
+    fi
+    
+    # Find all Python files and convert them
+    find "$src_dir" -type f -name "*.py" ! -name "__init__.py" | while read py_file; do
+        # Get relative path
+        rel_path=${py_file#"$src_dir/"}
+        
+        # Determine destination directory based on subdirectory name
+        subdir=$(dirname "$rel_path")
+        if [ "$subdir" = "." ]; then
+            # Root directory files go to "root"
+            target_dir="$dest_dir/root"
+        else
+            # Use the actual subdirectory name
+            target_dir="$dest_dir/$subdir"
+        fi
+        
+        # Create target directory if it doesn't exist
+        sudo mkdir -p "$target_dir"
+        
+        # Get the basename without extension
+        base_name=$(basename "$py_file" .py)
+        html_file="$target_dir/${base_name}.html"
+        
+        echo "Converting $py_file to $html_file"
+        
+        # Read Python file
+        py_content=$(cat "$py_file")
+        
+        # Generate HTML with Pygments using Python
+        html_content=$(sudo -u www-data /srv/htmx_website/venv/bin/python3 -c "
+import pygments
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
+code = '''$py_content'''
+formatter = HtmlFormatter(style='default', linenos=True, full=True)
+html = highlight(code, PythonLexer(), formatter)
+css = formatter.get_style_defs('.highlight')
+
+print(f'''<!DOCTYPE html>
+<html>
+<head>
+    <title>{os.path.basename('$py_file')}</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; }}
+        .back-link {{ margin-bottom: 20px; }}
+        .back-link a {{ text-decoration: none; color: #0066cc; }}
+        .code-container {{ border: 1px solid #ddd; border-radius: 5px; overflow: auto; }}
+        {css}
+    </style>
+</head>
+<body>
+    <div class='back-link'>
+        <a href='javascript:history.back()'>&lt; Back to mission</a>
+    </div>
+    <h2>{os.path.basename('$py_file')}</h2>
+    <div class='code-container'>
+        {html}
+    </div>
+</body>
+</html>''')
+")
+        
+        # Write HTML to file
+        echo "$html_content" | sudo tee "$html_file" > /dev/null
+        
+        # Set proper permissions
+        sudo chown www-data:www-data "$html_file"
+        sudo chmod 644 "$html_file"
+    done
+    
+    echo "✅ Converted Python files to HTML"
+}
+
 # Process remote repositories
 for REPO_URL in "${REPOS[@]}"; do
     REPO_NAME=$(basename "$REPO_URL")
@@ -334,11 +422,22 @@ for REPO_URL in "${REPOS[@]}"; do
         echo "No missionX.html found in $REPO_NAME"
     fi
 
-    # Copy src directory
+    # Copy src directory - modify this section
     if [ -d "$REPO_DIR/src" ]; then
+        echo "Processing source directory for $REPO_NAME..."
+        
+        # Create the destination directory
         sudo rm -rf "$WWW_DIR/${REPO_NAME}_src"
-        sudo cp -r "$REPO_DIR/src" "$WWW_DIR/${REPO_NAME}_src"
-        echo "✅ Copied src/ to $WWW_DIR/${REPO_NAME}_src/"
+        sudo mkdir -p "$WWW_DIR/${REPO_NAME}_src"
+        
+        # Convert Python files to HTML and organize by subdirectory
+        convert_py_to_html "$REPO_DIR/src" "$WWW_DIR/${REPO_NAME}_src" "$REPO_NAME"
+        
+        # Also copy the original Python files for reference
+        sudo cp -r "$REPO_DIR/src" "$WWW_DIR/${REPO_NAME}_src_original"
+        echo "✅ Processed src/ to $WWW_DIR/${REPO_NAME}_src/ and converted Python files to HTML"
+    else
+        echo "No src directory found in $REPO_NAME"
     fi
 
     # Copy Flask files if present
