@@ -29,33 +29,32 @@
 
         .sidebar-toggle {
             position: absolute;
-            left: 10px;
-            top: 10px;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 20px;
             cursor: pointer;
-            background: none;
+            background-color: #0066cc;
+            /* Blue color to match summary */
+            color: white;
             border: none;
             font-size: 14px;
-            color: #555;
-            width: 20px;
-            height: 20px;
             padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f0f0f0;
-            border-radius: 3px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 101;
         }
 
         .sidebar-toggle:hover {
-            background-color: #e0e0e0;
-            color: #333;
+            background-color: #0055aa;
+            color: white;
         }
 
         .vertical-title {
             position: absolute;
             top: 50%;
-            right: 20px;
+            right: 25px;
             transform: translateY(-50%) rotate(-90deg);
             transform-origin: right center;
             white-space: nowrap;
@@ -82,7 +81,7 @@
 <body hx-boost="true">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <button class="sidebar-toggle" id="sidebar-toggle">
+        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
             ◀
         </button>
         <div class="vertical-title">Scripts Used</div>
@@ -124,26 +123,60 @@
 
     <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
-        // Toggle sidebar functionality
+        // Improved sidebar toggle functionality with debugging
         document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
             const toggleBtn = document.getElementById('sidebar-toggle');
 
-            toggleBtn.addEventListener('click', function () {
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
+            console.log("Initializing sidebar toggle functionality");
 
-                // Change toggle button direction
-                if (sidebar.classList.contains('collapsed')) {
-                    toggleBtn.innerHTML = '▶';
-                    toggleBtn.style.left = '5px'; /* Adjust position when collapsed */
-                } else {
-                    toggleBtn.innerHTML = '◀';
-                    toggleBtn.style.left = '10px'; /* Reset position when expanded */
-                }
-            });
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function (e) {
+                    console.log("Toggle button clicked");
+                    e.preventDefault();
+
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+
+                    // Change toggle button direction
+                    if (sidebar.classList.contains('collapsed')) {
+                        toggleBtn.innerHTML = '▶';
+                        toggleBtn.style.right = '0';
+                        console.log("Sidebar collapsed");
+                    } else {
+                        toggleBtn.innerHTML = '◀';
+                        toggleBtn.style.right = '0';
+                        console.log("Sidebar expanded");
+                    }
+                });
+            } else {
+                console.error("Toggle button not found!");
+            }
         });
+
+        // Global function for direct onclick attribute
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+
+            if (!sidebar || !mainContent || !toggleBtn) {
+                console.error("Required elements not found");
+                return;
+            }
+
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+
+            if (sidebar.classList.contains('collapsed')) {
+                toggleBtn.innerHTML = '▶';
+                toggleBtn.style.right = '0';
+            } else {
+                toggleBtn.innerHTML = '◀';
+                toggleBtn.style.right = '0';
+            }
+        }
 
         // Set the iframe src and Colab link based on the current URL
         document.addEventListener('DOMContentLoaded', function () {
@@ -205,7 +238,7 @@
                 document.querySelector('.loading-message').textContent = 'Almost done...';
             }, 60000);
         }
-
+        simulateProgress();
         // Function to adjust sidebar height based on its content
         function adjustSidebarHeight() {
             const sidebar = document.querySelector('.sidebar');
