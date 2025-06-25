@@ -151,84 +151,44 @@ process_mission_with_layout() {
         # Copy the mission HTML to temp dir
         cp "$html_file" "$tmp_dir/mission_content.html"
         
-        # Look for scripts in the src directory for this mission
-        local script_list=""
-        local repo_name=$(basename $(dirname "$html_file"))
-        local src_dir="$WORKDIR/$repo_name/src"
+        # Extract mission number
+        local mission_number=${mission_name#mission}
         
-        if [ -d "$src_dir" ]; then
-            echo "Generating script list from $src_dir"
-            # Create a temporary script list file
-            local script_list_file="$tmp_dir/script_list.html"
-            echo '<ul id="sidebar-list">' > "$script_list_file"
+        # Extract mission title and description from summary.html if it exists
+        local mission_title="Mission $mission_number: Data Science Project"
+        local mission_desc="Exploring data science concepts and techniques."
+        
+        if [ -f "$WWW_DIR/templates/summary.html" ]; then
+            echo "Extracting mission details from summary.html"
             
-            # Get all subdirectories in the src directory
-            local subdirs=$(find "$src_dir" -type d | sort)
+            # Extract the specific mission title (h2) from summary.html
+            local extracted_title=$(grep -A1 "Mission $mission_number:" "$WWW_DIR/templates/summary.html" | grep "<h2>" | sed 's/<h2>\(.*\)<\/h2>/\1/')
             
-            # Process each subdirectory
-            for subdir in $subdirs; do
-                # Skip the src directory itself
-                if [ "$subdir" = "$src_dir" ]; then
-                    continue
-                fi
-                
-                # Get the relative path from src
-                local rel_path=${subdir#"$src_dir/"}
-                # Only add subdir heading if files exist in this directory
-                local has_py_files=$(find "$subdir" -maxdepth 1 -name "*.py" ! -name "__init__.py" | wc -l)
-                
-                if [ "$has_py_files" -gt 0 ]; then
-                    # Add subdirectory heading
-                    echo "<li class='subdir-heading'><strong>$(basename "$subdir")/</strong>" >> "$script_list_file"
-                    echo "<ul>" >> "$script_list_file"
-                    
-                    # Find Python files in this subdirectory, excluding __init__.py
-                    find "$subdir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
-                        local script_name=$(basename "$script_path")
-                        # FIXED: Create path without src directory in the URL and ensure no trailing slash
-                        local subdirectory=$(basename "$subdir")
-                        local script_url="${repo_name}_src/${subdirectory}/${script_name}"
-                        # Clean up the URL path and ensure no trailing slash
-                        script_url=$(echo "$script_url" | sed 's|//*|/|g' | sed 's|/$||')
-                        echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
-                    done
-                    
-                    echo "</ul></li>" >> "$script_list_file"
-                fi
-            done
+            # Extract the specific mission description (p) from summary.html - look for the 3rd paragraph after the title
+            local extracted_desc=$(grep -A5 "Mission $mission_number:" "$WWW_DIR/templates/summary.html" | grep -m3 "<p>" | tail -n1 | sed 's/<p>\(.*\)<\/p>/\1/')
             
-            # Also add Python files directly in the src directory
-            local root_has_py_files=$(find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | wc -l)
-            
-            if [ "$root_has_py_files" -gt 0 ]; then
-                echo "<li class='subdir-heading'><strong>root/</strong>" >> "$script_list_file"
-                echo "<ul>" >> "$script_list_file"
-                
-                # Also for root directory files
-                find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
-                    local script_name=$(basename "$script_path")
-                    # FIXED: Create correct URL path for root directory files with no trailing slash
-                    local script_url="${repo_name}_src/${script_name}"
-                    # Clean up the URL path and ensure no trailing slash
-                    script_url=$(echo "$script_url" | sed 's|//*|/|g' | sed 's|/$||')
-                    echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
-                done
-                
-                echo "</ul></li>" >> "$script_list_file"
+            # Use extracted values if found
+            if [ -n "$extracted_title" ]; then
+                mission_title="$extracted_title"
+                echo "Found mission title: $mission_title"
             fi
             
-            echo '</ul>' >> "$script_list_file"
-            script_list=$(cat "$script_list_file")
+            if [ -n "$extracted_desc" ]; then
+                mission_desc="$extracted_desc"
+                echo "Found mission description: $mission_desc"
+            fi
         else
-            echo "No src directory found for $repo_name"
-            # Default empty list
-            script_list='<ul id="sidebar-list"><li>No scripts available</li></ul>'
+            echo "Summary.html not found, using default mission title and description"
         fi
         
         # Create a modified layout with the correct mission name and script list
         local modified_layout="$tmp_dir/modified_layout.html"
         cp "$layout_file" "$modified_layout"
 
+        # Update mission title and description
+        sed -i "s|<h1>Mission: Data Science Project</h1>|<h1>$mission_title</h1>|g" "$modified_layout"
+        sed -i "s|<p>Exploring data science concepts and techniques.</p>|<p>$mission_desc</p>|g" "$modified_layout"
+        
         # Use more robust method to update mission number
         local mission_number=${mission_name#mission}
         # Update mission number in title tag
@@ -503,6 +463,46 @@ for REPO_URL in "${REPOS[@]}"; do
         echo "✅ Copied wsgi.py to $FLASK_DIR/"
     fi
 
+    # Copy Nginx config if present
+    if [ -f "$REPO_DIR/nginx/htmx_website" ]; then
+        sudo cp "$REPO_DIR/nginx/htmx_website" /etc/nginx/sites-available/htmx_website
+        sudo ln -sf /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/htmx_website
+        echo "✅ Copied Nginx config to /etc/nginx/sites-available/htmx_website"
+    fi
+done
+
+echo "===== Finalizing deployment ====="
+
+# Set permissions for web files
+sudo chown -R www-data:www-data "$WWW_DIR"
+sudo chown -R www-data:www-data "$FLASK_DIR"
+sudo chmod -R 755 "$WWW_DIR"
+sudo chmod -R 755 "$FLASK_DIR"
+
+# Ensure gunicorn is executable
+if [ -f "$FLASK_DIR/venv/bin/gunicorn" ]; then
+    sudo chmod +x "$FLASK_DIR/venv/bin/gunicorn"
+    sudo chmod +x "$FLASK_DIR/venv/bin/python3"
+    echo "✅ Set executable permissions for gunicorn and python"
+elif [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    sudo chmod +x /srv/htmx_website/venv/bin/python3
+    echo "✅ Set executable permissions for gunicorn and python (alternate path)"
+fi
+
+# Reload services
+sudo systemctl daemon-reload
+echo "✅ Reloaded systemd daemon"
+
+sudo systemctl restart htmx_website.service || echo "⚠️ Warning: Failed to restart htmx_website service"
+echo "✅ Attempted to restart Flask application"
+
+sudo systemctl reload nginx || echo "⚠️ Warning: Failed to reload nginx"
+echo "✅ Reloaded Nginx"
+
+echo "===== Deployment complete! ====="
+echo "Website should now be accessible."
+echo "Website should now be accessible."
     # Copy Nginx config if present
     if [ -f "$REPO_DIR/nginx/htmx_website" ]; then
         sudo cp "$REPO_DIR/nginx/htmx_website" /etc/nginx/sites-available/htmx_website
