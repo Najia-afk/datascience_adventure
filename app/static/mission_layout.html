@@ -141,7 +141,7 @@
             // Extract just the mission name without the leading slash for the Colab URL
             const repoName = currentPath.replace(/^\//, '');
             
-            // Set Colab button link with proper GitHub repo format - add 'main/' path
+            // Set Colab button link with proper GitHub repo format
             colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/main/' + repoName + '.ipynb';
             
             // Log for debugging

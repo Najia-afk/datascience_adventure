@@ -295,33 +295,12 @@ process_mission_with_layout() {
         # Update iframe src to point to the correct content file
         sed -i "s|id=\"main-iframe\" src=\"\"|id=\"main-iframe\" src=\"/${mission_name}_content.html\"|g" "$modified_layout"
 
-        # Update the Colab button URL - use a more robust approach
-        echo "Setting Colab button URL to https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb"
+        # Update the Colab button URL - simplify to match the pattern in mission_layout.html
+        local colab_url="https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb"
+        echo "Setting Colab button URL to $colab_url"
 
-        # First try: Replace if there's no href attribute yet
-        sed -i "s|id=\"colab-button\" class=\"button-colab\">|id=\"colab-button\" class=\"button-colab\" href=\"https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb\">|g" "$modified_layout"
-
-        # Second try: Replace if there's already an href attribute
-        sed -i "s|id=\"colab-button\" class=\"button-colab\" href=\"[^\"]*\"|id=\"colab-button\" class=\"button-colab\" href=\"https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb\"|g" "$modified_layout"
-
-        # Third try: Alternative attribute order
-        sed -i "s|class=\"button-colab\" id=\"colab-button\">|class=\"button-colab\" id=\"colab-button\" href=\"https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb\">|g" "$modified_layout"
-
-        # Final check - verify if it worked or directly insert the URL
-        if ! grep -q "https://colab.research.google.com/github/Najia-afk/$github_repo" "$modified_layout"; then
-            echo "Sed replacements failed, using direct approach"
-            # Find the line with the colab button and add the href directly
-            line_num=$(grep -n "id=\"colab-button\"" "$modified_layout" | cut -d: -f1)
-            if [ -n "$line_num" ]; then
-                awk -v line="$line_num" -v url="https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb" '{
-                    if (NR == line) {
-                        gsub(/>$/, " href=\"" url "\">");
-                    }
-                    print $0;
-                }' "$modified_layout" > "$tmp_dir/fixed_colab.html"
-                mv "$tmp_dir/fixed_colab.html" "$modified_layout"
-            fi
-        fi
+        # Match the exact line in the JavaScript and replace it
+        sed -i "s|colabButton.href = 'https://colab.research.google.com/github/Najia-afk/';|colabButton.href = 'https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb';|g" "$modified_layout"
 
         # Add resize listener script to the merged file if not already present
         if ! grep -q "sendHeight" "$modified_layout"; then
@@ -580,6 +559,27 @@ sudo chmod -R 755 "$FLASK_DIR"
 
 # Ensure gunicorn is executable
 if [ -f "$FLASK_DIR/venv/bin/gunicorn" ]; then
+    sudo chmod +x "$FLASK_DIR/venv/bin/gunicorn"
+    sudo chmod +x "$FLASK_DIR/venv/bin/python3"
+    echo "✅ Set executable permissions for gunicorn and python"
+elif [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
+    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
+    sudo chmod +x /srv/htmx_website/venv/bin/python3
+    echo "✅ Set executable permissions for gunicorn and python (alternate path)"
+fi
+
+# Reload services
+sudo systemctl daemon-reload
+echo "✅ Reloaded systemd daemon"
+
+sudo systemctl restart htmx_website.service || echo "⚠️ Warning: Failed to restart htmx_website service"
+echo "✅ Attempted to restart Flask application"
+
+sudo systemctl reload nginx || echo "⚠️ Warning: Failed to reload nginx"
+echo "✅ Reloaded Nginx"
+
+echo "===== Deployment complete! ====="
+echo "Website should now be accessible."
     sudo chmod +x "$FLASK_DIR/venv/bin/gunicorn"
     sudo chmod +x "$FLASK_DIR/venv/bin/python3"
     echo "✅ Set executable permissions for gunicorn and python"
