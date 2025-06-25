@@ -133,6 +133,10 @@ process_mission_with_layout() {
     local mission_name=$(basename "$html_file" .html)
     echo "Processing $mission_name HTML with layout template..."
     
+    # Extract mission number
+    local mission_number=${mission_name#mission}
+    echo "Detected mission number: $mission_number"
+    
     # Check if we have a specific layout template for this mission
     local layout_file="$LOCAL_STATIC_DIR/${mission_name}_layout.html"
     
@@ -150,6 +154,34 @@ process_mission_with_layout() {
         
         # Copy the mission HTML to temp dir
         cp "$html_file" "$tmp_dir/mission_content.html"
+        
+        # Look for mission info in the summary.html template
+        local summary_file="$LOCAL_STATIC_DIR/templates/summary.html"
+        if [ -f "$summary_file" ]; then
+            echo "Looking for mission $mission_number info in summary.html..."
+            
+            # Extract the mission title
+            local mission_title=$(grep -A 1 "Mission $mission_number:" "$summary_file" | grep "<h2>" | sed 's/<h2>\(.*\)<\/h2>/\1/' | tr -d '\n')
+            
+            # Extract the mission description (typically the 4th paragraph in the grid-item)
+            local mission_desc=$(grep -A 10 "Mission $mission_number:" "$summary_file" | grep -m 4 "<p>" | tail -n 1 | sed 's/<p>\(.*\)<\/p>/\1/' | tr -d '\n')
+            
+            echo "Extracted title: $mission_title"
+            echo "Extracted description: $mission_desc"
+            
+            # If we found both title and description, use them
+            if [ -n "$mission_title" ] && [ -n "$mission_desc" ]; then
+                echo "Will use extracted mission info for $mission_name"
+            else
+                echo "Could not extract complete mission info, using defaults"
+                mission_title="Mission $mission_number: Data Science Project"
+                mission_desc="Exploring data science concepts and techniques."
+            fi
+        else
+            echo "Summary file not found at $summary_file, using default mission info"
+            mission_title="Mission $mission_number: Data Science Project"
+            mission_desc="Exploring data science concepts and techniques."
+        fi
         
         # Look for scripts in the src directory for this mission
         local script_list=""
@@ -229,8 +261,10 @@ process_mission_with_layout() {
         local modified_layout="$tmp_dir/modified_layout.html"
         cp "$layout_file" "$modified_layout"
         
-        # Use more robust method to update mission number
-        local mission_number=${mission_name#mission}
+        # Update title and description with extracted info
+        sed -i "s|<h1>Mission: Data Science Project</h1>|<h1>$mission_title</h1>|g" "$modified_layout"
+        sed -i "s|<p>Exploring data science concepts and techniques.</p>|<p>$mission_desc</p>|g" "$modified_layout"
+        
         # Update mission number in title tag
         sed -i "s/Mission: Data/Mission $mission_number: Data/g" "$modified_layout"
         # Update mission number in h1 tag
