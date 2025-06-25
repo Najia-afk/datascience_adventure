@@ -502,44 +502,5 @@ echo "✅ Reloaded Nginx"
 
 echo "===== Deployment complete! ====="
 echo "Website should now be accessible."
-echo "Website should now be accessible."
-    # Copy Nginx config if present
-    if [ -f "$REPO_DIR/nginx/htmx_website" ]; then
-        sudo cp "$REPO_DIR/nginx/htmx_website" /etc/nginx/sites-available/htmx_website
-        sudo ln -sf /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/htmx_website
-        echo "✅ Copied Nginx config to /etc/nginx/sites-available/htmx_website"
-    fi
 
-
-echo "===== Finalizing deployment ====="
-
-# Set permissions for web files
-sudo chown -R www-data:www-data "$WWW_DIR"
-sudo chown -R www-data:www-data "$FLASK_DIR"
-sudo chmod -R 755 "$WWW_DIR"
-sudo chmod -R 755 "$FLASK_DIR"
-
-# Ensure gunicorn is executable
-if [ -f "$FLASK_DIR/venv/bin/gunicorn" ]; then
-    sudo chmod +x "$FLASK_DIR/venv/bin/gunicorn"
-    sudo chmod +x "$FLASK_DIR/venv/bin/python3"
-    echo "✅ Set executable permissions for gunicorn and python"
-elif [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
-    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
-    sudo chmod +x /srv/htmx_website/venv/bin/python3
-    echo "✅ Set executable permissions for gunicorn and python (alternate path)"
-fi
-
-# Reload services
-sudo systemctl daemon-reload
-echo "✅ Reloaded systemd daemon"
-
-sudo systemctl restart htmx_website.service || echo "⚠️ Warning: Failed to restart htmx_website service"
-echo "✅ Attempted to restart Flask application"
-
-sudo systemctl reload nginx || echo "⚠️ Warning: Failed to reload nginx"
-echo "✅ Reloaded Nginx"
-
-echo "===== Deployment complete! ====="
-echo "Website should now be accessible."
 
