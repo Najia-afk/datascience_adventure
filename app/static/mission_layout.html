@@ -116,9 +116,39 @@
             if (!iframe || !loadingIndicator || !iframeContainer) return false;
 
             try {
-                const documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                // Try multiple approaches to get the correct height
+                let documentHeight = 0;
+                
+                // Approach 1: Standard scrollHeight
+                try {
+                    documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                } catch (e) {
+                    console.log("Standard height detection failed:", e);
+                }
+                
+                // Approach 2: Try to get from documentElement if body failed
+                if (!documentHeight) {
+                    try {
+                        documentHeight = iframe.contentWindow.document.documentElement.scrollHeight;
+                    } catch (e) {
+                        console.log("documentElement height detection failed:", e);
+                    }
+                }
+                
+                // Approach 3: Try getting from offsetHeight
+                if (!documentHeight) {
+                    try {
+                        documentHeight = iframe.contentWindow.document.body.offsetHeight;
+                    } catch (e) {
+                        console.log("offsetHeight detection failed:", e);
+                    }
+                }
+                
+                console.log("Detected iframe height:", documentHeight);
+                
                 if (documentHeight > 0) {
-                    iframe.style.height = `${documentHeight}px`;
+                    // Add a small buffer to account for potential margins
+                    iframe.style.height = `${documentHeight + 50}px`;
                     loadingIndicator.style.display = 'none';
                     iframeContainer.style.visibility = 'visible';
                     iframeContainer.style.height = 'auto';
@@ -253,9 +283,43 @@
         
         // Set up HTMX events for navigation
         document.body.addEventListener('htmx:afterSwap', function(event) {
-            // When content changes, check sidebar layout and try to resize iframe
+            console.log("HTMX page swap detected, resetting iframe and resizing logic");
+            
+            // Clear existing resize timer if it exists
+            if (window.dsaApp && window.dsaApp.resizeTimer) {
+                clearInterval(window.dsaApp.resizeTimer);
+                window.dsaApp.resizeTimer = null;
+            }
+            
+            // Reset resize counter
+            if (window.dsaApp) {
+                window.dsaApp.resizeCounter = 0;
+                window.dsaApp.initialized = false; // Force reinitialization
+            }
+            
+            // Immediately check layout for mobile
             checkMobileAndSetLayout();
-            setTimeout(handleIframeResize, 500);
+            
+            // Show loading indicator again
+            const loadingIndicator = document.getElementById('loading');
+            const iframeContainer = document.querySelector('.iframe-container');
+            if (loadingIndicator && iframeContainer) {
+                loadingIndicator.style.display = 'block';
+                iframeContainer.style.visibility = 'hidden';
+                iframeContainer.style.height = '1px';
+            }
+            
+            // Reset progress bar
+            const progressIndicator = document.querySelector('.progress-indicator');
+            if (progressIndicator) {
+                progressIndicator.style.width = '0%';
+                simulateProgress(); // Restart progress simulation
+            }
+            
+            // Reinitialize the page with slight delay to ensure DOM is updated
+            setTimeout(function() {
+                initializePage();
+            }, 300);
         });
     </script>
 </body>
