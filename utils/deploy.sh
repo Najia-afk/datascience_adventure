@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Simple deploy script for public mission repos
-# No fallbacks - only copies existing files
+# Main deployment script for HTMX website
+# Modular design that calls specific scripts for different tasks
 
 set -e
 
@@ -26,11 +26,13 @@ WWW_DIR="/var/www/htmx_website"
 FLASK_DIR="/srv/htmx_website"
 LOCAL_APP_DIR="$USER_HOME/datascience_adventure/app"
 LOCAL_STATIC_DIR="$LOCAL_APP_DIR/static"
+SCRIPTS_DIR="$(dirname "$0")/scripts"
 
 echo "Using directories:"
 echo "- User home: $USER_HOME"
 echo "- App directory: $LOCAL_APP_DIR"
 echo "- Static directory: $LOCAL_STATIC_DIR"
+echo "- Scripts directory: $SCRIPTS_DIR"
 
 # Create necessary directories
 sudo mkdir -p "$WWW_DIR/templates"
@@ -127,364 +129,8 @@ fi
 
 echo "===== Deploying remote repository files ====="
 
-# Function to process mission HTML with layout template
-process_mission_with_layout() {
-    local html_file=$1
-    local mission_name=$(basename "$html_file" .html)
-    echo "Processing $mission_name HTML with layout template..."
-    
-    # Extract mission number
-    local mission_number=${mission_name#mission}
-    echo "Detected mission number: $mission_number"
-    
-    # Check if we have a specific layout template for this mission
-    local layout_file="$LOCAL_STATIC_DIR/${mission_name}_layout.html"
-    
-    # If no specific layout exists, use the generic one
-    if [ ! -f "$layout_file" ] && [ -f "$LOCAL_STATIC_DIR/mission_layout.html" ]; then
-        echo "Using generic mission layout for $mission_name"
-        layout_file="$LOCAL_STATIC_DIR/mission_layout.html"
-    fi
-    
-    if [ -f "$layout_file" ]; then
-        echo "Found layout template for $mission_name"
-        
-        # Create temporary directory
-        local tmp_dir=$(mktemp -d)
-        
-        # Copy the mission HTML to temp dir
-        cp "$html_file" "$tmp_dir/mission_content.html"
-        
-        # Look for mission info in the summary.html template
-        local summary_file="$LOCAL_STATIC_DIR/templates/summary.html"
-        if [ -f "$summary_file" ]; then
-            echo "Looking for mission $mission_number info in summary.html..."
-            
-            # Extract the mission title
-            local mission_title=$(grep -A 1 "Mission $mission_number:" "$summary_file" | grep "<h2>" | sed 's/<h2>\(.*\)<\/h2>/\1/' | tr -d '\n')
-            
-            # Extract the mission description (third paragraph in the grid-item, not fourth)
-            local mission_desc=$(grep -A 10 "Mission $mission_number:" "$summary_file" | grep -m 3 "<p>" | tail -n 1 | sed 's/<p>\(.*\)<\/p>/\1/' | tr -d '\n')
-            
-            echo "Extracted title: $mission_title"
-            echo "Extracted description: $mission_desc"
-            
-            # If we found both title and description, use them
-            if [ -n "$mission_title" ] && [ -n "$mission_desc" ]; then
-                echo "Will use extracted mission info for $mission_name"
-            else
-                echo "Could not extract complete mission info, using defaults"
-                mission_title="Mission $mission_number: Data Science Project"
-                mission_desc="Exploring data science concepts and techniques."
-            fi
-        else
-            echo "Summary file not found at $summary_file, using default mission info"
-            mission_title="Mission $mission_number: Data Science Project"
-            mission_desc="Exploring data science concepts and techniques."
-        fi
-        
-        # Look for scripts in the src directory for this mission
-        local script_list=""
-        local repo_name=$(basename $(dirname "$html_file"))
-        local src_dir="$WORKDIR/$repo_name/src"
-        
-        if [ -d "$src_dir" ]; then
-            echo "Generating script list from $src_dir"
-            # Create a temporary script list file
-            local script_list_file="$tmp_dir/script_list.html"
-            echo '<ul id="sidebar-list">' > "$script_list_file"
-            
-            # Get all subdirectories in the src directory
-            local subdirs=$(find "$src_dir" -type d | sort)
-            
-            # Process each subdirectory
-            for subdir in $subdirs; do
-                # Skip the src directory itself
-                if [ "$subdir" = "$src_dir" ]; then
-                    continue
-                fi
-                
-                # Get the relative path from src
-                local rel_path=${subdir#"$src_dir/"}
-                # Only add subdir heading if files exist in this directory
-                local has_py_files=$(find "$subdir" -maxdepth 1 -name "*.py" ! -name "__init__.py" | wc -l)
-                
-                if [ "$has_py_files" -gt 0 ]; then
-                    # Add subdirectory heading
-                    echo "<li class='subdir-heading'><strong>$(basename "$subdir")/</strong>" >> "$script_list_file"
-                    echo "<ul>" >> "$script_list_file"
-                    
-                    # Find Python files in this subdirectory, excluding __init__.py
-                    find "$subdir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
-                        local script_name=$(basename "$script_path")
-                        # FIXED: Create path without src directory in the URL and ensure no trailing slash
-                        local subdirectory=$(basename "$subdir")
-                        local script_url="${repo_name}_src/${subdirectory}/${script_name}"
-                        # Clean up the URL path and ensure no trailing slash
-                        script_url=$(echo "$script_url" | sed 's|//*|/|g' | sed 's|/$||')
-                        echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
-                    done
-                    
-                    echo "</ul></li>" >> "$script_list_file"
-                fi
-            done
-            
-            # Also add Python files directly in the src directory
-            local root_has_py_files=$(find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | wc -l)
-            
-            if [ "$root_has_py_files" -gt 0 ]; then
-                echo "<li class='subdir-heading'><strong>root/</strong>" >> "$script_list_file"
-                echo "<ul>" >> "$script_list_file"
-                
-                # Also for root directory files
-                find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
-                    local script_name=$(basename "$script_path")
-                    # FIXED: Create correct URL path for root directory files with no trailing slash
-                    local script_url="${repo_name}_src/${script_name}"
-                    # Clean up the URL path and ensure no trailing slash
-                    script_url=$(echo "$script_url" | sed 's|//*|/|g' | sed 's|/$||')
-                    echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
-                done
-                
-                echo "</ul></li>" >> "$script_list_file"
-            fi
-            
-            echo '</ul>' >> "$script_list_file"
-            script_list=$(cat "$script_list_file")
-        else
-            echo "No src directory found for $repo_name"
-            # Default empty list
-            script_list='<ul id="sidebar-list"><li>No scripts available</li></ul>'
-        fi
-        
-        # Create a modified layout with the correct mission name and script list
-        local modified_layout="$tmp_dir/modified_layout.html"
-        cp "$layout_file" "$modified_layout"
-        
-        # Update title and description with extracted info
-        sed -i "s|<h1>Mission: Data Science Project</h1>|<h1>$mission_title</h1>|g" "$modified_layout"
-        sed -i "s|<p>Exploring data science concepts and techniques.</p>|<p>$mission_desc</p>|g" "$modified_layout"
-        
-        # Update mission number in title tag
-        sed -i "s/Mission: Data/Mission $mission_number: Data/g" "$modified_layout"
-        # Update mission number in h1 tag
-        sed -i "s/<h1>Mission: /<h1>Mission $mission_number: /g" "$modified_layout"
-        
-        # Create a script list placeholder file to avoid sed escaping issues
-        echo "$script_list" > "$tmp_dir/script_list_content.html"
-        
-        # Use awk to replace the sidebar list - more reliable than sed for complex HTML
-        awk '{
-            if ($0 ~ /<ul id="sidebar-list">/) {
-                system("cat '"$tmp_dir/script_list_content.html"'");
-                in_list = 1;
-            } else if (in_list && $0 ~ /<\/ul>/) {
-                in_list = 0;
-            } else if (!in_list) {
-                print $0;
-            }
-        }' "$modified_layout" > "$tmp_dir/layout_with_scripts.html"
-        
-        # Move the modified file back
-        mv "$tmp_dir/layout_with_scripts.html" "$modified_layout"
-        
-        # Update GitHub repo link
-        local github_repo=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')
-        sed -i "s|github.com/Najia-afk/mission|github.com/Najia-afk/$github_repo|g" "$modified_layout"
-        
-        # Update iframe src to point to the correct content file
-        sed -i "s|id=\"main-iframe\" src=\"\"|id=\"main-iframe\" src=\"/${mission_name}_content.html\"|g" "$modified_layout"
-
-        # Update the Colab button URL - simplify to match the pattern in mission_layout.html
-        local colab_url="https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb"
-        echo "Setting Colab button URL to $colab_url"
-
-        # Match the exact line in the JavaScript and replace it
-        sed -i "s|colabButton.href = 'https://colab.research.google.com/github/Najia-afk/';|colabButton.href = 'https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb';|g" "$modified_layout"
-
-        # Add resize listener script to the merged file if not already present
-        if ! grep -q "sendHeight" "$modified_layout"; then
-            cat <<EOF >> "$modified_layout"
-<script>
-    function sendHeight() {
-        var documentHeight = document.body.scrollHeight;
-        console.log("Iframe content height:", documentHeight);
-        window.parent.postMessage({ height: documentHeight }, "*");
-    }
-    window.addEventListener("load", function() {
-        sendHeight();
-    });
-    window.addEventListener("resize", function() {
-        sendHeight();
-    });
-</script>
-</body>
-EOF
-            # Remove the original closing body tag to avoid duplicates
-            sed -i 's|</body>||g' "$modified_layout"
-            # Add back the closing HTML tag if needed
-            echo "</html>" >> "$modified_layout"
-            echo "Added resize listener script to merged file"
-        fi
-        
-        # Copy the modified layout and content to the web directory
-        sudo cp "$modified_layout" "$WWW_DIR/${mission_name}.html"
-        sudo cp "$html_file" "$WWW_DIR/${mission_name}_content.html"
-        
-        # Set proper permissions for both files
-        sudo chown www-data:www-data "$WWW_DIR/${mission_name}.html"
-        sudo chown www-data:www-data "$WWW_DIR/${mission_name}_content.html"
-        sudo chmod 644 "$WWW_DIR/${mission_name}.html"
-        sudo chmod 644 "$WWW_DIR/${mission_name}_content.html"
-        
-        # Clean up
-        rm -rf "$tmp_dir"
-        
-        echo "✅ Created merged ${mission_name}.html with layout in $WWW_DIR/"
-        return 0
-    else
-        # No layout template found
-        echo "No layout template found for $mission_name"
-        return 1
-    fi
-}
-
-# Add this new function to convert Python files to HTML
-convert_py_to_html() {
-    local src_dir="$1"
-    local dest_dir="$2"
-    local repo_name="$3"
-    
-    echo "Converting Python files to HTML in $src_dir..."
-    
-    # Install pygments if not already installed
-    if ! sudo -u www-data /srv/htmx_website/venv/bin/pip list | grep -q pygments; then
-        sudo -u www-data /srv/htmx_website/venv/bin/pip install pygments
-        echo "✅ Installed Pygments for Python syntax highlighting"
-    fi
-    
-    # Find all Python files and convert them
-    find "$src_dir" -type f -name "*.py" ! -name "__init__.py" | while read py_file; do
-        # Get relative path
-        rel_path=${py_file#"$src_dir/"}
-        
-        # Determine destination directory based on subdirectory name
-        subdir=$(dirname "$rel_path")
-        if [ "$subdir" = "." ]; then
-            # Root directory files go to "root"
-            target_dir="$dest_dir/root"
-        else
-            # Use the actual subdirectory name
-            target_dir="$dest_dir/$subdir"
-        fi
-        
-        # Create target directory if it doesn't exist
-        sudo mkdir -p "$target_dir"
-        
-        # Get the basename without extension
-        base_name=$(basename "$py_file" .py)
-        html_file="$target_dir/${base_name}.html"
-        
-        echo "Converting $py_file to $html_file"
-        
-        # Read Python file
-        py_content=$(cat "$py_file")
-        
-        # Generate HTML with Pygments using Python - with error handling
-        html_content=$(sudo -u www-data /srv/htmx_website/venv/bin/python3 -c "
-import pygments
-import os
-import sys
-from pygments import highlight
-from pygments.lexers import PythonLexer
-from pygments.formatters import HtmlFormatter
-
-code = '''$py_content'''
-
-# Try to parse the Python code first to check for syntax errors
-try:
-    compile(code, '<string>', 'exec')
-    is_valid = True
-except SyntaxError as e:
-    is_valid = False
-    error_line = e.lineno
-    error_msg = str(e)
-
-if is_valid:
-    # Code is valid, proceed with highlighting
-    formatter = HtmlFormatter(style='default', linenos=True, full=True)
-    html = highlight(code, PythonLexer(), formatter)
-    css = formatter.get_style_defs('.highlight')
-else:
-    # Code has syntax errors, create a simpler display with error highlighted
-    lines = code.split('\\n')
-    html_lines = []
-    
-    for i, line in enumerate(lines, 1):
-        if i == error_line:
-            # Highlight the error line
-            html_lines.append(f'<div class=\"error-line\">{i}: {line}</div>')
-        else:
-            html_lines.append(f'<div class=\"code-line\">{i}: {line}</div>')
-    
-    html = f'<div class=\"syntax-error\">SYNTAX ERROR: {error_msg}</div><pre>{\"\".join(html_lines)}</pre>'
-    css = '.error-line { background-color: #ffcccc; color: #990000; } .syntax-error { color: red; font-weight: bold; margin-bottom: 10px; }'
-
-print(f'''<!DOCTYPE html>
-<html>
-<head>
-    <title>{os.path.basename('$py_file')}</title>
-    <style>
-        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; }}
-        .back-link {{ margin-bottom: 20px; }}
-        .back-link a {{ text-decoration: none; color: #0066cc; }}
-        .code-container {{ border: 1px solid #ddd; border-radius: 5px; overflow: auto; padding: 10px; }}
-        .code-line {{ font-family: monospace; white-space: pre; }}
-        {css}
-    </style>
-</head>
-<body>
-    <h2>{os.path.basename('$py_file')}</h2>
-    <div class='code-container'>
-        {html}
-    </div>
-</body>
-</html>''')
-" 2>/dev/null) || {
-            # If Python script fails, create a simple error HTML file
-            echo "⚠️ Error processing $py_file - syntax error detected"
-            error_html="<!DOCTYPE html>
-<html>
-<head>
-    <title>$(basename "$py_file") - Syntax Error</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .error { color: red; font-weight: bold; }
-        .back-link { margin-bottom: 20px; }
-        .back-link a { text-decoration: none; color: #0066cc; }
-        pre { background-color: #f5f5f5; padding: 10px; border: 1px solid #ddd; border-radius: 5px; overflow: auto; }
-    </style>
-</head>
-<body>
-    <h2>$(basename "$py_file")</h2>
-    <div class='error'>This file contains syntax errors and cannot be properly displayed.</div>
-    <p>Please check the original source code for errors.</p>
-    <pre>$(cat "$py_file" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g')</pre>
-</body>
-</html>"
-            echo "$error_html" | sudo tee "$html_file" > /dev/null
-        }
-        
-        # Write HTML to file
-        echo "$html_content" | sudo tee "$html_file" > /dev/null
-        
-        # Set proper permissions
-        sudo chown www-data:www-data "$html_file"
-        sudo chmod 644 "$html_file"
-    done
-    
-    echo "✅ Converted Python files to HTML"
-}
+# Ensure script files are executable
+chmod +x "$SCRIPTS_DIR"/*.sh
 
 # Process remote repositories
 for REPO_URL in "${REPOS[@]}"; do
@@ -502,8 +148,29 @@ for REPO_URL in "${REPOS[@]}"; do
     # Copy missionX.html
     HTML_FILE=$(find "$REPO_DIR" -maxdepth 1 -iname "mission*.html" | head -n 1)
     if [ -f "$HTML_FILE" ]; then
-        # Use the function to process the mission with layout
-        if ! process_mission_with_layout "$HTML_FILE"; then
+        # Check if we have a specific layout template for this mission
+        MISSION_NAME=$(basename "$HTML_FILE" .html)
+        LAYOUT_FILE="$LOCAL_STATIC_DIR/${MISSION_NAME}_layout.html"
+        
+        # If no specific layout exists, use the generic one
+        if [ ! -f "$LAYOUT_FILE" ] && [ -f "$LOCAL_STATIC_DIR/mission_layout.html" ]; then
+            echo "Using generic mission layout for $MISSION_NAME"
+            LAYOUT_FILE="$LOCAL_STATIC_DIR/mission_layout.html"
+        fi
+        
+        if [ -f "$LAYOUT_FILE" ]; then
+            # Create temporary directory
+            TMP_DIR=$(mktemp -d)
+            
+            # Process mission with layout
+            echo "Processing mission with layout..."
+            SUMMARY_FILE="$LOCAL_STATIC_DIR/templates/summary.html"
+            bash "$SCRIPTS_DIR/process_missions.sh" "$HTML_FILE" "$TMP_DIR" "$LAYOUT_FILE" "$SUMMARY_FILE" "$WORKDIR" "$WWW_DIR"
+            
+            # Clean up temp directory
+            rm -rf "$TMP_DIR"
+            echo "✅ Processed $MISSION_NAME"
+        else
             # If function returns non-zero (failed), fall back to simple copy
             sudo cp "$HTML_FILE" "$WWW_DIR/"
             echo "✅ Copied $(basename "$HTML_FILE") to $WWW_DIR/ (no layout template found)"
@@ -521,7 +188,7 @@ for REPO_URL in "${REPOS[@]}"; do
         sudo mkdir -p "$WWW_DIR/${REPO_NAME}_src"
         
         # Convert Python files to HTML and organize by subdirectory
-        convert_py_to_html "$REPO_DIR/src" "$WWW_DIR/${REPO_NAME}_src" "$REPO_NAME"
+        bash "$SCRIPTS_DIR/convert_python_to_html.sh" "$REPO_DIR/src" "$WWW_DIR/${REPO_NAME}_src" "$REPO_NAME"
         
         # Also copy the original Python files for reference
         sudo cp -r "$REPO_DIR/src" "$WWW_DIR/${REPO_NAME}_src_original"
@@ -580,25 +247,4 @@ echo "✅ Reloaded Nginx"
 
 echo "===== Deployment complete! ====="
 echo "Website should now be accessible."
-    sudo chmod +x "$FLASK_DIR/venv/bin/gunicorn"
-    sudo chmod +x "$FLASK_DIR/venv/bin/python3"
-    echo "✅ Set executable permissions for gunicorn and python"
-elif [ -f "/srv/htmx_website/venv/bin/gunicorn" ]; then
-    sudo chmod +x /srv/htmx_website/venv/bin/gunicorn
-    sudo chmod +x /srv/htmx_website/venv/bin/python3
-    echo "✅ Set executable permissions for gunicorn and python (alternate path)"
-fi
-
-# Reload services
-sudo systemctl daemon-reload
-echo "✅ Reloaded systemd daemon"
-
-sudo systemctl restart htmx_website.service || echo "⚠️ Warning: Failed to restart htmx_website service"
-echo "✅ Attempted to restart Flask application"
-
-sudo systemctl reload nginx || echo "⚠️ Warning: Failed to reload nginx"
-echo "✅ Reloaded Nginx"
-
-echo "===== Deployment complete! ====="
-echo "Website should now be accessible."
-
+     
