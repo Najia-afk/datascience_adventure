@@ -163,8 +163,8 @@ process_mission_with_layout() {
             # Extract the mission title
             local mission_title=$(grep -A 1 "Mission $mission_number:" "$summary_file" | grep "<h2>" | sed 's/<h2>\(.*\)<\/h2>/\1/' | tr -d '\n')
             
-            # Extract the mission description (typically the 4th paragraph in the grid-item)
-            local mission_desc=$(grep -A 10 "Mission $mission_number:" "$summary_file" | grep -m 4 "<p>" | tail -n 1 | sed 's/<p>\(.*\)<\/p>/\1/' | tr -d '\n')
+            # Extract the mission description (third paragraph in the grid-item, not fourth)
+            local mission_desc=$(grep -A 10 "Mission $mission_number:" "$summary_file" | grep -m 3 "<p>" | tail -n 1 | sed 's/<p>\(.*\)<\/p>/\1/' | tr -d '\n')
             
             echo "Extracted title: $mission_title"
             echo "Extracted description: $mission_desc"
@@ -295,10 +295,34 @@ process_mission_with_layout() {
         # Update iframe src to point to the correct content file
         sed -i "s|id=\"main-iframe\" src=\"\"|id=\"main-iframe\" src=\"/${mission_name}_content.html\"|g" "$modified_layout"
 
-        # Update the Colab button URL
+        # Update the Colab button URL - use a more robust approach
+        echo "Setting Colab button URL to https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb"
+
+        # First try: Replace if there's no href attribute yet
         sed -i "s|id=\"colab-button\" class=\"button-colab\">|id=\"colab-button\" class=\"button-colab\" href=\"https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb\">|g" "$modified_layout"
 
-        
+        # Second try: Replace if there's already an href attribute
+        sed -i "s|id=\"colab-button\" class=\"button-colab\" href=\"[^\"]*\"|id=\"colab-button\" class=\"button-colab\" href=\"https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb\"|g" "$modified_layout"
+
+        # Third try: Alternative attribute order
+        sed -i "s|class=\"button-colab\" id=\"colab-button\">|class=\"button-colab\" id=\"colab-button\" href=\"https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb\">|g" "$modified_layout"
+
+        # Final check - verify if it worked or directly insert the URL
+        if ! grep -q "https://colab.research.google.com/github/Najia-afk/$github_repo" "$modified_layout"; then
+            echo "Sed replacements failed, using direct approach"
+            # Find the line with the colab button and add the href directly
+            line_num=$(grep -n "id=\"colab-button\"" "$modified_layout" | cut -d: -f1)
+            if [ -n "$line_num" ]; then
+                awk -v line="$line_num" -v url="https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb" '{
+                    if (NR == line) {
+                        gsub(/>$/, " href=\"" url "\">");
+                    }
+                    print $0;
+                }' "$modified_layout" > "$tmp_dir/fixed_colab.html"
+                mv "$tmp_dir/fixed_colab.html" "$modified_layout"
+            fi
+        fi
+
         # Add resize listener script to the merged file if not already present
         if ! grep -q "sendHeight" "$modified_layout"; then
             cat <<EOF >> "$modified_layout"
