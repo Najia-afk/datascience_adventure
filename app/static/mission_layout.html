@@ -13,7 +13,7 @@
 <body hx-boost="true" class="mobile-view">
     <!-- Sidebar -->
     <aside class="sidebar collapsed" id="sidebar">
-        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
             ▶
         </button>
         <div class="vertical-title">Scripts Used in This Notebook</div>
@@ -57,38 +57,12 @@
     <script>
         // Wrap all our code in an IIFE to avoid global variable conflicts
         (function() {
-            // Global toggleSidebar function for the onclick attribute
-            window.toggleSidebar = function() {
-                console.log("Toggle sidebar called");
-                const sidebar = document.getElementById('sidebar');
-                const mainContent = document.getElementById('main-content');
-                const toggleBtn = document.getElementById('sidebar-toggle');
-
-                if (!sidebar || !mainContent || !toggleBtn) {
-                    console.error("Required elements not found");
-                    return;
-                }
-
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
-
-                if (sidebar.classList.contains('collapsed')) {
-                    toggleBtn.innerHTML = '▶';
-                } else {
-                    toggleBtn.innerHTML = '◀';
-                }
-                
-                console.log("Sidebar collapsed:", sidebar.classList.contains('collapsed'));
-            };
-
             // Check if it's a mobile device and set initial state
             function checkMobileAndSetLayout() {
                 const isMobile = window.innerWidth <= 768;
                 const sidebar = document.getElementById('sidebar');
                 const mainContent = document.getElementById('main-content');
                 const toggleBtn = document.getElementById('sidebar-toggle');
-                
-                console.log("Checking mobile layout. isMobile:", isMobile);
                 
                 if (isMobile) {
                     // Ensure sidebar is collapsed and main content expanded on mobile
@@ -177,23 +151,80 @@
                 }
             }
             
+            // Function to handle sidebar toggle
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('main-content');
+                const toggleBtn = document.getElementById('sidebar-toggle');
+
+                if (!sidebar || !mainContent || !toggleBtn) {
+                    console.error("Required elements not found");
+                    return;
+                }
+
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleBtn.innerHTML = '▶';
+                    toggleBtn.style.right = '0';
+                } else {
+                    toggleBtn.innerHTML = '◀';
+                    toggleBtn.style.right = '0';
+                }
+            }
+            
+            // Function to set up Colab URL
+            function setupColabLink() {
+                const iframe = document.getElementById('main-iframe');
+                const colabButton = document.getElementById('colab-button');
+                let currentPath = window.location.pathname;
+                
+                // Remove trailing slash if any
+                currentPath = currentPath.replace(/\/$/, '');
+                
+                // If at root or empty path, default to the current page ID or a fallback
+                if (!currentPath || currentPath === '/') {
+                    // Try to determine mission from the page content or document title
+                    const titleText = document.title;
+                    const missionMatch = titleText.match(/Mission\s+(\d+)/i);
+                    
+                    if (missionMatch && missionMatch[1]) {
+                        currentPath = '/mission' + missionMatch[1];
+                    } else {
+                        console.error("Could not determine mission number from URL or title");
+                        // Disable Colab button if we can't determine the mission
+                        colabButton.style.display = 'none';
+                        return;
+                    }
+                }
+                
+                // Set iframe source
+                iframe.src = currentPath + '_content.html';
+                
+                // Extract just the mission name without the leading slash for the Colab URL
+                const repoName = currentPath.replace(/^\//, '');
+                
+                // Set Colab button link with proper GitHub repo format
+                colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/main/' + repoName + '.ipynb';
+                
+                // Log for debugging
+                console.log("Setting Colab URL to:", colabButton.href);
+            }
+            
             // Set up event listeners when DOM is ready
             function initializeEventListeners() {
                 // Run mobile check on page load and resize
                 checkMobileAndSetLayout();
                 window.addEventListener('resize', checkMobileAndSetLayout);
                 
-                // Setup sidebar toggle with direct event listener
+                // Setup sidebar toggle
                 const toggleBtn = document.getElementById('sidebar-toggle');
                 if (toggleBtn) {
-                    console.log("Adding click event to toggle button");
                     toggleBtn.addEventListener('click', function(e) {
                         e.preventDefault();
-                        window.toggleSidebar();
+                        toggleSidebar();
                     });
-                    
-                    // Make sure the button has the onclick attribute as well
-                    toggleBtn.setAttribute('onclick', 'toggleSidebar()');
                 }
                 
                 // Make the global toggle function available
@@ -251,21 +282,16 @@
                 }, 10000);
             }
             
-            // Initialize immediately if DOM is already loaded
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    console.log("DOM content loaded - initializing");
-                    initialize();
-                });
+            // Initialize when DOM content is loaded
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initialize);
             } else {
-                console.log("DOM already loaded - initializing immediately");
+                // DOM is already ready
                 initialize();
             }
             
-            // Also run on window load to ensure everything is properly set up
+            // Additional window load event for iframe resize
             window.addEventListener('load', function() {
-                console.log("Window loaded - checking mobile layout again");
-                checkMobileAndSetLayout();
                 handleIframeResize();
                 adjustSidebarHeight();
             });
