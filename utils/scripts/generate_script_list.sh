@@ -13,7 +13,6 @@ generate_script_list() {
         return
     fi
     
-    echo "Generating script list from $src_dir"
     # Create a temporary script list file
     local script_list_file="$tmp_dir/script_list.html"
     echo '<ul id="sidebar-list">' > "$script_list_file"
