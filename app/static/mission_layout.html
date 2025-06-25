@@ -223,6 +223,8 @@
                 document.querySelector('.loading-message').textContent = 'Almost done...';
             }, 60000);
         }
+        
+        // Initialize progress bar once
         simulateProgress();
         // Function to adjust sidebar height based on its content
         function adjustSidebarHeight() {
@@ -269,23 +271,14 @@
             }
         });
 
-        // Start simulating progress
-        simulateProgress();
-
-        // Trigger when the entire window has loaded
-        window.addEventListener('load', function () {
-            handleIframeResize(); // Call iframe resize on load
-            adjustSidebarHeight(); // Adjust sidebar height on load
-        });
-
         // Try resizing every 10 seconds for up to 2 minutes
-        let attempts = 0;
-        const maxAttempts = 12; // 2 minutes (12 * 10 seconds)
+        let resizeAttempts = 0; // Renamed from 'attempts' to avoid conflict
+        const maxResizeAttempts = 12; // 2 minutes (12 * 10 seconds)
         const resizeInterval = setInterval(() => {
-            attempts++;
-            if (handleIframeResize() || attempts >= maxAttempts) {
+            resizeAttempts++;
+            if (handleIframeResize() || resizeAttempts >= maxResizeAttempts) {
                 clearInterval(resizeInterval);
-                if (attempts >= maxAttempts) {
+                if (resizeAttempts >= maxResizeAttempts) {
                     // After 2 minutes, show the iframe anyway
                     const loadingIndicator = document.getElementById('loading');
                     const iframeContainer = document.querySelector('.iframe-container');
