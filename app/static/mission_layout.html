@@ -251,8 +251,7 @@
             
             // Initialize everything
             function initialize() {
-                // Setup Colab link
-                setupColabLink();
+                
                 
                 // Start progress simulation
                 simulateProgress();
@@ -262,6 +261,9 @@
                 
                 // Adjust sidebar height
                 setTimeout(adjustSidebarHeight, 500);
+
+                // Setup Colab link
+                setupColabLink();
                 
                 // Set up periodic resize attempts
                 let resizeCounter = 0;
