@@ -94,15 +94,15 @@
             
             if (!sidebar || !mainContent || !toggleBtn) return;
             
+            // Always start with sidebar collapsed regardless of device
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('expanded');
+            toggleBtn.innerHTML = '▶';
+            
+            // Add mobile-specific class if on mobile
             if (isMobile) {
-                sidebar.classList.add('collapsed');
-                mainContent.classList.add('expanded');
-                toggleBtn.innerHTML = '▶';
                 document.body.classList.add('mobile-view');
             } else {
-                sidebar.classList.remove('collapsed');
-                mainContent.classList.remove('expanded');
-                toggleBtn.innerHTML = '◀';
                 document.body.classList.remove('mobile-view');
             }
         }
