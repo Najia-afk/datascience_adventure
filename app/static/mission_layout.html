@@ -253,19 +253,16 @@
             function initialize() {
                 
                 
-                // Start progress simulation
+                // Start progress simulation for loading indicator
                 simulateProgress();
                 
-                // Set up event listeners
+                // Set up all event listeners
                 initializeEventListeners();
                 
-                // Adjust sidebar height
+                // Adjust sidebar height after a short delay to ensure content is loaded
                 setTimeout(adjustSidebarHeight, 500);
-
-                // Setup Colab link
-                setupColabLink();
                 
-                // Set up periodic resize attempts
+                // Set up periodic resize attempts for the iframe
                 let resizeCounter = 0;
                 const maxResizes = 12; // 2 minutes (12 * 10 seconds)
                 const resizeTimer = setInterval(function() {
@@ -282,6 +279,9 @@
                         }
                     }
                 }, 10000);
+
+                // Setup Colab link first so it's ready immediately
+                setupColabLink();
             }
             
             // Initialize when DOM content is loaded
