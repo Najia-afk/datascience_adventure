@@ -228,17 +228,17 @@ process_mission_with_layout() {
         # Create a modified layout with the correct mission name and script list
         local modified_layout="$tmp_dir/modified_layout.html"
         cp "$layout_file" "$modified_layout"
-        
+
         # Use more robust method to update mission number
         local mission_number=${mission_name#mission}
         # Update mission number in title tag
         sed -i "s/Mission: Data/Mission $mission_number: Data/g" "$modified_layout"
         # Update mission number in h1 tag
         sed -i "s/<h1>Mission: /<h1>Mission $mission_number: /g" "$modified_layout"
-        
+
         # Create a script list placeholder file to avoid sed escaping issues
         echo "$script_list" > "$tmp_dir/script_list_content.html"
-        
+
         # Use awk to replace the sidebar list - more reliable than sed for complex HTML
         awk '{
             if ($0 ~ /<ul id="sidebar-list">/) {
@@ -250,17 +250,20 @@ process_mission_with_layout() {
                 print $0;
             }
         }' "$modified_layout" > "$tmp_dir/layout_with_scripts.html"
-        
+
         # Move the modified file back
         mv "$tmp_dir/layout_with_scripts.html" "$modified_layout"
-        
+
         # Update GitHub repo link
         local github_repo=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')
         sed -i "s|github.com/Najia-afk/mission|github.com/Najia-afk/$github_repo|g" "$modified_layout"
-        
+
         # Update iframe src to point to the correct content file
         sed -i "s|id=\"main-iframe\" src=\"\"|id=\"main-iframe\" src=\"/${mission_name}_content.html\"|g" "$modified_layout"
-        
+
+        # NEW: Hardcode the Colab button URL
+        sed -i "s|id=\"colab-button\" class=\"button-colab\">|id=\"colab-button\" class=\"button-colab\" href=\"https://colab.research.google.com/github/Najia-afk/$github_repo/blob/main/$github_repo.ipynb\">|g" "$modified_layout"
+
         # Add resize listener script to the merged file if not already present
         if ! grep -q "sendHeight" "$modified_layout"; then
             cat <<EOF >> "$modified_layout"
