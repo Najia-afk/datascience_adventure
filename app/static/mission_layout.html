@@ -10,11 +10,11 @@
     <!-- Removed inline CSS styles - now using layout.css -->
 </head>
 
-<body hx-boost="true">
+<body hx-boost="true" class="mobile-view">
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar collapsed" id="sidebar">
         <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
-            ◀
+            ▶
         </button>
         <div class="vertical-title">Scripts Used in This Notebook</div>
         <h2>Scripts Used in This Notebook:</h2>
@@ -25,7 +25,7 @@
     </aside>
 
     <!-- Main Content Area -->
-    <section class="main-content" id="main-content">
+    <section class="main-content expanded" id="main-content">
         <header class="project-header">
             <h1>Mission: Data Science Project</h1>
             <p>Exploring data science concepts and techniques.</p>
@@ -55,6 +55,29 @@
 
     <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
+        // Check if it's a mobile device and set initial state
+        function checkMobileAndSetLayout() {
+            const isMobile = window.innerWidth <= 768;
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            
+            if (isMobile) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+                document.querySelector('.sidebar-toggle').innerHTML = '▶';
+            } else {
+                // On desktop, we can start with expanded sidebar
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+                document.querySelector('.sidebar-toggle').innerHTML = '◀';
+            }
+        }
+        
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', checkMobileAndSetLayout);
+        // Also run on resize
+        window.addEventListener('resize', checkMobileAndSetLayout);
+
         // Improved sidebar toggle functionality with debugging
         document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.getElementById('sidebar');

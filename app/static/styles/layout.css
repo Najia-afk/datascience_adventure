@@ -156,3 +156,63 @@
     background-color: #ff9900;
     color: #fff;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    /* Make main content take full width */
+    .main-content {
+        margin-left: 40px;
+        padding: 0 10px;
+        width: calc(100% - 40px);
+        transition: width 0.3s ease, margin-left 0.3s ease;
+    }
+    
+    /* Make sidebar collapsed by default */
+    .sidebar {
+        transform: translateX(-230px);
+        top: 100px; /* Lower the sidebar position */
+    }
+    
+    /* Ensure sidebar toggle is visible */
+    .sidebar-toggle {
+        left: 0;
+        width: 30px; /* Larger tap target for mobile */
+        height: 80px; /* Taller for easier tapping */
+        border-radius: 0 8px 8px 0; /* Rounder corners */
+    }
+    
+    /* Show vertical title by default on mobile */
+    .sidebar .vertical-title {
+        display: block;
+        opacity: 1;
+    }
+    
+    /* Ensure iframe container uses full width */
+    .iframe-container {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    /* Make project header more compact */
+    .project-header h1 {
+        font-size: 22px;
+        margin-bottom: 5px;
+    }
+    
+    .project-header p {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+    
+    /* Make Colab button more prominent */
+    .button-container {
+        text-align: center;
+    }
+    
+    .button-colab {
+        display: block;
+        width: 100%;
+        padding: 12px 0;
+        font-size: 18px;
+    }
+}
