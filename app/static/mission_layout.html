@@ -60,22 +60,34 @@
             const isMobile = window.innerWidth <= 768;
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('sidebar-toggle');
             
             if (isMobile) {
+                // Ensure sidebar is collapsed and main content expanded on mobile
                 sidebar.classList.add('collapsed');
                 mainContent.classList.add('expanded');
-                document.querySelector('.sidebar-toggle').innerHTML = '▶';
+                toggleBtn.innerHTML = '▶';
+                
+                // Apply additional mobile-specific adjustments
+                document.body.classList.add('mobile-view');
+                
+                // Ensure iframe gets full width
+                const iframeContainer = document.querySelector('.iframe-container');
+                if (iframeContainer) {
+                    iframeContainer.style.width = '100%';
+                    iframeContainer.style.padding = '0';
+                }
             } else {
-                // On desktop, we can start with expanded sidebar
+                // On desktop, we can expand the sidebar
                 sidebar.classList.remove('collapsed');
                 mainContent.classList.remove('expanded');
-                document.querySelector('.sidebar-toggle').innerHTML = '◀';
+                toggleBtn.innerHTML = '◀';
+                document.body.classList.remove('mobile-view');
             }
         }
         
-        // Run on page load
+        // Run on page load and resize
         document.addEventListener('DOMContentLoaded', checkMobileAndSetLayout);
-        // Also run on resize
         window.addEventListener('resize', checkMobileAndSetLayout);
 
         // Improved sidebar toggle functionality with debugging
