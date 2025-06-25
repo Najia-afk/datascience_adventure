@@ -58,6 +58,7 @@
     position: absolute;
     left: 260px; /* Position at the edge of the sidebar */
     top: 50%;
+    transform: translateY(-50%); /* Center vertically */
     height: 60px;
     width: 20px; /* Make it wider for better visibility */
     cursor: pointer;
@@ -74,9 +75,9 @@
     box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Add shadow for depth */
 }
 
-.sidebar-toggle:hover {
-    background-color: #0055aa;
-    color: white;
+/* Adjust toggle button position for collapsed sidebar */
+.sidebar.collapsed .sidebar-toggle {
+    left: 230px; /* Position at the edge of the collapsed sidebar */
 }
 
 /* Vertical title for collapsed sidebar */
@@ -173,12 +174,17 @@
         top: 100px; /* Lower the sidebar position */
     }
     
-    /* Ensure sidebar toggle is visible */
+    /* Ensure sidebar toggle is visible and positioned correctly */
     .sidebar-toggle {
-        left: 0;
+        left: 230px; /* Match the collapsed sidebar position */
         width: 30px; /* Larger tap target for mobile */
         height: 80px; /* Taller for easier tapping */
         border-radius: 0 8px 8px 0; /* Rounder corners */
+    }
+    
+    /* When sidebar is collapsed on mobile, move toggle to the edge */
+    .sidebar.collapsed .sidebar-toggle {
+        left: 0;
     }
     
     /* Show vertical title by default on mobile */
