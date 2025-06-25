@@ -509,7 +509,7 @@ echo "Website should now be accessible."
         sudo ln -sf /etc/nginx/sites-available/htmx_website /etc/nginx/sites-enabled/htmx_website
         echo "✅ Copied Nginx config to /etc/nginx/sites-available/htmx_website"
     fi
-done
+
 
 echo "===== Finalizing deployment ====="
 
