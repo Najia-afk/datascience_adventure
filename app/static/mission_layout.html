@@ -55,249 +55,239 @@
 
     <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
-        // Wrap all our code in an IIFE to avoid global variable conflicts
-        (function() {
-            // Check if it's a mobile device and set initial state
-            function checkMobileAndSetLayout() {
-                const isMobile = window.innerWidth <= 768;
-                const sidebar = document.getElementById('sidebar');
-                const mainContent = document.getElementById('main-content');
-                const toggleBtn = document.getElementById('sidebar-toggle');
-                
-                if (isMobile) {
-                    // Ensure sidebar is collapsed and main content expanded on mobile
-                    sidebar.classList.add('collapsed');
-                    mainContent.classList.add('expanded');
-                    toggleBtn.innerHTML = '▶';
-                    
-                    // Apply additional mobile-specific adjustments
-                    document.body.classList.add('mobile-view');
-                    
-                    // Ensure iframe gets full width
-                    const iframeContainer = document.querySelector('.iframe-container');
-                    if (iframeContainer) {
-                        iframeContainer.style.width = '100%';
-                        iframeContainer.style.padding = '0';
-                    }
-                } else {
-                    // On desktop, we can expand the sidebar
-                    sidebar.classList.remove('collapsed');
-                    mainContent.classList.remove('expanded');
-                    toggleBtn.innerHTML = '◀';
-                    document.body.classList.remove('mobile-view');
-                }
-            }
+        // Check if it's a mobile device and set initial state
+        function checkMobileAndSetLayout() {
+            const isMobile = window.innerWidth <= 768;
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('sidebar-toggle');
             
-            // Function to handle iframe resizing and loading display
-            function handleIframeResize() {
-                const iframe = document.getElementById('main-iframe');
-                const loadingIndicator = document.getElementById('loading');
+            if (isMobile) {
+                // Ensure sidebar is collapsed and main content expanded on mobile
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+                toggleBtn.innerHTML = '▶';
+                
+                // Apply additional mobile-specific adjustments
+                document.body.classList.add('mobile-view');
+                
+                // Ensure iframe gets full width
                 const iframeContainer = document.querySelector('.iframe-container');
-
-                try {
-                    const documentHeight = iframe.contentWindow.document.body.scrollHeight;
-                    if (documentHeight > 0) {
-                        iframe.style.height = `${documentHeight}px`;
-                        loadingIndicator.style.display = 'none';
-                        iframeContainer.style.visibility = 'visible'; // Show iframe container
-                        iframeContainer.style.height = 'auto'; // Remove the 1px height restriction
-                        return true;
-                    }
-                } catch (e) {
-                    console.error("Error accessing iframe content:", e);
+                if (iframeContainer) {
+                    iframeContainer.style.width = '100%';
+                    iframeContainer.style.padding = '0';
                 }
-                return false;
+            } else {
+                // On desktop, we can expand the sidebar
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+                toggleBtn.innerHTML = '◀';
+                document.body.classList.remove('mobile-view');
             }
+        }
+        
+        // Run on page load and resize
+        document.addEventListener('DOMContentLoaded', checkMobileAndSetLayout);
+        window.addEventListener('resize', checkMobileAndSetLayout);
 
-            // Function to simulate loading progress
-            function simulateProgress() {
-                const progressIndicator = document.querySelector('.progress-indicator');
-                let width = 0;
-                const interval = setInterval(() => {
-                    if (width >= 90) {
-                        clearInterval(interval);
+        // Improved sidebar toggle functionality with debugging
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+
+            console.log("Initializing sidebar toggle functionality");
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function (e) {
+                    console.log("Toggle button clicked");
+                    e.preventDefault();
+
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+
+                    // Change toggle button direction
+                    if (sidebar.classList.contains('collapsed')) {
+                        toggleBtn.innerHTML = '▶';
+                        toggleBtn.style.right = '0';
+                        console.log("Sidebar collapsed");
                     } else {
-                        width += Math.random() * 2;
-                        progressIndicator.style.width = width + '%';
-                    }
-                }, 500);
-
-                // After 60 seconds, set to 100% regardless
-                setTimeout(() => {
-                    progressIndicator.style.width = '100%';
-                    document.querySelector('.loading-message').textContent = 'Almost done...';
-                }, 60000);
-            }
-            
-            // Function to adjust sidebar height based on its content
-            function adjustSidebarHeight() {
-                const sidebar = document.querySelector('.sidebar');
-                const sidebarList = document.querySelector('#sidebar-list');
-                if (sidebar && sidebarList) {
-                    // Add some padding to the list height
-                    const listHeight = sidebarList.offsetHeight + 100; // Add padding for header and margins
-                    sidebar.style.height = listHeight + 'px';
-                    console.log("Adjusted sidebar height to:", listHeight, "px");
-                }
-            }
-            
-            // Function to adjust the sidebar position after the header is dynamically loaded
-            function adjustSidebarPosition() {
-                const header = document.getElementById('header');
-                const sidebar = document.querySelector('.sidebar');
-                if (header && sidebar) {
-                    const headerHeight = header.offsetHeight;
-                    sidebar.style.top = `${headerHeight}px`; // Set sidebar position below header
-                }
-            }
-            
-            // Function to handle sidebar toggle
-            function toggleSidebar() {
-                const sidebar = document.getElementById('sidebar');
-                const mainContent = document.getElementById('main-content');
-                const toggleBtn = document.getElementById('sidebar-toggle');
-
-                if (!sidebar || !mainContent || !toggleBtn) {
-                    console.error("Required elements not found");
-                    return;
-                }
-
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
-
-                if (sidebar.classList.contains('collapsed')) {
-                    toggleBtn.innerHTML = '▶';
-                    toggleBtn.style.right = '0';
-                } else {
-                    toggleBtn.innerHTML = '◀';
-                    toggleBtn.style.right = '0';
-                }
-            }
-            
-            // Function to set up Colab URL
-            function setupColabLink() {
-                const iframe = document.getElementById('main-iframe');
-                const colabButton = document.getElementById('colab-button');
-                let currentPath = window.location.pathname;
-                
-                // Remove trailing slash if any
-                currentPath = currentPath.replace(/\/$/, '');
-                
-                // If at root or empty path, default to the current page ID or a fallback
-                if (!currentPath || currentPath === '/') {
-                    // Try to determine mission from the page content or document title
-                    const titleText = document.title;
-                    const missionMatch = titleText.match(/Mission\s+(\d+)/i);
-                    
-                    if (missionMatch && missionMatch[1]) {
-                        currentPath = '/mission' + missionMatch[1];
-                    } else {
-                        console.error("Could not determine mission number from URL or title");
-                        // Disable Colab button if we can't determine the mission
-                        colabButton.style.display = 'none';
-                        return;
-                    }
-                }
-                
-                // Set iframe source
-                iframe.src = currentPath + '_content.html';
-                
-                // Extract just the mission name without the leading slash for the Colab URL
-                const repoName = currentPath.replace(/^\//, '');
-                
-                // Set Colab button link with proper GitHub repo format
-                colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/main/' + repoName + '.ipynb';
-                
-                // Log for debugging
-                console.log("Setting Colab URL to:", colabButton.href);
-            }
-            
-            // Set up event listeners when DOM is ready
-            function initializeEventListeners() {
-                // Run mobile check on page load and resize
-                checkMobileAndSetLayout();
-                window.addEventListener('resize', checkMobileAndSetLayout);
-                
-                // Setup sidebar toggle
-                const toggleBtn = document.getElementById('sidebar-toggle');
-                if (toggleBtn) {
-                    toggleBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        toggleSidebar();
-                    });
-                }
-                
-                // Make the global toggle function available
-                window.toggleSidebar = toggleSidebar;
-                
-                // Handle iframe load event
-                const iframe = document.getElementById('main-iframe');
-                if (iframe) {
-                    iframe.addEventListener('load', function() {
-                        if (!handleIframeResize()) {
-                            // If resize fails, try again after a short delay
-                            setTimeout(handleIframeResize, 1000);
-                        }
-                    });
-                }
-                
-                // Listen for HTMX event to adjust sidebar after header is loaded
-                document.body.addEventListener("htmx:afterOnLoad", function(evt) {
-                    if (evt.detail.target.id === "header") {
-                        adjustSidebarPosition();
+                        toggleBtn.innerHTML = '◀';
+                        toggleBtn.style.right = '0';
+                        console.log("Sidebar expanded");
                     }
                 });
-            }
-            
-            // Initialize everything
-            function initialize() {
-                
-                
-                // Start progress simulation for loading indicator
-                simulateProgress();
-                
-                // Set up all event listeners
-                initializeEventListeners();
-                
-                // Adjust sidebar height after a short delay to ensure content is loaded
-                setTimeout(adjustSidebarHeight, 500);
-                
-                // Set up periodic resize attempts for the iframe
-                let resizeCounter = 0;
-                const maxResizes = 12; // 2 minutes (12 * 10 seconds)
-                const resizeTimer = setInterval(function() {
-                    resizeCounter++;
-                    if (handleIframeResize() || resizeCounter >= maxResizes) {
-                        clearInterval(resizeTimer);
-                        if (resizeCounter >= maxResizes) {
-                            // After 2 minutes, show the iframe anyway
-                            const loadingIndicator = document.getElementById('loading');
-                            const iframeContainer = document.querySelector('.iframe-container');
-                            loadingIndicator.style.display = 'none';
-                            iframeContainer.style.visibility = 'visible';
-                            iframeContainer.style.height = 'auto';
-                        }
-                    }
-                }, 10000);
-
-                // Setup Colab link first so it's ready immediately
-                setupColabLink();
-            }
-            
-            // Initialize when DOM content is loaded
-            if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", initialize);
             } else {
-                // DOM is already ready
-                initialize();
+                console.error("Toggle button not found!");
+            }
+        });
+
+        // Global function for direct onclick attribute
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+
+            if (!sidebar || !mainContent || !toggleBtn) {
+                console.error("Required elements not found");
+                return;
+            }
+
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+
+            if (sidebar.classList.contains('collapsed')) {
+                toggleBtn.innerHTML = '▶';
+                toggleBtn.style.right = '0';
+            } else {
+                toggleBtn.innerHTML = '◀';
+                toggleBtn.style.right = '0';
+            }
+        }
+
+        // Set the iframe src and Colab link based on the current URL
+        document.addEventListener('DOMContentLoaded', function () {
+            const iframe = document.getElementById('main-iframe');
+            const colabButton = document.getElementById('colab-button');
+            let currentPath = window.location.pathname;
+            
+            // Remove trailing slash if any
+            currentPath = currentPath.replace(/\/$/, '');
+            
+            // If at root or empty path, default to the current page ID or a fallback
+            if (!currentPath || currentPath === '/') {
+                // Try to determine mission from the page content or document title
+                const titleText = document.title;
+                const missionMatch = titleText.match(/Mission\s+(\d+)/i);
+                
+                if (missionMatch && missionMatch[1]) {
+                    currentPath = '/mission' + missionMatch[1];
+                } else {
+                    console.error("Could not determine mission number from URL or title");
+                    // Disable Colab button if we can't determine the mission
+                    colabButton.style.display = 'none';
+                    return;
+                }
             }
             
-            // Additional window load event for iframe resize
-            window.addEventListener('load', function() {
-                handleIframeResize();
-                adjustSidebarHeight();
-            });
-        })(); // End of IIFE
+            // Set iframe source
+            iframe.src = currentPath + '_content.html';
+            
+            // Extract just the mission name without the leading slash for the Colab URL
+            const repoName = currentPath.replace(/^\//, '');
+            
+            // Set Colab button link with proper GitHub repo format
+            colabButton.href = 'https://colab.research.google.com/github/Najia-afk/' + repoName + '/blob/main/' + repoName + '.ipynb';
+            
+            // Log for debugging
+            console.log("Setting Colab URL to:", colabButton.href);
+        });
+
+        // Function to handle iframe resizing and loading display
+        function handleIframeResize() {
+            const iframe = document.getElementById('main-iframe');
+            const loadingIndicator = document.getElementById('loading');
+            const iframeContainer = document.querySelector('.iframe-container');
+
+            try {
+                const documentHeight = iframe.contentWindow.document.body.scrollHeight;
+                if (documentHeight > 0) {
+                    iframe.style.height = `${documentHeight}px`;
+                    loadingIndicator.style.display = 'none';
+                    iframeContainer.style.visibility = 'visible'; // Show iframe container
+                    iframeContainer.style.height = 'auto'; // Remove the 1px height restriction
+                    return true;
+                }
+            } catch (e) {
+                console.error("Error accessing iframe content:", e);
+            }
+            return false;
+        }
+
+        // Function to simulate loading progress
+        function simulateProgress() {
+            const progressIndicator = document.querySelector('.progress-indicator');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 90) {
+                    clearInterval(interval);
+                } else {
+                    width += Math.random() * 2;
+                    progressIndicator.style.width = width + '%';
+                }
+            }, 500);
+
+            // After 60 seconds, set to 100% regardless
+            setTimeout(() => {
+                progressIndicator.style.width = '100%';
+                document.querySelector('.loading-message').textContent = 'Almost done...';
+            }, 60000);
+        }
+        
+        // Initialize progress bar once
+        simulateProgress();
+        // Function to adjust sidebar height based on its content
+        function adjustSidebarHeight() {
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarList = document.querySelector('#sidebar-list');
+            if (sidebar && sidebarList) {
+                // Add some padding to the list height
+                const listHeight = sidebarList.offsetHeight + 100; // Add padding for header and margins
+                sidebar.style.height = listHeight + 'px';
+                console.log("Adjusted sidebar height to:", listHeight, "px");
+            }
+        }
+
+        // Make sure this function is called after the page loads and whenever content changes
+        window.addEventListener('load', adjustSidebarHeight);
+        // Also call it when the sidebar content might change
+        document.addEventListener('DOMContentLoaded', function() {
+            // Call after a short delay to ensure all content is loaded
+            setTimeout(adjustSidebarHeight, 500);
+        });
+
+        // Function to adjust the sidebar position after the header is dynamically loaded
+        function adjustSidebarPosition() {
+            const header = document.getElementById('header');
+            const sidebar = document.querySelector('.sidebar');
+            if (header && sidebar) {
+                const headerHeight = header.offsetHeight;
+                sidebar.style.top = `${headerHeight}px`; // Set sidebar position below header
+            }
+        }
+
+        // Listen for HTMX event to adjust sidebar after header is loaded
+        document.body.addEventListener("htmx:afterOnLoad", function (evt) {
+            if (evt.detail.target.id === "header") {
+                adjustSidebarPosition(); // Adjust sidebar after the header is loaded
+            }
+        });
+
+        // Handle iframe load event
+        document.getElementById('main-iframe').addEventListener('load', function () {
+            if (!handleIframeResize()) {
+                // If resize fails, try again after a short delay
+                setTimeout(handleIframeResize, 1000);
+            }
+        });
+
+        // Try resizing every 10 seconds for up to 2 minutes
+        let resizeAttempts = 0; // Renamed from 'attempts' to avoid conflict
+        const maxResizeAttempts = 12; // 2 minutes (12 * 10 seconds)
+        const resizeInterval = setInterval(() => {
+            resizeAttempts++;
+            if (handleIframeResize() || resizeAttempts >= maxResizeAttempts) {
+                clearInterval(resizeInterval);
+                if (resizeAttempts >= maxResizeAttempts) {
+                    // After 2 minutes, show the iframe anyway
+                    const loadingIndicator = document.getElementById('loading');
+                    const iframeContainer = document.querySelector('.iframe-container');
+                    loadingIndicator.style.display = 'none';
+                    iframeContainer.style.visibility = 'visible';
+                    iframeContainer.style.height = 'auto';
+                }
+            }
+        }, 10000);
     </script>
 </body>
 </html>
