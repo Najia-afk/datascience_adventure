@@ -18,6 +18,7 @@ REPOS=(
     "https://github.com/Najia-afk/mission3"
     "https://github.com/Najia-afk/mission4"
     "https://github.com/Najia-afk/mission5"
+    "https://github.com/Najia-afk/mission6"
 )
 
 # Directory to clone/pull repos
