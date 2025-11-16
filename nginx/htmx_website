@@ -1,7 +1,19 @@
 server {
-    listen 127.0.0.1:80;
-    server_name datascience-adventure.xyz;
-    return 301 https://$host$request_uri;
+    listen 80;
+    listen [::]:80;
+    server_name datascience-adventure.xyz www.datascience-adventure.xyz;
+
+    # Serve only ACME challenge files from the webroot
+    location ^~ /.well-known/acme-challenge/ {
+        alias /var/www/htmx_website/.well-known/acme-challenge/;
+        default_type "text/plain";
+        try_files $uri =404;
+    }
+
+    # Immediately close any other HTTP requests (minimal exposure)
+    location / {
+        return 444;
+    }
 }
 
 server {
