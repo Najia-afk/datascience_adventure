@@ -1,16 +1,18 @@
 /* Footer */
 .footer {
-    background-color: #343a40;
-    color: white;
-    padding: 15px;
+    background-color: #1e293b; /* Match header */
+    color: #94a3b8; /* Slate 400 */
+    padding: 2rem 1rem;
     text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .footer a {
-    color: #007bff;
+    color: #38bdf8; /* Sky 400 */
     text-decoration: none;
 }
 
 .footer a:hover {
-    text-decoration: underline;
+    color: #ffffff;
+    text-decoration: none;
 }

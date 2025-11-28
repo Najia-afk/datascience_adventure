@@ -10,10 +10,11 @@
     flex: 0 0 300px; /* Adjust width to fit smaller screens */
     height: 220px;
     margin-right: 20px;
-    background: #ffffff;
+    background: var(--bg-surface);
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Increase shadow for more depth */
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -21,14 +22,16 @@
 }
 
 .grid-item:hover {
-    transform: translateY(-5px); /* Slight hover effect */
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2); /* Add a bit more depth on hover */
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color); /* Highlight border on hover */
 }
 
 .grid-item h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
-    color: #2c3e50; /* Darker text color for contrast */
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text-main);
 }
 
 .grid-item p {
@@ -40,6 +43,7 @@
     display: -webkit-box;
     -webkit-line-clamp: 3; /* Limit to 3 lines */
     -webkit-box-orient: vertical;
+    color: var(--text-secondary);
 }
 
 /* Scrollable Container */
@@ -64,9 +68,10 @@
 
 /* Scroll Buttons */
 .scroll-btn {
-    background-color: transparent;
-    color: #007bff;
-    border: none;
+    background-color: var(--bg-surface);
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
     cursor: pointer;
     border-radius: 50%;
     width: 30px; /* Reduced size */
@@ -76,12 +81,13 @@
     transform: translateY(-50%);
     z-index: 10;
     transition: background-color 0.3s, opacity 0.3s ease;
-    opacity: 0.5; /* Less intrusive */
+    opacity: 0.9;
 }
 
 .scroll-btn:hover {
-    background-color: rgba(0, 123, 255, 0.15);
-    opacity: 0.8;
+    background-color: var(--primary-color);
+    color: white;
+    opacity: 1;
 }
 
 .left-btn {
