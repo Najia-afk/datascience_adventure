@@ -5,59 +5,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mission: Data Exploration</title>
-    <link rel="stylesheet" href="/styles/modern.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <!-- Removed inline CSS styles - now using layout.css -->
 </head>
 
-<body hx-boost="true">
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar collapsed" id="sidebar">
-            <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
-                ▶
-            </button>
-            <div class="sidebar-header">
-                <div class="sidebar-title">Scripts Used</div>
-            </div>
-            <div class="sidebar-content">
-                <ul id="sidebar-list" class="sidebar-list">
-                    <!-- This will be dynamically populated by the deploy script -->
-                    <li>No scripts available</li>
-                </ul>
-            </div>
-        </aside>
+<body hx-boost="true" class="mobile-view">
+    <!-- Sidebar -->
+    <aside class="sidebar collapsed" id="sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
+            ▶
+        </button>
+        <div class="vertical-title">Scripts Used in This Notebook</div>
+        <h2>Scripts Used in This Notebook:</h2>
+        <ul id="sidebar-list">
+            <!-- This will be dynamically populated by the deploy script -->
+            <li>No scripts available</li>
+        </ul>
+    </aside>
 
-        <!-- Main Content Area -->
-        <section class="main-content expanded" id="main-content">
-            <header class="project-header">
-                <h1>Mission: Data Science Project</h1>
-                <p>Exploring data science concepts and techniques.</p>
-            </header>
+    <!-- Main Content Area -->
+    <section class="main-content expanded" id="main-content">
+        <header class="project-header">
+            <h1>Mission: Data Science Project</h1>
+            <p>Exploring data science concepts and techniques.</p>
+        </header>
 
-            <!-- Google Colab Button -->
-            <div class="button-container">
-                <a href="#" id="colab-button" class="button-colab">
-                    Run on Google Colab
-                </a>
-            </div>
+        <!-- Google Colab Button -->
+        <div class="button-container">
+            <a href="#" id="colab-button" class="button-colab">
+                Run on Google Colab
+            </a>
+        </div>
 
-            <!-- Iframe Display for the Jupyter Notebook -->
-            <div id="loading">
-                <h3>Loading Notebook</h3>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-indicator"></div>
-                    </div>
+        <!-- Iframe Display for the Jupyter Notebook -->
+        <div id="loading">
+            <p>Loading large notebook...</p>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-indicator"></div>
                 </div>
-                <p class="loading-message">This may take a minute or two for large notebooks. Please wait...</p>
             </div>
-
-            <div class="iframe-container" style="visibility: hidden; height: 1px; overflow: hidden;">
-                <iframe id="main-iframe" src="" scrolling="no" style="width: 100%; border: none;"></iframe>
-            </div>
-        </section>
-    </div>
+            <p class="loading-message">This may take a minute or two for large notebooks. Please wait...</p>
+        </div>
+        <div class="iframe-container" style="visibility: hidden; height: 1px; overflow: hidden;">
+            <iframe id="main-iframe" src="" scrolling="no" style="width: 100%; border: none;"></iframe>
+        </div>
+    </section>
 
     <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
@@ -97,14 +91,14 @@
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
             const toggleBtn = document.getElementById('sidebar-toggle');
-
+            
             if (!sidebar || !mainContent || !toggleBtn) return;
-
+            
             // Always start with sidebar collapsed regardless of device
             sidebar.classList.add('collapsed');
             mainContent.classList.add('expanded');
             toggleBtn.innerHTML = '▶';
-
+            
             // Add mobile-specific class if on mobile
             if (isMobile) {
                 document.body.classList.add('mobile-view');
@@ -112,7 +106,7 @@
                 document.body.classList.remove('mobile-view');
             }
         }
-
+        
         // Function to handle iframe resizing
         function handleIframeResize() {
             const iframe = document.getElementById('main-iframe');
@@ -124,14 +118,14 @@
             try {
                 // Try multiple approaches to get the correct height
                 let documentHeight = 0;
-
+                
                 // Approach 1: Standard scrollHeight
                 try {
                     documentHeight = iframe.contentWindow.document.body.scrollHeight;
                 } catch (e) {
                     console.log("Standard height detection failed:", e);
                 }
-
+                
                 // Approach 2: Try to get from documentElement if body failed
                 if (!documentHeight) {
                     try {
@@ -140,7 +134,7 @@
                         console.log("documentElement height detection failed:", e);
                     }
                 }
-
+                
                 // Approach 3: Try getting from offsetHeight
                 if (!documentHeight) {
                     try {
@@ -149,9 +143,9 @@
                         console.log("offsetHeight detection failed:", e);
                     }
                 }
-
+                
                 console.log("Detected iframe height:", documentHeight);
-
+                
                 if (documentHeight > 0) {
                     // Add a small buffer to account for potential margins
                     iframe.style.height = `${documentHeight + 50}px`;
@@ -170,7 +164,7 @@
         function simulateProgress() {
             const progressIndicator = document.querySelector('.progress-indicator');
             if (!progressIndicator) return;
-
+            
             let width = 0;
             const interval = setInterval(() => {
                 if (width >= 90) {
@@ -189,20 +183,20 @@
                 }
             }, 60000);
         }
-
+        
         // Function to set up Colab URL
         function setupColabLink() {
             const iframe = document.getElementById('main-iframe');
             const colabButton = document.getElementById('colab-button');
             if (!iframe || !colabButton) return;
-
+            
             let currentPath = window.location.pathname;
             currentPath = currentPath.replace(/\/$/, '');
-
+            
             if (!currentPath || currentPath === '/') {
                 const titleText = document.title;
                 const missionMatch = titleText.match(/Mission\s+(\d+)/i);
-
+                
                 if (missionMatch && missionMatch[1]) {
                     currentPath = '/mission' + missionMatch[1];
                 } else {
@@ -211,40 +205,40 @@
                     return;
                 }
             }
-
+            
             // Set iframe source
             iframe.src = currentPath + '_content.html';
-
+            
             // Extract just the mission name without the leading slash for the Colab URL
             const repoName = currentPath.replace(/^\//, '');
-
+            
             // Set Colab button link with proper GitHub repo format - fixed URL format
             const cleanRepoName = repoName.trim(); // Remove any whitespace
             colabButton.href = `https://colab.research.google.com/github/Najia-afk/${cleanRepoName}/blob/main/${cleanRepoName}.ipynb`;
-
+            
             console.log("Setting Colab URL to:", colabButton.href);
         }
-
+        
         // Initialize the page - run only once
         function initializePage() {
             if (window.dsaApp.initialized) return;
-
+            
             console.log("Initializing page for the first time");
             window.dsaApp.initialized = true;
-
+            
             // Setup Colab link
             setupColabLink();
-
+            
             // Start progress simulation
             simulateProgress();
-
+            
             // Set up periodic resize attempts
             if (window.dsaApp.resizeTimer) {
                 clearInterval(window.dsaApp.resizeTimer);
             }
-
+            
             window.dsaApp.resizeCounter = 0;
-            window.dsaApp.resizeTimer = setInterval(function () {
+            window.dsaApp.resizeTimer = setInterval(function() {
                 window.dsaApp.resizeCounter++;
                 if (handleIframeResize() || window.dsaApp.resizeCounter >= 12) {
                     clearInterval(window.dsaApp.resizeTimer);
@@ -259,54 +253,54 @@
                     }
                 }
             }, 10000);
-
+            
             // Add event listeners
             window.addEventListener('resize', checkMobileAndSetLayout);
-
+            
             const iframe = document.getElementById('main-iframe');
             if (iframe) {
-                iframe.addEventListener('load', function () {
+                iframe.addEventListener('load', function() {
                     if (!handleIframeResize()) {
                         setTimeout(handleIframeResize, 1000);
                     }
                 });
             }
         }
-
+        
         // Check if page already loaded, otherwise wait for DOM
         if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function() {
                 checkMobileAndSetLayout();
-                setTimeout(function () {
+                setTimeout(function() {
                     initializePage();
                 }, 100);
             });
         } else {
             checkMobileAndSetLayout();
-            setTimeout(function () {
+            setTimeout(function() {
                 initializePage();
             }, 100);
         }
-
+        
         // Set up HTMX events for navigation
-        document.body.addEventListener('htmx:afterSwap', function (event) {
+        document.body.addEventListener('htmx:afterSwap', function(event) {
             console.log("HTMX page swap detected, resetting iframe and resizing logic");
-
+            
             // Clear existing resize timer if it exists
             if (window.dsaApp && window.dsaApp.resizeTimer) {
                 clearInterval(window.dsaApp.resizeTimer);
                 window.dsaApp.resizeTimer = null;
             }
-
+            
             // Reset resize counter
             if (window.dsaApp) {
                 window.dsaApp.resizeCounter = 0;
                 window.dsaApp.initialized = false; // Force reinitialization
             }
-
+            
             // Immediately check layout for mobile
             checkMobileAndSetLayout();
-
+            
             // Show loading indicator again
             const loadingIndicator = document.getElementById('loading');
             const iframeContainer = document.querySelector('.iframe-container');
@@ -315,20 +309,19 @@
                 iframeContainer.style.visibility = 'hidden';
                 iframeContainer.style.height = '1px';
             }
-
+            
             // Reset progress bar
             const progressIndicator = document.querySelector('.progress-indicator');
             if (progressIndicator) {
                 progressIndicator.style.width = '0%';
                 simulateProgress(); // Restart progress simulation
             }
-
+            
             // Reinitialize the page with slight delay to ensure DOM is updated
-            setTimeout(function () {
+            setTimeout(function() {
                 initializePage();
             }, 300);
         });
     </script>
 </body>
-
 </html>
