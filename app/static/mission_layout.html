@@ -5,53 +5,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mission: Data Exploration</title>
-    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/modern.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-    <!-- Removed inline CSS styles - now using layout.css -->
 </head>
 
-<body hx-boost="true" class="mobile-view">
-    <!-- Sidebar -->
-    <aside class="sidebar collapsed" id="sidebar">
-        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
-            ▶
-        </button>
-        <div class="vertical-title">Scripts Used in This Notebook</div>
-        <h2>Scripts Used in This Notebook:</h2>
-        <ul id="sidebar-list">
-            <!-- This will be dynamically populated by the deploy script -->
-            <li>No scripts available</li>
-        </ul>
-    </aside>
-
-    <!-- Main Content Area -->
-    <section class="main-content expanded" id="main-content">
-        <header class="project-header">
-            <h1>Mission: Data Science Project</h1>
-            <p>Exploring data science concepts and techniques.</p>
-        </header>
-
-        <!-- Google Colab Button -->
-        <div class="button-container">
-            <a href="#" id="colab-button" class="button-colab">
-                Run on Google Colab
-            </a>
-        </div>
-
-        <!-- Iframe Display for the Jupyter Notebook -->
-        <div id="loading">
-            <p>Loading large notebook...</p>
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-indicator"></div>
-                </div>
+<body hx-boost="true">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar collapsed" id="sidebar">
+            <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
+                ▶
+            </button>
+            <div class="sidebar-header">
+                <div class="sidebar-title">Scripts Used</div>
             </div>
-            <p class="loading-message">This may take a minute or two for large notebooks. Please wait...</p>
-        </div>
-        <div class="iframe-container" style="visibility: hidden; height: 1px; overflow: hidden;">
-            <iframe id="main-iframe" src="" scrolling="no" style="width: 100%; border: none;"></iframe>
-        </div>
-    </section>
+            <div class="sidebar-content">
+                <ul id="sidebar-list" class="sidebar-list">
+                    <!-- This will be dynamically populated by the deploy script -->
+                    <li>No scripts available</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="main-content expanded" id="main-content">
+            <header class="project-header">
+                <h1>Mission: Data Science Project</h1>
+                <p>Exploring data science concepts and techniques.</p>
+            </header>
+
+            <!-- Google Colab Button -->
+            <div class="button-container">
+                <a href="#" id="colab-button" class="button-colab">
+                    Run on Google Colab
+                </a>
+            </div>
+
+            <!-- Iframe Display for the Jupyter Notebook -->
+            <div id="loading">
+                <h3>Loading Notebook</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-indicator"></div>
+                    </div>
+                </div>
+                <p class="loading-message">This may take a minute or two for large notebooks. Please wait...</p>
+            </div>
+            
+            <div class="iframe-container" style="visibility: hidden; height: 1px; overflow: hidden;">
+                <iframe id="main-iframe" src="" scrolling="no" style="width: 100%; border: none;"></iframe>
+            </div>
+        </section>
+    </div>
 
     <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
