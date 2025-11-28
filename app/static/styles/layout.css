@@ -5,6 +5,7 @@
     padding: 20px;
     flex-direction: row;
     overflow: hidden;
+    position: relative;
 }
 
 /* Main Content Area */
@@ -12,86 +13,112 @@
     flex: 1;
     background-color: var(--bg-surface);
     padding: 0 20px;
-    margin-left: 270px;
+    margin-left: 280px; /* Increased to match new sidebar width */
     box-shadow: var(--shadow-sm);
     border-radius: var(--radius-lg);
     min-width: 0;
     overflow: hidden;
     margin-top: 0;
     z-index: 1;
-    transition: margin-left 0.3s ease; /* Add transition for smooth resize */
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .main-content.expanded {
-    margin-left: 40px; /* Reduced margin when sidebar is collapsed */
+    margin-left: 60px; /* Leave space for the collapsed sidebar strip */
 }
 
-/* Sidebar Styles - Make it float above the main content */
+/* Sidebar Styles - Fixed height for scrolling */
 .sidebar {
-    width: 250px;
+    width: 280px; /* Slightly wider for better readability */
     padding: 20px;
     background-color: var(--bg-sidebar);
     box-shadow: var(--shadow-md);
-    border-right: none; /* Remove harsh border */
+    border-right: 1px solid var(--border-color);
     position: fixed;
-    top: 140px;
+    top: 75px; /* Position directly below the header */
+    bottom: 0; /* Anchor to bottom to force height calculation */
     left: 0;
     z-index: 1000;
-    transition: transform 0.3s ease;
-    overflow-y: auto;
-    /* Hide scrollbar but keep functionality */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer and Edge */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto; /* Enable internal scrolling */
+    
+    /* Modern Scrollbar Styling */
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-secondary) transparent;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Webkit Scrollbar Styling */
 .sidebar::-webkit-scrollbar {
-    display: none;
+    width: 6px;
+    display: block;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
 }
 
 .sidebar.collapsed {
-    transform: translateX(-230px); /* Move sidebar left, keeping toggle visible */
+    transform: translateX(-220px); /* Leave 60px visible */
 }
 
-/* Toggle button for sidebar */
+/* Toggle button - Redesigned as a floating tab */
 .sidebar-toggle {
     position: absolute;
-    left: 260px; /* Position at the edge of the sidebar */
-    top: 50%;
-    height: 60px;
-    width: 20px; /* Make it wider for better visibility */
+    right: 15px; /* Position inside the sidebar */
+    top: 15px;
+    height: 32px;
+    width: 32px;
     cursor: pointer;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    font-size: 18px; /* Larger font size */
-    padding: 0;
+    background-color: #f1f5f9;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1005; /* Increase z-index to ensure visibility */
-    border-radius: 0 4px 4px 0; /* Round right corners only */
-    box-shadow: 2px 0 8px rgba(79, 70, 229, 0.4); /* Colored shadow */
+    z-index: 1005;
+    transition: all 0.2s ease;
 }
 
 .sidebar-toggle:hover {
-    background-color: var(--primary-hover);
+    background-color: var(--primary-color);
     color: white;
+    border-color: var(--primary-color);
+    transform: scale(1.1);
 }
 
 /* Vertical title for collapsed sidebar */
 .vertical-title {
     position: absolute;
-    top: 50%; /* Add this to match the toggle button */
-    right: 40px;
-    transform: translateY(-50%) rotate(-90deg); /* Add translateY to center vertically */
-    transform-origin: right center;
+    top: 100px; /* Fixed distance from top, not 50% */
+    right: 0;
+    width: 60px; /* Match the visible strip width */
+    height: auto;
     white-space: nowrap;
     display: none;
-    font-weight: bold;
-    color: #333;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);  /* Add text shadow for readability */
-    z-index: 1001;  /* Ensure it's below the toggle button */
+    z-index: 1001;
+    pointer-events: none; /* Let clicks pass through */
+}
+
+.vertical-title span {
+    display: block;
+    transform: rotate(90deg);
+    transform-origin: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    margin-top: 100px; /* Push text down a bit */
 }
 
 .sidebar.collapsed .vertical-title {
@@ -100,26 +127,16 @@
 
 /* Hide content when sidebar is collapsed */
 .sidebar.collapsed h2,
-.sidebar.collapsed #sidebar-list {
+.sidebar.collapsed #sidebar-list,
+.sidebar.collapsed .subdir-heading {
     opacity: 0;
-    transition: opacity 0.2s ease;
+    pointer-events: none;
+    transition: opacity 0.1s ease;
 }
 
 .sidebar h2,
-.sidebar #sidebar-list,
-.sidebar .vertical-title {
-    transition: opacity 0.2s ease;
-}
-
-.sidebar .vertical-title {
-    opacity: 0;
-}
-
-.sidebar.collapsed .vertical-title {
-    opacity: 1;
-    font-size: 14px;
-    letter-spacing: 1px;
-    color: var(--primary-color);
+.sidebar #sidebar-list {
+    transition: opacity 0.3s ease 0.1s; /* Delay fade in */
 }
 
 /* Project Header */
@@ -178,32 +195,40 @@
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
-    /* Make main content take full width */
     .main-content {
-        margin-left: 40px;
-        padding: 0 10px;
-        width: calc(100% - 40px);
-        transition: width 0.3s ease, margin-left 0.3s ease;
+        margin-left: 0;
+        width: 100%;
+        padding: 0 15px;
     }
     
-    /* Make sidebar collapsed by default */
     .sidebar {
-        transform: translateX(-230px);
-        top: 100px; /* Lower the sidebar position */
+        width: 280px;
+        transform: translateX(-100%); /* Completely hide on mobile */
+        top: 60px; /* Adjust for mobile header */
+        box-shadow: 4px 0 10px rgba(0,0,0,0.1);
     }
     
-    /* Ensure sidebar toggle is visible */
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    /* Floating toggle button for mobile */
     .sidebar-toggle {
-        left: 0;
-        width: 30px; /* Larger tap target for mobile */
-        height: 80px; /* Taller for easier tapping */
-        border-radius: 0 8px 8px 0; /* Rounder corners */
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        top: auto;
+        right: auto;
+        width: 50px;
+        height: 50px;
+        background-color: var(--primary-color);
+        color: white;
+        box-shadow: var(--shadow-lg);
+        border-radius: 50%;
     }
     
-    /* Show vertical title by default on mobile */
-    .sidebar .vertical-title {
-        display: block;
-        opacity: 1;
+    .sidebar.collapsed .vertical-title {
+        display: none; /* Hide vertical title on mobile */
     }
     
     /* Ensure iframe container uses full width */

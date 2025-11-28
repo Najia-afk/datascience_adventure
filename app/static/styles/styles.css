@@ -41,20 +41,23 @@ body {
 
 /* Sidebar styling for script categories */
 .subdir-heading {
-    margin-top: 15px;
-    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
     color: var(--text-main);
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
 }
 
 .subdir-heading ul {
-    margin-left: 5px; /* Reduce left margin from 15px to 5px */
-    margin-top: 2px; /* Reduce top margin */
-    margin-bottom: 10px;
-    list-style-type: none; /* Remove bullets/dots from nested list */
-    padding-left: 0; /* Remove default padding */
+    margin-left: 0;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    list-style-type: none;
+    padding-left: 0;
 }
 
 .subdir-heading strong {
@@ -78,15 +81,17 @@ body {
     color: var(--text-secondary);
     transition: all 0.2s ease;
     display: block;
-    padding: 4px 8px;
-    border-radius: 4px;
+    padding: 8px 12px; /* Larger click area */
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    border-left: 3px solid transparent;
 }
 
 #sidebar-list li a:hover {
     color: var(--primary-color);
-    background-color: #f1f5f9;
-    text-decoration: none;
-    transform: translateX(4px);
+    background-color: #f8fafc;
+    border-left-color: var(--primary-color);
+    transform: translateX(2px);
 }
 
 /* Collapsible sidebar enhancements */
