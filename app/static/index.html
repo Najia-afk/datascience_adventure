@@ -5,21 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Datascience Adventure</title>
-    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 
-<body hx-boost="true">
+<body hx-boost="true" class="app-container">
     <!-- Header will be dynamically loaded -->
-    <div id="header" hx-get="/header" hx-target="#header" hx-trigger="load"></div>
+    <header id="header" class="site-header" hx-get="/header" hx-target="#header" hx-trigger="load"></header>
 
-    <main id="main-content" class="content">
-        <!-- Summary will be dynamically loaded by default -->
-        <div id="default-content" hx-get="/summary" hx-target="#main-content" hx-trigger="load"></div>
-    </main>
+    <div class="main-wrapper">
+        <main id="main-content" class="content-area">
+            <!-- Summary will be dynamically loaded by default -->
+            <div id="default-content" hx-get="/summary" hx-target="#main-content" hx-trigger="load"></div>
+        </main>
+    </div>
 
     <!-- Footer will be dynamically loaded -->
-    <div id="footer" hx-get="/footer" hx-target="#footer" hx-trigger="load"></div>
+    <footer id="footer" class="site-footer" hx-get="/footer" hx-target="#footer" hx-trigger="load"></footer>
 </body>
 </html>
 

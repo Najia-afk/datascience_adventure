@@ -5,53 +5,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mission: Data Exploration</title>
-    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-    <!-- Removed inline CSS styles - now using layout.css -->
 </head>
 
-<body hx-boost="true" class="mobile-view">
-    <!-- Sidebar -->
-    <aside class="sidebar collapsed" id="sidebar">
-        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
-            ▶
-        </button>
-        <div class="vertical-title">Scripts Used in This Notebook</div>
-        <h2>Scripts Used in This Notebook:</h2>
-        <ul id="sidebar-list">
-            <!-- This will be dynamically populated by the deploy script -->
-            <li>No scripts available</li>
-        </ul>
-    </aside>
-
-    <!-- Main Content Area -->
-    <section class="main-content expanded" id="main-content">
-        <header class="project-header">
-            <h1>Mission: Data Science Project</h1>
-            <p>Exploring data science concepts and techniques.</p>
-        </header>
-
-        <!-- Google Colab Button -->
-        <div class="button-container">
-            <a href="#" id="colab-button" class="button-colab">
-                Run on Google Colab
-            </a>
+<body hx-boost="true" class="app-container">
+    <!-- Header (Static for mission pages or loaded via HTMX if preferred, keeping simple for now) -->
+    <header class="site-header">
+        <div class="logo">
+            <a href="/">DataScience<span>Adventure</span></a>
         </div>
+        <nav class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/contact/" class="nav-link">Contact</a>
+        </nav>
+    </header>
 
-        <!-- Iframe Display for the Jupyter Notebook -->
-        <div id="loading">
-            <p>Loading large notebook...</p>
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-indicator"></div>
-                </div>
+    <div class="main-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar collapsed" id="sidebar">
+            <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
+                ▶
+            </button>
+            <div class="sidebar-content">
+                <h3>Scripts Used</h3>
+                <ul id="sidebar-list" class="sidebar-list">
+                    <!-- This will be dynamically populated by the deploy script -->
+                    <li>No scripts available</li>
+                </ul>
             </div>
-            <p class="loading-message">This may take a minute or two for large notebooks. Please wait...</p>
-        </div>
-        <div class="iframe-container" style="visibility: hidden; height: 1px; overflow: hidden;">
-            <iframe id="main-iframe" src="" scrolling="no" style="width: 100%; border: none;"></iframe>
-        </div>
-    </section>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="content-area" id="main-content">
+            <header class="project-header">
+                <h1>Mission: Data Science Project</h1>
+                <p>Exploring data science concepts and techniques.</p>
+            </header>
+
+            <!-- Google Colab Button -->
+            <div style="margin-bottom: 1.5rem;">
+                <a href="#" id="colab-button" class="btn btn-colab">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px;">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                    Run on Google Colab
+                </a>
+            </div>
+
+            <!-- Iframe Display for the Jupyter Notebook -->
+            <div id="loading">
+                <h3>Loading Notebook...</h3>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+                <p class="loading-message">This may take a moment for large notebooks.</p>
+            </div>
+            
+            <div class="iframe-wrapper" style="visibility: hidden; height: 1px;">
+                <iframe id="main-iframe" src="" scrolling="no"></iframe>
+            </div>
+        </section>
+    </div>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 DataScience Adventure. All rights reserved.</p>
+    </footer>
 
     <!-- JavaScript for Handling Iframe Resizing and Sidebar Position -->
     <script>
@@ -64,19 +84,14 @@
             };
         }
 
-        // Global toggle function - needs to be directly in global scope
+        // Global toggle function
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
             const toggleBtn = document.getElementById('sidebar-toggle');
 
-            if (!sidebar || !mainContent || !toggleBtn) {
-                console.error("Required elements not found");
-                return;
-            }
+            if (!sidebar || !toggleBtn) return;
 
             sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
 
             if (sidebar.classList.contains('collapsed')) {
                 toggleBtn.innerHTML = '▶';
@@ -89,44 +104,32 @@
         function checkMobileAndSetLayout() {
             const isMobile = window.innerWidth <= 768;
             const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
             const toggleBtn = document.getElementById('sidebar-toggle');
             
-            if (!sidebar || !mainContent || !toggleBtn) return;
+            if (!sidebar || !toggleBtn) return;
             
-            // Always start with sidebar collapsed regardless of device
+            // Always start with sidebar collapsed
             sidebar.classList.add('collapsed');
-            mainContent.classList.add('expanded');
             toggleBtn.innerHTML = '▶';
-            
-            // Add mobile-specific class if on mobile
-            if (isMobile) {
-                document.body.classList.add('mobile-view');
-            } else {
-                document.body.classList.remove('mobile-view');
-            }
         }
         
         // Function to handle iframe resizing
         function handleIframeResize() {
             const iframe = document.getElementById('main-iframe');
             const loadingIndicator = document.getElementById('loading');
-            const iframeContainer = document.querySelector('.iframe-container');
+            const iframeContainer = document.querySelector('.iframe-wrapper');
 
             if (!iframe || !loadingIndicator || !iframeContainer) return false;
 
             try {
-                // Try multiple approaches to get the correct height
                 let documentHeight = 0;
                 
-                // Approach 1: Standard scrollHeight
                 try {
                     documentHeight = iframe.contentWindow.document.body.scrollHeight;
                 } catch (e) {
                     console.log("Standard height detection failed:", e);
                 }
                 
-                // Approach 2: Try to get from documentElement if body failed
                 if (!documentHeight) {
                     try {
                         documentHeight = iframe.contentWindow.document.documentElement.scrollHeight;
@@ -135,19 +138,9 @@
                     }
                 }
                 
-                // Approach 3: Try getting from offsetHeight
-                if (!documentHeight) {
-                    try {
-                        documentHeight = iframe.contentWindow.document.body.offsetHeight;
-                    } catch (e) {
-                        console.log("offsetHeight detection failed:", e);
-                    }
-                }
-                
                 console.log("Detected iframe height:", documentHeight);
                 
                 if (documentHeight > 0) {
-                    // Add a small buffer to account for potential margins
                     iframe.style.height = `${documentHeight + 50}px`;
                     loadingIndicator.style.display = 'none';
                     iframeContainer.style.visibility = 'visible';
@@ -162,26 +155,18 @@
 
         // Function to simulate loading progress
         function simulateProgress() {
-            const progressIndicator = document.querySelector('.progress-indicator');
-            if (!progressIndicator) return;
+            const progressBar = document.querySelector('.progress-bar');
+            if (!progressBar) return;
             
             let width = 0;
             const interval = setInterval(() => {
                 if (width >= 90) {
                     clearInterval(interval);
                 } else {
-                    width += Math.random() * 2;
-                    progressIndicator.style.width = width + '%';
+                    width += Math.random() * 5;
+                    progressBar.style.width = width + '%';
                 }
-            }, 500);
-
-            setTimeout(() => {
-                if (progressIndicator) {
-                    progressIndicator.style.width = '100%';
-                    const loadingMessage = document.querySelector('.loading-message');
-                    if (loadingMessage) loadingMessage.textContent = 'Almost done...';
-                }
-            }, 60000);
+            }, 200);
         }
         
         // Function to set up Colab URL
@@ -200,39 +185,26 @@
                 if (missionMatch && missionMatch[1]) {
                     currentPath = '/mission' + missionMatch[1];
                 } else {
-                    console.error("Could not determine mission number from URL or title");
                     colabButton.style.display = 'none';
                     return;
                 }
             }
             
-            // Set iframe source
             iframe.src = currentPath + '_content.html';
             
-            // Extract just the mission name without the leading slash for the Colab URL
             const repoName = currentPath.replace(/^\//, '');
-            
-            // Set Colab button link with proper GitHub repo format - fixed URL format
-            const cleanRepoName = repoName.trim(); // Remove any whitespace
+            const cleanRepoName = repoName.trim();
             colabButton.href = `https://colab.research.google.com/github/Najia-afk/${cleanRepoName}/blob/main/${cleanRepoName}.ipynb`;
-            
-            console.log("Setting Colab URL to:", colabButton.href);
         }
         
-        // Initialize the page - run only once
+        // Initialize the page
         function initializePage() {
             if (window.dsaApp.initialized) return;
             
-            console.log("Initializing page for the first time");
             window.dsaApp.initialized = true;
-            
-            // Setup Colab link
             setupColabLink();
-            
-            // Start progress simulation
             simulateProgress();
             
-            // Set up periodic resize attempts
             if (window.dsaApp.resizeTimer) {
                 clearInterval(window.dsaApp.resizeTimer);
             }
@@ -244,7 +216,7 @@
                     clearInterval(window.dsaApp.resizeTimer);
                     if (window.dsaApp.resizeCounter >= 12) {
                         const loadingIndicator = document.getElementById('loading');
-                        const iframeContainer = document.querySelector('.iframe-container');
+                        const iframeContainer = document.querySelector('.iframe-wrapper');
                         if (loadingIndicator) loadingIndicator.style.display = 'none';
                         if (iframeContainer) {
                             iframeContainer.style.visibility = 'visible';
@@ -252,76 +224,27 @@
                         }
                     }
                 }
-            }, 10000);
+            }, 2000); // Check every 2 seconds
             
-            // Add event listeners
             window.addEventListener('resize', checkMobileAndSetLayout);
             
             const iframe = document.getElementById('main-iframe');
             if (iframe) {
                 iframe.addEventListener('load', function() {
-                    if (!handleIframeResize()) {
-                        setTimeout(handleIframeResize, 1000);
-                    }
+                    setTimeout(handleIframeResize, 500);
                 });
             }
         }
         
-        // Check if page already loaded, otherwise wait for DOM
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", function() {
                 checkMobileAndSetLayout();
-                setTimeout(function() {
-                    initializePage();
-                }, 100);
+                setTimeout(initializePage, 100);
             });
         } else {
             checkMobileAndSetLayout();
-            setTimeout(function() {
-                initializePage();
-            }, 100);
+            setTimeout(initializePage, 100);
         }
-        
-        // Set up HTMX events for navigation
-        document.body.addEventListener('htmx:afterSwap', function(event) {
-            console.log("HTMX page swap detected, resetting iframe and resizing logic");
-            
-            // Clear existing resize timer if it exists
-            if (window.dsaApp && window.dsaApp.resizeTimer) {
-                clearInterval(window.dsaApp.resizeTimer);
-                window.dsaApp.resizeTimer = null;
-            }
-            
-            // Reset resize counter
-            if (window.dsaApp) {
-                window.dsaApp.resizeCounter = 0;
-                window.dsaApp.initialized = false; // Force reinitialization
-            }
-            
-            // Immediately check layout for mobile
-            checkMobileAndSetLayout();
-            
-            // Show loading indicator again
-            const loadingIndicator = document.getElementById('loading');
-            const iframeContainer = document.querySelector('.iframe-container');
-            if (loadingIndicator && iframeContainer) {
-                loadingIndicator.style.display = 'block';
-                iframeContainer.style.visibility = 'hidden';
-                iframeContainer.style.height = '1px';
-            }
-            
-            // Reset progress bar
-            const progressIndicator = document.querySelector('.progress-indicator');
-            if (progressIndicator) {
-                progressIndicator.style.width = '0%';
-                simulateProgress(); // Restart progress simulation
-            }
-            
-            // Reinitialize the page with slight delay to ensure DOM is updated
-            setTimeout(function() {
-                initializePage();
-            }, 300);
-        });
     </script>
 </body>
 </html>

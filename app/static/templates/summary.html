@@ -1,79 +1,51 @@
-<div class="scroll-container">
-    <!-- Left Scroll Button -->
-    <button class="scroll-btn left-btn"
-            hx-get="/scroll-left/"
-            hx-trigger="click"
-            hx-swap="none"
-            hx-on="htmx:afterRequest: handleScroll(this, event)">◀</button>
+<header class="project-header">
+    <h1>Data Scientist Training</h1>
+    <p>A collection of data science projects and missions.</p>
+</header>
 
-    <div id="scroll-wrapper" class="scroll-wrapper">
-        <article class="grid-item">
-            <h2>Mission 2: World Bank Educational Data Analysis</h2>
-            <p>September , 2024</p>
-            <p>Datascientist Training</p>
-            <p>Acadamy EdTech eLearning platform would like to expand its activities....</p>
-            <!-- Change from HTMX to regular link with hx-push-url -->
-            <a href="/mission2/" hx-get="/mission2/" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="false" class="more-link">More</a>
-        </article>
-        <article class="grid-item">
-            <h2>Mission 3: Nustriscore correlations analysis</h2>
-            <p>February 13, 2025</p>
-            <p>Datascientist Training</p>
-            <p>The Public Health Agency wishes to improve the quality of Open Food Facts data....</p>
-            <a href="/mission3/" hx-get="/mission3/" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="false" class="more-link">More</a>
-        </article>
-        <article class="grid-item">
-            <h2>Mission 4: Energyscore supervised forcasting</h2>
-            <p>March 07, 2025</p>
-            <p>Datascientist Training</p>
-            <p>Building Energy Consumption Prediction for Seattle....</p>
-            <a href="/mission4/" hx-get="/mission4/" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="false" class="more-link">More</a>
-        </article>
-        <article class="grid-item">
-            <h2>Mission 5: Client segmentation unsupervised analysis</h2>
-            <p>May 25, 2025</p>
-            <p>Datascientist Training</p>
-            <p>Olist E-commerce would like several dashboards for its customer segmentation....</p>
-            <a href="/mission5/" hx-get="/mission5/" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="false" class="more-link">More</a>
-        </article>
-        <article class="grid-item">
-            <h2>Mission 6: Feasibility Study of Product Classification Engine</h2>
-            <p>November 13, 2025</p>
-            <p>Datascientist Training</p>
-            <p>Evaluate the feasibility of automatic product classification using text.....</p>
-            <a href="/mission6/" hx-get="/mission6/" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="false" class="more-link">More</a>
-        </article>
+<div class="grid-container">
+    <article class="card">
+        <h3>Mission 2: World Bank Educational Data Analysis</h3>
+        <p class="text-light">September, 2024</p>
+        <p>Academy EdTech eLearning platform would like to expand its activities...</p>
+        <div class="card-footer">
+            <a href="#" hx-get="/mission2/" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+        </div>
+    </article>
 
+    <article class="card">
+        <h3>Mission 3: Nutriscore Correlations Analysis</h3>
+        <p class="text-light">February 13, 2025</p>
+        <p>The Public Health Agency wishes to improve the quality of Open Food Facts data...</p>
+        <div class="card-footer">
+            <a href="#" hx-get="/mission3/" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+        </div>
+    </article>
 
-        <!-- Add more grid-items as needed -->
-    </div>
+    <article class="card">
+        <h3>Mission 4: Energyscore Supervised Forecasting</h3>
+        <p class="text-light">March 07, 2025</p>
+        <p>Building Energy Consumption Prediction for Seattle...</p>
+        <div class="card-footer">
+            <a href="#" hx-get="/mission4/" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+        </div>
+    </article>
 
-    <!-- Right Scroll Button -->
-    <button class="scroll-btn right-btn"
-            hx-get="/scroll-right/"
-            hx-trigger="click"
-            hx-swap="none"
-            hx-on="htmx:afterRequest: handleScroll(this, event)">▶</button>
+    <article class="card">
+        <h3>Mission 5: Client Segmentation Unsupervised Analysis</h3>
+        <p class="text-light">May 25, 2025</p>
+        <p>Olist E-commerce would like several dashboards for its customer segmentation...</p>
+        <div class="card-footer">
+            <a href="#" hx-get="/mission5/" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+        </div>
+    </article>
+
+    <article class="card">
+        <h3>Mission 6: Feasibility Study of Product Classification Engine</h3>
+        <p class="text-light">November 13, 2025</p>
+        <p>Evaluate the feasibility of automatic product classification using text...</p>
+        <div class="card-footer">
+            <a href="#" hx-get="/mission6/" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+        </div>
+    </article>
 </div>
-
-<script>
-    function handleScroll(direction) {
-        const scrollWrapper = document.getElementById('scroll-wrapper');
-        const scrollAmount = 320; // Adjust as needed for grid-item width
-
-        if (scrollWrapper) {
-            scrollWrapper.scrollBy({
-                left: direction * scrollAmount,
-                behavior: 'smooth'
-            });
-        }
-    }
-
-    document.querySelector('.left-btn').addEventListener('click', function() {
-        handleScroll(-1); // Scroll left
-    });
-
-    document.querySelector('.right-btn').addEventListener('click', function() {
-        handleScroll(1); // Scroll right
-    });
-</script>
