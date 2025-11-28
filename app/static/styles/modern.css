@@ -288,3 +288,262 @@ a:hover {
         font-size: 1.8rem;
     }
 }
+
+/* =========================================
+   FIXES & MISSING COMPONENTS
+   ========================================= */
+
+/* 1. Scripts List Fix (Targeting ID because class is stripped by script) */
+#sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#sidebar-list li {
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+#sidebar-list li a {
+    color: var(--text-primary);
+    display: block;
+    transition: color 0.2s;
+}
+
+#sidebar-list li a:hover {
+    color: var(--accent-primary);
+    padding-left: 4px;
+}
+
+#sidebar-list .subdir-heading {
+    color: var(--accent-secondary);
+    font-weight: 600;
+    margin-top: var(--spacing-md);
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+#sidebar-list ul {
+    list-style: none;
+    padding-left: var(--spacing-md);
+}
+
+/* 2. Header Styles (Ported from header.css) */
+.top-bar {
+    /* Fixed positioning relative to main-content if needed, 
+       but typically headers are inside main-content in this layout? 
+       Wait, header.html is loaded into #header div in index.html.
+       Let's make it sticky at the top of the main area or fixed. */
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+    border-radius: 0 0 16px 16px;
+    /* Rounded bottom corners */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.logo img {
+    height: 32px;
+    width: auto;
+}
+
+.top-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.nav-link:hover {
+    color: var(--accent-primary);
+}
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+}
+
+.dropbtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.dropbtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px;
+    background: var(--bg-secondary);
+    min-width: 200px;
+    box-shadow: var(--shadow-lg);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    z-index: 50;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-link {
+    display: block;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.dropdown-link:last-child {
+    border-bottom: none;
+}
+
+.dropdown-link:hover {
+    background: var(--bg-tertiary);
+    color: var(--accent-primary);
+}
+
+.dark-mode-toggle {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+}
+
+/* 3. Main Layout / Grid Styles (Ported from grid.css) */
+.scroll-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) 0;
+}
+
+.scroll-wrapper {
+    display: flex;
+    overflow-x: auto;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md);
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* Hide scrollbar Firefox */
+    -ms-overflow-style: none;
+    /* Hide scrollbar IE/Edge */
+}
+
+.scroll-wrapper::-webkit-scrollbar {
+    display: none;
+    /* Hide scrollbar Chrome/Safari */
+}
+
+.grid-item {
+    min-width: 300px;
+    max-width: 300px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-md);
+}
+
+.grid-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--accent-primary);
+}
+
+.grid-item h2 {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-sm);
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.grid-item p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.more-link {
+    margin-top: auto;
+    display: inline-block;
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.more-link:hover {
+    color: var(--accent-secondary);
+    text-decoration: underline;
+}
+
+.scroll-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--glass-border);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.scroll-btn:hover {
+    background: var(--accent-primary);
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+.left-btn {
+    margin-right: var(--spacing-sm);
+}
+
+.right-btn {
+    margin-left: var(--spacing-sm);
+}
