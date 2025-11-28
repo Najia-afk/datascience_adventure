@@ -1,0 +1,165 @@
+/* 
+   MODERN UI DESIGN - CSS EXPORT
+   This file contains the CSS rules for the modern UI design.
+   It should be saved as 'app/static/styles/modern.css' in the project.
+*/
+
+/* --- CSS VARIABLES (The Theme) --- */
+:root {
+    --primary: #4f46e5;       /* Indigo */
+    --primary-hover: #4338ca;
+    --bg-body: #f3f4f6;       /* Light Gray */
+    --bg-sidebar: #111827;    /* Very Dark Blue/Gray */
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --radius: 12px;
+}
+
+/* --- RESET & BASE --- */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+}
+
+/* --- SIDEBAR (Modern Look) --- */
+.sidebar {
+    background-color: var(--bg-sidebar) !important; /* Override existing */
+    color: white !important;
+    border-right: none !important;
+}
+
+.sidebar h2, .sidebar .vertical-title {
+    color: #e0e7ff !important;
+}
+
+.sidebar-toggle {
+    background-color: var(--primary) !important;
+    border-radius: 0 8px 8px 0 !important;
+}
+
+.sidebar-toggle:hover {
+    background-color: var(--primary-hover) !important;
+}
+
+#sidebar-list li a {
+    color: #9ca3af !important;
+    padding: 8px 12px;
+    display: block;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+#sidebar-list li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white !important;
+    text-decoration: none !important;
+}
+
+/* --- CARDS & GRID (Summary Page) --- */
+.grid-item {
+    background: var(--card-bg) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow) !important;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    padding: 1.5rem !important;
+    transition: transform 0.2s;
+}
+
+.grid-item:hover {
+    transform: translateY(-2px);
+}
+
+.grid-item h2 {
+    color: #374151 !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.grid-item p {
+    color: var(--text-muted) !important;
+}
+
+.more-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--primary) !important;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.more-link:hover {
+    color: var(--primary-hover) !important;
+    text-decoration: underline;
+}
+
+/* --- BUTTONS --- */
+.button-colab {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 0.625rem 1.25rem !important;
+    font-weight: 500 !important;
+    box-shadow: var(--shadow) !important;
+}
+
+.button-colab:hover {
+    background-color: var(--primary-hover) !important;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--primary);
+    color: white;
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: var(--primary-hover);
+}
+
+/* --- HEADER --- */
+.top-bar {
+    background-color: white !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.logo span {
+    color: #111827 !important;
+    font-weight: 600;
+}
+
+.nav-link, .dropbtn {
+    color: #4b5563 !important;
+    font-weight: 500 !important;
+}
+
+.nav-link:hover, .dropbtn:hover {
+    color: var(--primary) !important;
+}
+
+/* --- MAIN CONTENT --- */
+.main-content {
+    background-color: transparent !important; /* Let body bg show through */
+    box-shadow: none !important;
+}
+
+.project-header h1 {
+    color: #111827;
+    font-weight: 700;
+}
+
+.project-header p {
+    color: var(--text-muted);
+}

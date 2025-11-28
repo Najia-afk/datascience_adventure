@@ -1,0 +1,59 @@
+MODERN UI IMPLEMENTATION NOTES
+==============================
+
+To apply the modern design to the old branch, follow these steps:
+
+1. CSS FILE
+   - Copy the content of 'modern_design.css' to 'app/static/styles/modern.css'.
+   - Ensure 'app/static/styles/styles.css' imports it or link it directly in HTML.
+
+2. HTML HEADERS
+   - In all HTML files (index.html, mission_layout.html, etc.), add the following to the <head>:
+     
+     <!-- Modern UI Fonts & Icons -->
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <link rel="stylesheet" href="/styles/modern.css">
+
+3. LAYOUT STRUCTURE
+   - The sidebar should have the class "sidebar".
+   - The main content area should have the class "main-content".
+   - Mission pages should use the structure:
+     <section class="main-content expanded" id="main-content">
+         <header class="project-header">
+             <h1>Mission Title</h1>
+             <p>Mission Description</p>
+         </header>
+         ...
+     </section>
+
+4. SUMMARY PAGE (Grid)
+   - Use the class "grid-item" for the mission cards.
+   - Use "badge" classes for status indicators.
+   - Example structure:
+     <article class="grid-item">
+         <div style="display:flex; justify-content:space-between; ...">
+             <div style="...">Icon</div>
+             <span class="badge" style="...">Status</span>
+         </div>
+         <h2>Mission Title</h2>
+         <p>Description...</p>
+         <a href="/missionX/" class="more-link">View Mission</a>
+     </article>
+
+5. NAVIGATION
+   - Ensure mission links are standard hrefs (e.g., href="/mission2/") and NOT hx-get if you want full page reloads for the mission layout.
+   - If using HTMX for the dashboard, use hx-boost="false" on mission links to break out of the SPA mode for those specific pages.
+
+6. IFRAME HANDLING
+   - The modern layout expects an iframe container:
+     <div class="iframe-container">
+         <iframe id="main-iframe" src="..." ...></iframe>
+     </div>
+   - The CSS handles the responsiveness.
+
+7. SERVER ROUTES
+   - Ensure the server can serve the static CSS files correctly.
+   - If using the new file structure (missionX.html wrapper + missionX_content.html content), ensure routes are set up to serve both.

@@ -1,22 +1,18 @@
 from flask import Flask, render_template, send_from_directory, abort
 import os
-import re
 
-# Function to create the Flask app
 def create_app():
-    # Use the root as template_folder
-    app = Flask(__name__, static_folder="/var/www/htmx_website/", template_folder="/var/www/htmx_website/")
+    # Set template_folder to current directory (app/) to find missionX.html
+    # Set static_folder to 'static' and static_url_path to '' so /styles/ works
+    app = Flask(__name__, static_folder="static", static_url_path="", template_folder=".")
     
-    # Route for main website pages
     @app.route('/')
     def index():
-        return render_template('index.html')
-
+        return render_template('templates/index.html')
 
     @app.route('/header/')
     def header():
         return render_template('templates/header.html')
-
 
     @app.route('/footer/')
     def footer():
@@ -34,46 +30,26 @@ def create_app():
     def contact():
         return render_template('templates/contact.html')
     
-    # Dynamic route for mission pages
     @app.route('/<path:mission_path>/')
     def mission_page(mission_path):
+        # Security check
+        if '..' in mission_path or mission_path.startswith('/'):
+             abort(404)
         return render_template(f'{mission_path}.html')
 
-    # Dynamic route for mission content HTML files
     @app.route('/<path:mission_path>_content.html')
     def mission_content(mission_path):
-        content_file = f'{mission_path}_content.html'
-        file_path = os.path.join('/var/www/htmx_website', content_file)
-        if os.path.exists(file_path):
-            return send_from_directory('/var/www/htmx_website', content_file)
-        abort(404)
+        if '..' in mission_path or mission_path.startswith('/'):
+             abort(404)
+        return send_from_directory('.', f'{mission_path}_content.html')
 
-    # Generic route for static files - properly fixed version
-    @app.route('/<path:filename>.py/')
-    def serve_static(filename):
-        # Clean up the filename - ensure trailing slashes are removed
-        filename = re.sub(r'/+', '/', filename).rstrip('/')
-        
-    
-        base_name, ext = os.path.splitext(filename)
-        html_filename = base_name + '.html'
-        html_path = os.path.join('/var/www/htmx_website', html_filename)
-        
-        if os.path.exists(html_path):
-            return send_from_directory('/var/www/htmx_website', html_filename)
-        
-        # If not found, return 404
-        abort(404)
-
-    # Error handler for 404
     @app.errorhandler(404)
     def not_found(e):
-        return render_template('404.html'), 404
+        return render_template('templates/404.html'), 404
 
     return app
 
 if __name__ == "__main__":
-    # Run the app
     app = create_app()
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000, debug=True)
 
