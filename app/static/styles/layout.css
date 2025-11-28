@@ -6,6 +6,8 @@
     flex-direction: row;
     overflow: hidden;
     position: relative;
+    min-height: 100vh;
+    padding-top: var(--header-height); /* Push down content by header height */
 }
 
 /* Main Content Area */
@@ -13,7 +15,7 @@
     flex: 1;
     background-color: var(--bg-surface);
     padding: 0 20px;
-    margin-left: 280px; /* Increased to match new sidebar width */
+    margin-left: var(--sidebar-width); /* Push content right by sidebar width */
     box-shadow: var(--shadow-sm);
     border-radius: var(--radius-lg);
     min-width: 0;
@@ -21,33 +23,36 @@
     margin-top: 0;
     z-index: 1;
     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 2rem;
+    min-height: calc(100vh - var(--header-height));
+    position: relative;
 }
 
 .main-content.expanded {
-    margin-left: 60px; /* Leave space for the collapsed sidebar strip */
+    margin-left: var(--sidebar-collapsed-width);
 }
 
 /* Sidebar Styles - Fixed height for scrolling */
 .sidebar {
-    width: 280px; /* Slightly wider for better readability */
+    width: var(--sidebar-width);
     padding: 20px;
     background-color: var(--bg-sidebar);
     box-shadow: var(--shadow-md);
     border-right: 1px solid var(--border-color);
     position: fixed;
-    top: 75px; /* Position directly below the header */
+    top: var(--header-height);
     bottom: 0; /* Anchor to bottom to force height calculation */
     left: 0;
     z-index: 1000;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease;
     overflow-y: auto; /* Enable internal scrolling */
+    padding: 1.5rem;
     
     /* Modern Scrollbar Styling */
     scrollbar-width: thin;
     scrollbar-color: var(--text-secondary) transparent;
 }
 
-/* Webkit Scrollbar Styling */
 .sidebar::-webkit-scrollbar {
     width: 6px;
     display: block;
@@ -68,6 +73,9 @@
 
 .sidebar.collapsed {
     transform: translateX(-220px); /* Leave 60px visible */
+    width: var(--sidebar-collapsed-width);
+    padding: 1.5rem 0; /* Remove horizontal padding */
+    overflow: hidden; /* Hide scrollbar when collapsed */
 }
 
 /* Toggle button - Redesigned as a floating tab */
@@ -87,6 +95,12 @@
     justify-content: center;
     z-index: 1005;
     transition: all 0.2s ease;
+    top: 12px;
+    right: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text-muted);
 }
 
 .sidebar-toggle:hover {
@@ -94,6 +108,14 @@
     color: white;
     border-color: var(--primary-color);
     transform: scale(1.1);
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.sidebar.collapsed .sidebar-toggle {
+    right: 50%;
+    transform: translateX(50%);
 }
 
 /* Vertical title for collapsed sidebar */
@@ -107,6 +129,13 @@
     display: none;
     z-index: 1001;
     pointer-events: none; /* Let clicks pass through */
+    left: 50%;
+    transform: translateX(-50%);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--primary);
 }
 
 .vertical-title span {
@@ -132,6 +161,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.1s ease;
+    display: none; /* Remove from flow */
 }
 
 .sidebar h2,
@@ -159,6 +189,9 @@
 .button-container {
     text-align: right; /* Align button to the right */
     margin-bottom: 20px; /* Add space below the button */
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
 }
 
 /* Google Colab Button Style */
@@ -176,6 +209,11 @@
     border: 1px solid #e2e8f0;
     box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
+    gap: 0.5rem;
+    color: var(--text-main);
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
 }
 
 .button-colab:hover {
@@ -184,6 +222,10 @@
     box-shadow: var(--shadow-md);
     transform: translateY(-1px);
     color: #ea580c; /* Orange accent on hover */
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    border-color: #f97316; /* Orange border */
+    color: #f97316;
 }
 
 /* Add text before the button content */

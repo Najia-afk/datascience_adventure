@@ -10,27 +10,39 @@
     .sidebar {
         /* Keep the fixed positioning from layout.css instead of relative */
         position: fixed;
-        width: 250px; /* Match layout.css width */
+        width: 260px; /* Match layout.css width */
         margin-bottom: 0;
         top: 100px; /* Match layout.css */
         /* Let the sidebar transform handle positioning */
-        transform: translateX(-230px); /* Default collapsed state */
+        transform: translateX(-100%); /* Default collapsed state */
         z-index: 1000;
+        box-shadow: 4px 0 10px rgba(0,0,0,0.1);
     }
     
     /* Use layout.css approach for main content */
     .main-content {
-        margin-left: 40px; /* Allow room for toggle button */
-        padding: 0 10px;
-        width: calc(100% - 40px);
+        margin-left: 0 !important; /* Override JS inline styles if any */
+        padding: 1rem;
+        width: 100%;
     }
     
     /* Make sure the toggle button is visible */
     .sidebar-toggle {
-        left: 0;
-        width: 30px;
-        height: 80px;
-        border-radius: 0 8px 8px 0;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        top: auto;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        border: none;
+    }
+    
+    .sidebar-toggle:hover {
+        transform: scale(1.1);
     }
     
     /* Ensure vertical title is visible */
@@ -67,6 +79,20 @@
     .iframe-container {
         width: 100% !important;
         padding: 0 !important;
+    }
+
+    /* Class to show sidebar on mobile if you add a toggle button */
+    .sidebar.mobile-active {
+        transform: translateX(0);
+    }
+
+    /* 3. Adjust Header */
+    .top-bar {
+        padding: 0 1rem;
+    }
+    
+    .top-nav {
+        display: none; /* Simplify header on mobile */
     }
 }
 

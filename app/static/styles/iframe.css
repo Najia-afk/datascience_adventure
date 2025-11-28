@@ -2,15 +2,18 @@
 .iframe-container {
     position: relative;
     width: 100%;
-    height: auto; /* This allows the iframe to expand vertically */
+    background: white;
+    border-radius: 8px;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    margin-top: 2rem;
 }
 
 .iframe-container iframe {
     width: 100%;
-    height: auto;
+    min-height: 800px; /* Ensure enough height */
     border: none;
     display: block;
-    min-height: 600px; /* Optional, to ensure a base height */
 }
 
