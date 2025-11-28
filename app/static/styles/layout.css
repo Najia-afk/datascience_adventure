@@ -1,0 +1,25 @@
+/* Layout Structure */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-wrapper {
+    display: flex;
+    flex: 1;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
+    position: relative;
+}
+
+.content-area {
+    flex: 1;
+    background-color: transparent;
+    min-width: 0; /* Prevents flex item from overflowing */
+    display: flex;
+    flex-direction: column;
+}

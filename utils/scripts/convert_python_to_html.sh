@@ -13,9 +13,93 @@ convert_py_to_html() {
     # Install pygments if not already installed
     if ! sudo -u www-data /srv/htmx_website/venv/bin/pip list | grep -q pygments; then
         sudo -u www-data /srv/htmx_website/venv/bin/pip install pygments
-        echo "✅ Installed Pygments for Python syntax highlighting"
+        echo " Installed Pygments for Python syntax highlighting"
     fi
     
+    # Create a temporary python script for conversion
+    cat << 'EOF' > /tmp/convert_syntax.py
+import sys
+import os
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
+if len(sys.argv) < 2:
+    sys.exit(1)
+
+file_path = sys.argv[1]
+try:
+    with open(file_path, 'r') as f:
+        code = f.read()
+except Exception as e:
+    print(f"Error reading file: {e}", file=sys.stderr)
+    sys.exit(1)
+
+# Try to parse the Python code first to check for syntax errors
+try:
+    compile(code, '<string>', 'exec')
+    is_valid = True
+    error_msg = ""
+    error_line = -1
+except SyntaxError as e:
+    is_valid = False
+    error_line = e.lineno
+    error_msg = str(e)
+
+if is_valid:
+    # Code is valid, proceed with highlighting
+    # Use 'monokai' style for dark theme compatibility
+    # full=False ensures we only get the code block, not a full HTML document
+    formatter = HtmlFormatter(style='monokai', linenos=True, full=False, cssclass='highlight')
+    html = highlight(code, PythonLexer(), formatter)
+    css = formatter.get_style_defs('.highlight')
+else:
+    # Code has syntax errors, create a simpler display with error highlighted
+    lines = code.split('\n')
+    html_lines = []
+    
+    for i, line in enumerate(lines, 1):
+        if i == error_line:
+            # Highlight the error line
+            html_lines.append(f'<div class="error-line">{i}: {line}</div>')
+        else:
+            html_lines.append(f'<div class="code-line">{i}: {line}</div>')
+    
+    html = f'<div class="syntax-error">SYNTAX ERROR: {error_msg}</div><pre>{"".join(html_lines)}</pre>'
+    css = '.error-line { background-color: #ffcccc; color: #990000; } .syntax-error { color: red; font-weight: bold; margin-bottom: 10px; }'
+
+print(f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{os.path.basename(file_path)} - DataScience Adventure</title>
+    <link rel="stylesheet" href="/styles/modern-styles.css?v=layout8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        /* Pygments styles injected directly */
+        {css}
+        
+        /* Ensure code background matches container */
+        .highlight {{ background: transparent !important; }}
+        .linenos {{ color: #666 !important; border-right: 1px solid #333 !important; margin-right: 10px !important; }}
+    </style>
+</head>
+<body class="code-view-body">
+    <div class="code-header">
+        <h2>{os.path.basename(file_path)}</h2>
+        <div class="back-link">
+            <a href="javascript:window.close()">Close Window</a>
+        </div>
+    </div>
+    
+    <div class="code-container">
+        {html}
+    </div>
+</body>
+</html>''')
+EOF
+
     # Find all Python files and convert them
     find "$src_dir" -type f -name "*.py" ! -name "__init__.py" | while read py_file; do
         # Get relative path
@@ -40,103 +124,48 @@ convert_py_to_html() {
         
         echo "Converting $py_file to $html_file"
         
-        # Read Python file
-        py_content=$(cat "$py_file")
-        
-        # Generate HTML with Pygments using Python - with error handling
-        html_content=$(sudo -u www-data /srv/htmx_website/venv/bin/python3 -c "
-import pygments
-import os
-import sys
-from pygments import highlight
-from pygments.lexers import PythonLexer
-from pygments.formatters import HtmlFormatter
-
-code = '''$py_content'''
-
-# Try to parse the Python code first to check for syntax errors
-try:
-    compile(code, '<string>', 'exec')
-    is_valid = True
-except SyntaxError as e:
-    is_valid = False
-    error_line = e.lineno
-    error_msg = str(e)
-
-if is_valid:
-    # Code is valid, proceed with highlighting
-    formatter = HtmlFormatter(style='default', linenos=True, full=True)
-    html = highlight(code, PythonLexer(), formatter)
-    css = formatter.get_style_defs('.highlight')
-else:
-    # Code has syntax errors, create a simpler display with error highlighted
-    lines = code.split('\\n')
-    html_lines = []
-    
-    for i, line in enumerate(lines, 1):
-        if i == error_line:
-            # Highlight the error line
-            html_lines.append(f'<div class=\"error-line\">{i}: {line}</div>')
-        else:
-            html_lines.append(f'<div class=\"code-line\">{i}: {line}</div>')
-    
-    html = f'<div class=\"syntax-error\">SYNTAX ERROR: {error_msg}</div><pre>{\"\".join(html_lines)}</pre>'
-    css = '.error-line { background-color: #ffcccc; color: #990000; } .syntax-error { color: red; font-weight: bold; margin-bottom: 10px; }'
-
-print(f'''<!DOCTYPE html>
-<html>
+        # Generate HTML using the python script
+        if ! sudo -u www-data /srv/htmx_website/venv/bin/python3 /tmp/convert_syntax.py "$py_file" > /tmp/temp_output.html 2>/dev/null; then
+             echo " Error processing $py_file - syntax error detected"
+             # Fallback error HTML
+             cat <<HTML > /tmp/temp_output.html
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>{os.path.basename('$py_file')}</title>
+    <meta charset="UTF-8">
+    <title>Syntax Error</title>
+    <link rel="stylesheet" href="/styles/modern-styles.css?v=layout8">
     <style>
-        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; }}
-        .back-link {{ margin-bottom: 20px; }}
-        .back-link a {{ text-decoration: none; color: #0066cc; }}
-        .code-container {{ border: 1px solid #ddd; border-radius: 5px; overflow: auto; padding: 10px; }}
-        .code-line {{ font-family: monospace; white-space: pre; }}
-        {css}
+        .error { color: #ff4444; font-weight: bold; margin-bottom: 1rem; }
+        pre { background-color: rgba(0,0,0,0.3); padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: auto; color: var(--text-main); }
     </style>
 </head>
-<body>
-    <h2>{os.path.basename('$py_file')}</h2>
-    <div class='code-container'>
-        {html}
+<body class="code-view-body">
+    <div class="code-header">
+        <h2>Syntax Error</h2>
+        <div class="back-link">
+            <a href="#" onclick="window.close()">Close Window</a>
+        </div>
     </div>
-</body>
-</html>''')
-" 2>/dev/null) || {
-            # If Python script fails, create a simple error HTML file
-            echo "⚠️ Error processing $py_file - syntax error detected"
-            error_html="<!DOCTYPE html>
-<html>
-<head>
-    <title>$(basename "$py_file") - Syntax Error</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .error { color: red; font-weight: bold; }
-        .back-link { margin-bottom: 20px; }
-        .back-link a { text-decoration: none; color: #0066cc; }
-        pre { background-color: #f5f5f5; padding: 10px; border: 1px solid #ddd; border-radius: 5px; overflow: auto; }
-    </style>
-</head>
-<body>
-    <h2>$(basename "$py_file")</h2>
-    <div class='error'>This file contains syntax errors and cannot be properly displayed.</div>
-    <p>Please check the original source code for errors.</p>
+    <div class='error'>This file contains syntax errors.</div>
     <pre>$(cat "$py_file" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g')</pre>
 </body>
-</html>"
-            echo "$error_html" | sudo tee "$html_file" > /dev/null
-        }
+</html>
+HTML
+        fi
         
-        # Write HTML to file
-        echo "$html_content" | sudo tee "$html_file" > /dev/null
+        # Move output to final destination
+        sudo mv /tmp/temp_output.html "$html_file"
         
         # Set proper permissions
         sudo chown www-data:www-data "$html_file"
         sudo chmod 644 "$html_file"
     done
     
-    echo "✅ Converted Python files to HTML"
+    # Clean up
+    rm -f /tmp/convert_syntax.py
+    
+    echo " Converted Python files to HTML"
 }
 
 # If script is called directly, execute the function with passed arguments

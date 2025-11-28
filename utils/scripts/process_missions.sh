@@ -77,7 +77,7 @@ process_mission_with_layout() {
     
     # Use awk to replace the sidebar list - more reliable than sed for complex HTML
     awk '{
-        if ($0 ~ /<ul id="sidebar-list">/) {
+        if ($0 ~ /<ul id="sidebar-list"/) {
             system("cat '"$tmp_dir/script_list_content.html"'");
             in_list = 1;
         } else if (in_list && $0 ~ /<\/ul>/) {

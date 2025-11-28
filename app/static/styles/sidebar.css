@@ -1,0 +1,82 @@
+/* Sidebar - Overlay Drawer Style */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 70px; /* Match header height */
+    bottom: 0;
+    width: 300px;
+    background-color: var(--secondary); /* Dark Slate Background */
+    color: var(--surface);
+    z-index: 900;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0); /* Expanded by default state in CSS, JS will toggle */
+    border-right: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%); /* Hide completely off-screen */
+    width: 300px; /* Keep width for layout, transform handles visibility */
+    border: none;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    top: 1rem;
+    right: -40px; /* Stick out to the right */
+    width: 40px;
+    height: 40px;
+    background-color: var(--secondary);
+    color: white;
+    border: 1px solid var(--border);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: background-color 0.2s;
+    z-index: 901;
+}
+
+.sidebar-toggle:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.sidebar h3 {
+    color: var(--text-light); /* Light slate for dark bg */
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: var(--spacing-sm);
+    margin-top: 0;
+}
+
+.sidebar-content {
+    padding: var(--spacing-md);
+    overflow-y: auto;
+    height: 100%;
+    opacity: 1;
+}
+
+/* Script List Styling for Dark Sidebar */
+.sidebar-list li a {
+    background-color: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e2e8f0;
+}
+
+.sidebar-list li a:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transform: translateX(4px);
+}
+
+.sidebar-list li a:before {
+    opacity: 1;
+}

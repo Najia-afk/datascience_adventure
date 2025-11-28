@@ -5,22 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mission: Data Exploration</title>
-    <link rel="stylesheet" href="/styles/modern-styles.css">
+    <link rel="stylesheet" href="/styles/modern-styles.css?v=layout8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 
 <body hx-boost="true" class="app-container">
-    <!-- Header (Static for mission pages or loaded via HTMX if preferred, keeping simple for now) -->
-    <header class="site-header">
-        <div class="logo">
-            <a href="/">DataScience<span>Adventure</span></a>
-        </div>
-        <nav class="nav-links">
-            <a href="/" class="nav-link">Home</a>
-            <a href="/contact/" class="nav-link">Contact</a>
-        </nav>
-    </header>
+    <!-- Header loaded via HTMX -->
+    <header id="header" class="site-header" hx-get="/header" hx-target="#header" hx-trigger="load"></header>
 
     <div class="main-wrapper">
         <!-- Sidebar -->
@@ -102,13 +94,12 @@
 
         // Check if it's a mobile device and set initial state
         function checkMobileAndSetLayout() {
-            const isMobile = window.innerWidth <= 768;
             const sidebar = document.getElementById('sidebar');
             const toggleBtn = document.getElementById('sidebar-toggle');
             
             if (!sidebar || !toggleBtn) return;
             
-            // Always start with sidebar collapsed
+            // Always start with sidebar collapsed by default (user preference)
             sidebar.classList.add('collapsed');
             toggleBtn.innerHTML = '▶';
         }

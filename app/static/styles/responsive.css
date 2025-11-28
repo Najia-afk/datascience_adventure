@@ -1,0 +1,28 @@
+/* Responsive */
+@media (max-width: 1024px) {
+    /* Keep main wrapper as is, don't force column */
+    .main-wrapper {
+        padding: var(--spacing-md);
+    }
+
+    /* Keep sidebar as overlay, just ensure it's collapsed by default (handled by JS/HTML class) */
+    .sidebar {
+        z-index: 1100; /* Ensure it's above everything */
+    }
+}
+
+@media (max-width: 640px) {
+    .site-header {
+        padding: 0 var(--spacing-sm);
+        height: 60px;
+    }
+    
+    .logo a {
+        font-size: 1.2rem;
+    }
+    
+    /* Allow grid to be 1 column on very small screens, but 2 on larger phones if possible */
+    .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}

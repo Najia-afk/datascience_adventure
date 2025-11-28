@@ -15,7 +15,7 @@ generate_script_list() {
     
     # Create a temporary script list file
     local script_list_file="$tmp_dir/script_list.html"
-    echo '<ul id="sidebar-list">' > "$script_list_file"
+    echo '<ul id="sidebar-list" class="sidebar-list">' > "$script_list_file"
     
     # Get all subdirectories in the src directory
     local subdirs=$(find "$src_dir" -type d | sort)
@@ -40,12 +40,13 @@ generate_script_list() {
             # Find Python files in this subdirectory, excluding __init__.py
             find "$subdir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
                 local script_name=$(basename "$script_path")
+                local script_base_name="${script_name%.py}"
                 # FIXED: Create path without src directory in the URL and ensure no trailing slash
                 local subdirectory=$(basename "$subdir")
-                local script_url="${repo_name}_src/${subdirectory}/${script_name}"
+                local script_url="${repo_name}_src/${subdirectory}/${script_base_name}.html"
                 # Clean up the URL path and ensure no trailing slash
                 script_url=$(echo "$script_url" | sed 's|//*|/|g' | sed 's|/$||')
-                echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
+                echo "<li><a href=\"/$script_url\" hx-boost=\"false\" onclick=\"window.open(this.href, 'CodeViewer', 'width=1200,height=800'); return false;\">$script_name</a></li>" >> "$script_list_file"
             done
             
             echo "</ul></li>" >> "$script_list_file"
@@ -62,11 +63,12 @@ generate_script_list() {
         # Also for root directory files
         find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
             local script_name=$(basename "$script_path")
+            local script_base_name="${script_name%.py}"
             # FIXED: Create correct URL path for root directory files with no trailing slash
-            local script_url="${repo_name}_src/${script_name}"
+            local script_url="${repo_name}_src/${script_base_name}.html"
             # Clean up the URL path and ensure no trailing slash
             script_url=$(echo "$script_url" | sed 's|//*|/|g' | sed 's|/$||')
-            echo "<li><a href=\"/$script_url\" target=\"_blank\">$script_name</a></li>" >> "$script_list_file"
+            echo "<li><a href=\"/$script_url\" hx-boost=\"false\" onclick=\"window.open(this.href, 'CodeViewer', 'width=1200,height=800'); return false;\">$script_name</a></li>" >> "$script_list_file"
         done
         
         echo "</ul></li>" >> "$script_list_file"
