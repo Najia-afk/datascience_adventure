@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: datascience_app
+    restart: always
+    volumes:
+      # Share the generated static files with Nginx
+      - static_data:/var/www/htmx_website
+    # When the container starts, we need to ensure the volume is populated
+    # Docker copies data from the image to the volume on first creation.
+    
+  nginx:
+    image: nginx:alpine
+    container_name: datascience_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx-docker.conf:/etc/nginx/conf.d/default.conf
+      - static_data:/var/www/htmx_website
+    depends_on:
+      - app
+
+volumes:
+  static_data:
