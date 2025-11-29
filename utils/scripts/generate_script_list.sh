@@ -34,8 +34,9 @@ generate_script_list() {
         
         if [ "$has_py_files" -gt 0 ]; then
             # Add subdirectory heading
-            echo "<li class='subdir-heading'><strong>$(basename "$subdir")/</strong>" >> "$script_list_file"
-            echo "<ul>" >> "$script_list_file"
+            echo "<li class='repo-category'>" >> "$script_list_file"
+            echo "<div class='category-header'><span class='name'>$(basename "$subdir")</span></div>" >> "$script_list_file"
+            echo "<ul class='category-scripts'>" >> "$script_list_file"
             
             # Find Python files in this subdirectory, excluding __init__.py
             find "$subdir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do
@@ -57,8 +58,9 @@ generate_script_list() {
     local root_has_py_files=$(find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | wc -l)
     
     if [ "$root_has_py_files" -gt 0 ]; then
-        echo "<li class='subdir-heading'><strong>root/</strong>" >> "$script_list_file"
-        echo "<ul>" >> "$script_list_file"
+        echo "<li class='repo-category'>" >> "$script_list_file"
+        echo "<div class='category-header'><span class='name'>Main Scripts</span></div>" >> "$script_list_file"
+        echo "<ul class='category-scripts'>" >> "$script_list_file"
         
         # Also for root directory files
         find "$src_dir" -maxdepth 1 -type f -name "*.py" ! -name "__init__.py" | sort | while read script_path; do

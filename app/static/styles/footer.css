@@ -1,10 +1,10 @@
 /* Footer */
 .site-footer {
-    background-color: var(--surface);
+    background-color: var(--secondary);
     border-top: 1px solid var(--border);
     padding: var(--spacing-lg);
     margin-top: auto;
     text-align: center;
     color: var(--text-light);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }

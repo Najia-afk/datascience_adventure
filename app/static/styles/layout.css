@@ -1,4 +1,4 @@
-/* Layout Structure */
+/* Layout */
 .app-container {
     display: flex;
     flex-direction: column;
@@ -8,18 +8,38 @@
 .main-wrapper {
     display: flex;
     flex: 1;
-    max-width: 1440px;
+    max-width: 100%; /* Full width */
     margin: 0 auto;
     width: 100%;
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md); /* Reduced padding */
     gap: var(--spacing-lg);
     position: relative;
+    /* Removed padding-left transition to allow sidebar overlay */
+}
+
+/* Push content when sidebar is open on desktop */
+@media (min-width: 769px) {
+    .main-wrapper.sidebar-open {
+        /* padding-left: 300px;  Removed to allow overlay */
+    }
 }
 
 .content-area {
     flex: 1;
     background-color: transparent;
-    min-width: 0; /* Prevents flex item from overflowing */
+    min-width: 0;
     display: flex;
     flex-direction: column;
+    width: 100%; /* Ensure full width */
+}
+
+.iframe-wrapper {
+    width: 100%;
+    display: block;
+}
+
+.iframe-wrapper iframe {
+    width: 100%;
+    border: none;
+    display: block;
 }

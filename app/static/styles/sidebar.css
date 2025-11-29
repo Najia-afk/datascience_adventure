@@ -1,82 +1,121 @@
-/* Sidebar - Overlay Drawer Style */
+/* Sidebar */
 .sidebar {
     position: fixed;
     left: 0;
-    top: 70px; /* Match header height */
-    bottom: 0;
+    top: 80px; /* Match header height */
     width: 300px;
-    background-color: var(--secondary); /* Dark Slate Background */
-    color: var(--surface);
+    background-color: rgba(11, 16, 21, 0.98);
+    color: var(--text-main);
     z-index: 900;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateX(0); /* Expanded by default state in CSS, JS will toggle */
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-right: 1px solid var(--border);
-    box-shadow: var(--shadow-lg);
-    border-radius: 0;
+    backdrop-filter: blur(10px);
+    /* Dynamic height and scrolling */
+    height: auto;
+    max-height: calc(100vh - 100px); /* Leave some space at bottom */
+    border-bottom-right-radius: var(--radius-md);
+    border-bottom: 1px solid var(--border);
     display: flex;
     flex-direction: column;
+    /* Draggable cursor */
+    cursor: move;
 }
 
 .sidebar.collapsed {
-    transform: translateX(-100%); /* Hide completely off-screen */
-    width: 300px; /* Keep width for layout, transform handles visibility */
-    border: none;
+    width: 40px;
+    transform: none; /* Don't move it off screen, just shrink it */
+    cursor: default; /* Only draggable when open? Or always? Let's say always */
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle-container {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer; /* Handle for dragging */
+    background: var(--surface);
 }
 
 .sidebar-toggle {
-    position: absolute;
-    top: 1rem;
-    right: -40px; /* Stick out to the right */
-    width: 40px;
-    height: 40px;
-    background-color: var(--secondary);
-    color: white;
-    border: 1px solid var(--border);
-    border-left: none;
-    border-radius: 0 8px 8px 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: var(--primary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    transition: background-color 0.2s;
-    z-index: 901;
+    font-size: 0.9rem; /* Smaller arrow */
+    transition: var(--transition);
 }
 
 .sidebar-toggle:hover {
-    background-color: var(--primary);
-    color: white;
+    background-color: rgba(0, 220, 255, 0.1);
+    color: #fff;
 }
 
-.sidebar h3 {
-    color: var(--text-light); /* Light slate for dark bg */
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: var(--spacing-sm);
-    margin-top: 0;
-}
-
+/* Sidebar Content */
 .sidebar-content {
     padding: var(--spacing-md);
-    overflow-y: auto;
-    height: 100%;
+    overflow-y: auto; /* Enable scrolling */
+    overflow-x: hidden;
+    flex: 1;
+    /* Custom Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-dark) var(--surface);
     opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+    cursor: default; /* Content shouldn't trigger drag */
 }
 
-/* Script List Styling for Dark Sidebar */
-.sidebar-list li a {
-    background-color: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #e2e8f0;
+.sidebar.collapsed .sidebar-content {
+    opacity: 0;
+    pointer-events: none;
+    display: none; /* Hide content when collapsed */
 }
 
-.sidebar-list li a:hover {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
-    transform: translateX(4px);
+/* Category Header Styling */
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.5rem; /* More padding */
+    cursor: pointer;
+    color: var(--text-light);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    transition: var(--transition);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator */
+    margin-bottom: 0.25rem;
 }
 
-.sidebar-list li a:before {
+.category-header:hover {
+    color: var(--primary);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.category-header .name {
+    color: var(--text-main); /* Cleaner look, not colored by default */
+}
+
+.category-header:hover .name {
+    color: var(--primary);
+}
+
+.category-header .arrow {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    opacity: 0.5;
+    transition: transform 0.2s;
+}
+
+.category-header:hover .arrow {
     opacity: 1;
+    color: var(--primary);
+    transform: translateX(2px);
 }

@@ -1,0 +1,106 @@
+/* Flyout Menu - Fixed Positioning */
+.category-scripts {
+    display: none;
+    position: fixed; /* Fixed relative to viewport to escape sidebar overflow */
+    width: 280px;
+    background-color: rgba(11, 16, 21, 0.95); /* Slightly transparent */
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--primary);
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem 0;
+    z-index: 1001; /* Higher than sidebar */
+    backdrop-filter: blur(10px); /* Blur effect */
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.category-scripts.visible {
+    display: block;
+    animation: slideIn 0.2s ease-out;
+}
+
+.category-scripts li a {
+    display: block;
+    padding: 0.6rem 1.2rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.category-scripts li a:hover {
+    background-color: rgba(0, 220, 255, 0.08);
+    color: var(--text-main);
+    border-left-color: var(--primary);
+    padding-left: 1.5rem;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+
+/* Code View Styles */
+.code-view-body {
+    background-color: var(--background);
+    color: var(--text-main);
+    padding: var(--spacing-lg);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.code-container {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-md);
+    overflow-x: auto;
+    box-shadow: var(--shadow-md);
+    margin-top: var(--spacing-md);
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--spacing-sm);
+}
+
+.code-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+.back-link a {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.back-link a:hover {
+    color: var(--primary);
+}
+
+.back-link a::before {
+    content: '←';
+    margin-right: 0.5rem;
+}
+
+/* Pygments Overrides for Dark Theme */
+.highlight {
+    background: transparent !important;
+    color: var(--text-main);
+}
+
+.highlight pre {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}

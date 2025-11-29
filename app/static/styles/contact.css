@@ -1,0 +1,23 @@
+/* Contact Page Styles */
+.contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px -10px rgba(0, 220, 255, 0.2);
+    border-color: var(--primary);
+}
+
+.icon-wrapper svg {
+    transition: transform 0.3s ease;
+}
+
+.contact-card:hover .icon-wrapper svg {
+    transform: scale(1.1);
+}
+
+.contact-card h3 {
+    color: var(--text-main);
+    font-size: 1.5rem;
+}
+
+.contact-card p {
+    color: var(--text-light);
+}

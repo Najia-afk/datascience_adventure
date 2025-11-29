@@ -5,7 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mission: Data Exploration</title>
-    <link rel="stylesheet" href="/styles/modern-styles.css?v=layout8">
+    <link rel="stylesheet" href="/styles/variables.css">
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/layout.css">
+    <link rel="stylesheet" href="/styles/header.css">
+    <link rel="stylesheet" href="/styles/footer.css">
+    <link rel="stylesheet" href="/styles/components.css">
+    <link rel="stylesheet" href="/styles/sidebar.css">
+    <link rel="stylesheet" href="/styles/interactive.css">
+    <link rel="stylesheet" href="/styles/contact.css">
+    <link rel="stylesheet" href="/styles/responsive.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
@@ -17,9 +26,11 @@
     <div class="main-wrapper">
         <!-- Sidebar -->
         <aside class="sidebar collapsed" id="sidebar">
-            <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
-                ▶
-            </button>
+            <div class="sidebar-toggle-container">
+                <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
             <div class="sidebar-content">
                 <h3>Scripts Used</h3>
                 <ul id="sidebar-list" class="sidebar-list">
@@ -31,20 +42,18 @@
 
         <!-- Main Content Area -->
         <section class="content-area" id="main-content">
-            <header class="project-header">
-                <h1>Mission: Data Science Project</h1>
-                <p>Exploring data science concepts and techniques.</p>
-            </header>
-
-            <!-- Google Colab Button -->
-            <div style="margin-bottom: 1.5rem;">
-                <a href="#" id="colab-button" class="btn btn-colab">
+            <header class="project-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>Mission: Data Science Project</h1>
+                    <p>Exploring data science concepts and techniques.</p>
+                </div>
+                <a href="#" id="colab-button" class="btn btn-primary">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px;">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                     </svg>
                     Run on Google Colab
                 </a>
-            </div>
+            </header>
 
             <!-- Iframe Display for the Jupyter Notebook -->
             <div id="loading">
@@ -80,15 +89,19 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const toggleBtn = document.getElementById('sidebar-toggle');
+            const mainWrapper = document.querySelector('.main-wrapper');
 
             if (!sidebar || !toggleBtn) return;
 
             sidebar.classList.toggle('collapsed');
+            if (mainWrapper) {
+                mainWrapper.classList.toggle('sidebar-open');
+            }
 
             if (sidebar.classList.contains('collapsed')) {
-                toggleBtn.innerHTML = '▶';
+                toggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
             } else {
-                toggleBtn.innerHTML = '◀';
+                toggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
             }
         }
 
@@ -101,7 +114,7 @@
             
             // Always start with sidebar collapsed by default (user preference)
             sidebar.classList.add('collapsed');
-            toggleBtn.innerHTML = '▶';
+            toggleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
         }
         
         // Function to handle iframe resizing
@@ -190,9 +203,17 @@
         
         // Initialize the page
         function initializePage() {
-            if (window.dsaApp.initialized) return;
+            // Reset loading state
+            const loadingIndicator = document.getElementById('loading');
+            const iframeContainer = document.querySelector('.iframe-wrapper');
+            const iframe = document.getElementById('main-iframe');
             
-            window.dsaApp.initialized = true;
+            if (loadingIndicator) loadingIndicator.style.display = 'block';
+            if (iframeContainer) {
+                iframeContainer.style.visibility = 'hidden';
+                iframeContainer.style.height = '1px';
+            }
+            
             setupColabLink();
             simulateProgress();
             
@@ -206,8 +227,6 @@
                 if (handleIframeResize() || window.dsaApp.resizeCounter >= 12) {
                     clearInterval(window.dsaApp.resizeTimer);
                     if (window.dsaApp.resizeCounter >= 12) {
-                        const loadingIndicator = document.getElementById('loading');
-                        const iframeContainer = document.querySelector('.iframe-wrapper');
                         if (loadingIndicator) loadingIndicator.style.display = 'none';
                         if (iframeContainer) {
                             iframeContainer.style.visibility = 'visible';
@@ -219,13 +238,118 @@
             
             window.addEventListener('resize', checkMobileAndSetLayout);
             
-            const iframe = document.getElementById('main-iframe');
             if (iframe) {
-                iframe.addEventListener('load', function() {
+                // Remove old listeners to prevent duplicates if re-initializing
+                const newIframe = iframe.cloneNode(true);
+                iframe.parentNode.replaceChild(newIframe, iframe);
+                
+                newIframe.addEventListener('load', function() {
                     setTimeout(handleIframeResize, 500);
                 });
             }
+            
+            // Initialize Flyout Menus
+            initFlyoutMenus();
         }
+        
+        // Flyout Menu Logic
+        function initFlyoutMenus() {
+            const categories = document.querySelectorAll('.repo-category');
+            
+            categories.forEach(category => {
+                const header = category.querySelector('.category-header');
+                const scripts = category.querySelector('.category-scripts');
+                
+                if (!header || !scripts) return;
+                
+                header.addEventListener('mouseenter', () => {
+                    const rect = category.getBoundingClientRect();
+                    
+                    // Calculate position
+                    let topPos = rect.top;
+                    const menuHeight = scripts.offsetHeight || 300; // Estimate if not visible yet
+                    const windowHeight = window.innerHeight;
+                    
+                    // Check if menu would go off screen
+                    if (topPos + menuHeight > windowHeight) {
+                        // Shift up to fit, but not above header (80px)
+                        topPos = Math.max(80, windowHeight - menuHeight - 20);
+                    }
+                    
+                    scripts.style.top = `${topPos}px`;
+                    scripts.style.left = `${rect.right + 5}px`; // 5px gap
+                    scripts.classList.add('visible');
+                });
+                
+                category.addEventListener('mouseleave', () => {
+                    scripts.classList.remove('visible');
+                });
+            });
+            
+            // Initialize Draggable Sidebar
+            initDraggableSidebar();
+        }
+        
+        // Draggable Sidebar Logic
+        function initDraggableSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const handle = document.querySelector('.sidebar-toggle-container');
+            
+            if (!sidebar || !handle) return;
+            
+            let isDragging = false;
+            let startY;
+            let startTop;
+            
+            handle.addEventListener('mousedown', (e) => {
+                // Only allow dragging if not clicking the button itself (optional, but good UX)
+                if (e.target.id === 'sidebar-toggle') return;
+                
+                isDragging = true;
+                startY = e.clientY;
+                startTop = sidebar.offsetTop;
+                
+                // Prevent text selection while dragging
+                document.body.style.userSelect = 'none';
+                sidebar.style.transition = 'none'; // Disable transition during drag
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaY = e.clientY - startY;
+                let newTop = startTop + deltaY;
+                
+                // Constrain to viewport
+                const maxTop = window.innerHeight - 100; // Keep at least 100px visible
+                if (newTop < 80) newTop = 80; // Don't go above header
+                if (newTop > maxTop) newTop = maxTop;
+                
+                sidebar.style.top = `${newTop}px`;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    document.body.style.userSelect = '';
+                    sidebar.style.transition = ''; // Re-enable transition
+                }
+            });
+        }
+
+        // HTMX Events for Loading Bar
+        document.body.addEventListener('htmx:configRequest', function(evt) {
+            const loadingIndicator = document.getElementById('loading');
+            const iframeContainer = document.querySelector('.iframe-wrapper');
+            
+            if (loadingIndicator) loadingIndicator.style.display = 'block';
+            if (iframeContainer) iframeContainer.style.visibility = 'hidden';
+        });
+
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            // Re-initialize page after HTMX content swap
+            initializePage();
+        });
         
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", function() {
