@@ -4,8 +4,20 @@ import re
 
 # Function to create the Flask app
 def create_app():
+    # Define the base directory relative to this file
+    base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+
+    # Determine where the content (processed missions, converted python files) is located
+    # In Docker, this is /var/www/htmx_website
+    # Locally, we default to the static folder (though content might not be there if not generated)
+    if os.path.exists('/var/www/htmx_website'):
+        content_dir = '/var/www/htmx_website'
+    else:
+        content_dir = base_dir
+
     # Use the root as template_folder
-    app = Flask(__name__, static_folder="/var/www/htmx_website/", template_folder="/var/www/htmx_website/")
+    app = Flask(__name__, static_folder=content_dir, template_folder=content_dir)
+    app.config['CONTENT_DIR'] = content_dir
     
     # Route for main website pages
     @app.route('/')
@@ -43,9 +55,11 @@ def create_app():
     @app.route('/<path:mission_path>_content.html')
     def mission_content(mission_path):
         content_file = f'{mission_path}_content.html'
-        file_path = os.path.join('/var/www/htmx_website', content_file)
+        # Use the configured content directory
+        content_dir = app.config['CONTENT_DIR']
+        file_path = os.path.join(content_dir, content_file)
         if os.path.exists(file_path):
-            return send_from_directory('/var/www/htmx_website', content_file)
+            return send_from_directory(content_dir, content_file)
         abort(404)
 
     # Generic route for static files - properly fixed version
@@ -57,10 +71,11 @@ def create_app():
     
         base_name, ext = os.path.splitext(filename)
         html_filename = base_name + '.html'
-        html_path = os.path.join('/var/www/htmx_website', html_filename)
+        content_dir = app.config['CONTENT_DIR']
+        html_path = os.path.join(content_dir, html_filename)
         
         if os.path.exists(html_path):
-            return send_from_directory('/var/www/htmx_website', html_filename)
+            return send_from_directory(content_dir, html_filename)
         
         # If not found, return 404
         abort(404)
