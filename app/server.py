@@ -31,33 +31,33 @@ def create_app():
         return render_template('index.html')
 
 
-    @app.route('/header/')
+    @app.route('/header')
     def header():
         return render_template('templates/header.html')
 
 
-    @app.route('/footer/')
+    @app.route('/footer')
     def footer():
         return render_template('templates/footer.html')
 
-    @app.route('/summary/')
+    @app.route('/summary')
     def summary():
         return render_template('templates/summary.html')
 
-    @app.route('/load-home/')
+    @app.route('/load-home')
     def load_home():
         return render_template('templates/home.html')
 
-    @app.route('/contact/')
+    @app.route('/contact')
     def contact():
         return render_template('templates/contact.html')
 
-    @app.route('/dashboard/home-credit/')
+    @app.route('/dashboard/home-credit')
     def dashboard_home_credit():
         return render_template('templates/dashboard_home_credit.html')
     
     # Dynamic route for mission pages
-    @app.route('/<path:mission_path>/')
+    @app.route('/<path:mission_path>')
     def mission_page(mission_path):
         return render_template(f'{mission_path}.html')
 
