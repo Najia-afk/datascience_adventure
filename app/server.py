@@ -18,6 +18,9 @@ def create_app():
     # Use the root as template_folder
     app = Flask(__name__, static_folder=content_dir, template_folder=content_dir)
     app.config['CONTENT_DIR'] = content_dir
+    
+    # Allow routes to match with or without trailing slashes
+    app.url_map.strict_slashes = False
 
     # Route for serving converted script HTML files
     @app.route('/<path:repo>_src/<path:filename>')
