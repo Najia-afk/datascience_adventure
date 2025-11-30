@@ -74,7 +74,9 @@ print(f'''<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{os.path.basename(file_path)} - DataScience Adventure</title>
-    <link rel="stylesheet" href="/styles/modern-styles.css?v=layout8">
+    <link rel="stylesheet" href="/styles/variables.css">
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/interactive.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
     <style>
         /* Pygments styles injected directly */
@@ -134,7 +136,9 @@ EOF
 <head>
     <meta charset="UTF-8">
     <title>Syntax Error</title>
-    <link rel="stylesheet" href="/styles/modern-styles.css?v=layout8">
+    <link rel="stylesheet" href="/styles/variables.css">
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/interactive.css">
     <style>
         .error { color: #ff4444; font-weight: bold; margin-bottom: 1rem; }
         pre { background-color: rgba(0,0,0,0.3); padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: auto; color: var(--text-main); }

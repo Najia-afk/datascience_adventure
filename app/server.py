@@ -18,6 +18,12 @@ def create_app():
     # Use the root as template_folder
     app = Flask(__name__, static_folder=content_dir, template_folder=content_dir)
     app.config['CONTENT_DIR'] = content_dir
+
+    # Route for serving converted script HTML files
+    @app.route('/<path:repo>_src/<path:filename>')
+    def serve_script_html(repo, filename):
+        src_dir = os.path.join(app.config['CONTENT_DIR'], f"{repo}_src")
+        return send_from_directory(src_dir, filename)
     
     # Route for main website pages
     @app.route('/')
