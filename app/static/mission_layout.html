@@ -290,8 +290,11 @@
                 
                 if (!header || !scripts) return;
                 
-                // Use mouseenter on category to keep menu open when moving mouse to it
-                category.addEventListener('mouseenter', () => {
+                let timeoutId;
+
+                const showMenu = () => {
+                    clearTimeout(timeoutId);
+                    
                     const rect = header.getBoundingClientRect();
                     const sidebarRect = sidebar.getBoundingClientRect();
                     
@@ -317,11 +320,23 @@
                     scripts.style.top = `${topPos}px`;
                     scripts.style.left = `${leftPos}px`;
                     scripts.classList.add('visible');
-                });
+                };
+
+                const hideMenu = () => {
+                    timeoutId = setTimeout(() => {
+                        scripts.classList.remove('visible');
+                    }, 300); // 300ms delay to allow crossing the gap
+                };
                 
-                category.addEventListener('mouseleave', () => {
-                    scripts.classList.remove('visible');
+                // Use mouseenter on category to keep menu open when moving mouse to it
+                category.addEventListener('mouseenter', showMenu);
+                category.addEventListener('mouseleave', hideMenu);
+
+                // Also keep menu open when hovering over the menu itself
+                scripts.addEventListener('mouseenter', () => {
+                    clearTimeout(timeoutId);
                 });
+                scripts.addEventListener('mouseleave', hideMenu);
             });
             
             // Initialize Draggable Sidebar
