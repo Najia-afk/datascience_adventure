@@ -119,7 +119,7 @@ if [ -f "$LOCAL_APP_DIR/server.py" ]; then
     echo "✅ Copied server.py from app directory"
     
     # Install Pygments for syntax highlighting
-    sudo -u www-data /srv/htmx_website/venv/bin/pip install pygments
+    sudo /srv/htmx_website/venv/bin/pip install pygments
     echo "✅ Installed Pygments for Python syntax highlighting"
 fi
 

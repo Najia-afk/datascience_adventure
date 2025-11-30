@@ -11,8 +11,8 @@ convert_py_to_html() {
     echo "Converting Python files to HTML in $src_dir..."
     
     # Install pygments if not already installed
-    if ! sudo -u www-data /srv/htmx_website/venv/bin/pip list | grep -q pygments; then
-        sudo -u www-data /srv/htmx_website/venv/bin/pip install pygments
+    if ! /srv/htmx_website/venv/bin/pip list | grep -q pygments; then
+        sudo /srv/htmx_website/venv/bin/pip install pygments
         echo " Installed Pygments for Python syntax highlighting"
     fi
     
@@ -127,7 +127,8 @@ EOF
         echo "Converting $py_file to $html_file"
         
         # Generate HTML using the python script
-        if ! sudo -u www-data /srv/htmx_website/venv/bin/python3 /tmp/convert_syntax.py "$py_file" > /tmp/temp_output.html 2>/dev/null; then
+        # Run as current user to ensure access to source files (avoid sudo -u www-data permission issues)
+        if ! /srv/htmx_website/venv/bin/python3 /tmp/convert_syntax.py "$py_file" > /tmp/temp_output.html; then
              echo " Error processing $py_file - syntax error detected"
              # Fallback error HTML
              cat <<HTML > /tmp/temp_output.html
