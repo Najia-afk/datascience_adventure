@@ -126,35 +126,56 @@
             if (!iframe || !loadingIndicator || !iframeContainer) return false;
 
             try {
-                let documentHeight = 0;
+                const iframeDoc = iframe.contentWindow.document;
+                if (!iframeDoc) return false;
+
+                const body = iframeDoc.body;
+                const html = iframeDoc.documentElement;
                 
-                try {
-                    documentHeight = iframe.contentWindow.document.body.scrollHeight;
-                } catch (e) {
-                    console.log("Standard height detection failed:", e);
-                }
+                // Get the maximum height to ensure we catch everything
+                const height = Math.max(
+                    body.scrollHeight, body.offsetHeight,
+                    html.clientHeight, html.scrollHeight, html.offsetHeight
+                );
                 
-                if (!documentHeight) {
-                    try {
-                        documentHeight = iframe.contentWindow.document.documentElement.scrollHeight;
-                    } catch (e) {
-                        console.log("documentElement height detection failed:", e);
+                console.log("Detected iframe height:", height);
+                
+                if (height > 0) {
+                    // Only update if height changed significantly to avoid jitter
+                    const currentHeight = parseInt(iframe.style.height || 0);
+                    if (Math.abs(height + 50 - currentHeight) > 10) {
+                        iframe.style.height = `${height + 50}px`;
                     }
-                }
-                
-                console.log("Detected iframe height:", documentHeight);
-                
-                if (documentHeight > 0) {
-                    iframe.style.height = `${documentHeight + 50}px`;
-                    loadingIndicator.style.display = 'none';
-                    iframeContainer.style.visibility = 'visible';
-                    iframeContainer.style.height = 'auto';
+                    
+                    // Show content if not already visible
+                    if (loadingIndicator.style.display !== 'none') {
+                        loadingIndicator.style.display = 'none';
+                        iframeContainer.style.visibility = 'visible';
+                        iframeContainer.style.height = 'auto';
+                        
+                        // Start observing for future changes
+                        setupResizeObserver(body);
+                    }
+                    
                     return true;
                 }
             } catch (e) {
                 console.error("Error accessing iframe content:", e);
             }
             return false;
+        }
+
+        function setupResizeObserver(targetNode) {
+            // Prevent multiple observers
+            if (window.dsaApp.resizeObserver) return;
+
+            if ('ResizeObserver' in window) {
+                window.dsaApp.resizeObserver = new ResizeObserver(entries => {
+                    handleIframeResize();
+                });
+                window.dsaApp.resizeObserver.observe(targetNode);
+                console.log("ResizeObserver attached to iframe content");
+            }
         }
 
         // Function to simulate loading progress
@@ -224,14 +245,20 @@
             window.dsaApp.resizeCounter = 0;
             window.dsaApp.resizeTimer = setInterval(function() {
                 window.dsaApp.resizeCounter++;
-                if (handleIframeResize() || window.dsaApp.resizeCounter >= 12) {
+                const loaded = handleIframeResize();
+                
+                // Stop polling only after a long time (60s) to allow for large files
+                // We rely on ResizeObserver for updates, but keep polling as backup
+                if (window.dsaApp.resizeCounter >= 30) {
                     clearInterval(window.dsaApp.resizeTimer);
-                    if (window.dsaApp.resizeCounter >= 12) {
-                        if (loadingIndicator) loadingIndicator.style.display = 'none';
-                        if (iframeContainer) {
-                            iframeContainer.style.visibility = 'visible';
-                            iframeContainer.style.height = 'auto';
-                        }
+                    
+                    // Ensure it's visible even if we timed out (fallback)
+                    const loadingIndicator = document.getElementById('loading');
+                    const iframeContainer = document.querySelector('.iframe-wrapper');
+                    if (loadingIndicator) loadingIndicator.style.display = 'none';
+                    if (iframeContainer) {
+                        iframeContainer.style.visibility = 'visible';
+                        iframeContainer.style.height = 'auto';
                     }
                 }
             }, 2000); // Check every 2 seconds
