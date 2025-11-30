@@ -35,6 +35,20 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 echo ">>> Adding user $USER to docker group..."
 sudo usermod -aG docker $USER
 
+# 5b. Configure Swap (Critical for 1GB RAM)
+echo ">>> Checking for Swap space..."
+if [ $(sudo swapon --show | wc -l) -eq 0 ]; then
+    echo ">>> No swap detected. Creating 2GB swap file for 1GB RAM server..."
+    sudo fallocate -l 2G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+    echo ">>> Swap created successfully."
+else
+    echo ">>> Swap already exists."
+fi
+
 # 6. Create Project Directory Structure
 echo ">>> Setting up project directories..."
 mkdir -p ~/projects
