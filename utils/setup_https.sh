@@ -17,8 +17,10 @@ docker compose stop nginx
 
 # 3. Obtain Certificate
 echo ">>> Obtaining SSL Certificate for datascience-adventure.xyz..."
+read -p "Enter your email address for Let's Encrypt registration: " EMAIL_ADDRESS
+
 # We use --standalone because we stopped the web server
-sudo certbot certonly --standalone -d datascience-adventure.xyz --non-interactive --agree-tos -m adrien.normand@example.com
+sudo certbot certonly --standalone -d datascience-adventure.xyz --non-interactive --agree-tos -m "$EMAIL_ADDRESS"
 
 # 4. Create Nginx SSL Configuration
 echo ">>> Configuring Nginx for SSL..."
