@@ -35,7 +35,7 @@ generate_script_list() {
         if [ "$has_py_files" -gt 0 ]; then
             # Add subdirectory heading
             echo "<li class='repo-category'>" >> "$script_list_file"
-            echo "<div class='category-header'><span class='name'>$(basename "$subdir")</span></div>" >> "$script_list_file"
+            echo "<div class='category-header'><span class='name'>$(basename "$subdir")</span><span class='arrow'>▶</span></div>" >> "$script_list_file"
             echo "<ul class='category-scripts'>" >> "$script_list_file"
             
             # Find Python files in this subdirectory, excluding __init__.py
@@ -59,7 +59,7 @@ generate_script_list() {
     
     if [ "$root_has_py_files" -gt 0 ]; then
         echo "<li class='repo-category'>" >> "$script_list_file"
-        echo "<div class='category-header'><span class='name'>Main Scripts</span></div>" >> "$script_list_file"
+        echo "<div class='category-header'><span class='name'>Main Scripts</span><span class='arrow'>▶</span></div>" >> "$script_list_file"
         echo "<ul class='category-scripts'>" >> "$script_list_file"
         
         # Also for root directory files

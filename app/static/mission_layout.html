@@ -255,6 +255,7 @@
         // Flyout Menu Logic
         function initFlyoutMenus() {
             const categories = document.querySelectorAll('.repo-category');
+            const sidebar = document.getElementById('sidebar');
             
             categories.forEach(category => {
                 const header = category.querySelector('.category-header');
@@ -262,22 +263,32 @@
                 
                 if (!header || !scripts) return;
                 
-                header.addEventListener('mouseenter', () => {
-                    const rect = category.getBoundingClientRect();
+                // Use mouseenter on category to keep menu open when moving mouse to it
+                category.addEventListener('mouseenter', () => {
+                    const rect = header.getBoundingClientRect();
+                    const sidebarRect = sidebar.getBoundingClientRect();
                     
-                    // Calculate position
-                    let topPos = rect.top;
-                    const menuHeight = scripts.offsetHeight || 300; // Estimate if not visible yet
+                    // Calculate position relative to sidebar (which is the containing block due to backdrop-filter)
+                    // We subtract sidebarRect.top/left to convert viewport coordinates to sidebar-relative coordinates
+                    let topPos = rect.top - sidebarRect.top;
+                    let leftPos = rect.right - sidebarRect.left + 5; // 5px gap
+                    
+                    const menuHeight = scripts.offsetHeight || 300; 
                     const windowHeight = window.innerHeight;
                     
-                    // Check if menu would go off screen
-                    if (topPos + menuHeight > windowHeight) {
-                        // Shift up to fit, but not above header (80px)
-                        topPos = Math.max(80, windowHeight - menuHeight - 20);
+                    // Check if menu would go off screen (using viewport coordinates)
+                    if (rect.top + menuHeight > windowHeight) {
+                        // Shift up
+                        // Target viewport top: windowHeight - menuHeight - 20
+                        // Convert to relative: target - sidebarRect.top
+                        topPos = (windowHeight - menuHeight - 20) - sidebarRect.top;
+                        
+                        // Don't go above the sidebar top
+                        if (topPos < 0) topPos = 0;
                     }
                     
                     scripts.style.top = `${topPos}px`;
-                    scripts.style.left = `${rect.right + 5}px`; // 5px gap
+                    scripts.style.left = `${leftPos}px`;
                     scripts.classList.add('visible');
                 });
                 
