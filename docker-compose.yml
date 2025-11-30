@@ -10,6 +10,8 @@ services:
       - static_data:/var/www/htmx_website
     # When the container starts, we need to ensure the volume is populated
     # Docker copies data from the image to the volume on first creation.
+    networks:
+      - web_network
     
   nginx:
     image: nginx:alpine
@@ -22,6 +24,12 @@ services:
       - static_data:/var/www/htmx_website
     depends_on:
       - app
+    networks:
+      - web_network
 
 volumes:
   static_data:
+
+networks:
+  web_network:
+    external: true

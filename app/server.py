@@ -51,6 +51,10 @@ def create_app():
     @app.route('/contact/')
     def contact():
         return render_template('templates/contact.html')
+
+    @app.route('/dashboard/home-credit/')
+    def dashboard_home_credit():
+        return render_template('templates/dashboard_home_credit.html')
     
     # Dynamic route for mission pages
     @app.route('/<path:mission_path>/')
