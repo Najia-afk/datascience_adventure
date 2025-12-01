@@ -2,18 +2,54 @@
 @media (max-width: 768px) {
     .site-header {
         padding: 0 var(--spacing-sm);
-        height: 60px;
+        height: auto;
+        min-height: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-bottom: 0.5rem;
     }
     
+    .logo {
+        height: 50px;
+        width: 100%;
+        justify-content: center;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        margin-bottom: 0.5rem;
+    }
+
     .logo img {
         height: 35px;
     }
     
     .nav-links {
-        display: none; /* Hide nav on mobile for now */
+        display: flex; /* Show nav on mobile */
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        gap: 1rem;
+        -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+    }
+
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        white-space: nowrap;
     }
     
     .grid-container {
         grid-template-columns: 1fr;
+    }
+
+    /* Fix for iframe full screen on mobile */
+    .main-wrapper {
+        padding: 0; /* Remove padding on mobile to allow full width */
+    }
+
+    .content-area {
+        width: 100vw; /* Force full viewport width */
+    }
+    
+    .dashboard-container iframe {
+        min-height: 100vh; /* Ensure full height */
     }
 }
