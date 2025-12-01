@@ -35,6 +35,31 @@
         padding: 0.4rem 0.8rem;
         white-space: nowrap;
     }
+
+    /* Mobile Dropdown Fix */
+    .dropdown {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dropdown-content {
+        display: block; /* Always show on mobile */
+        position: static; /* Flow naturally */
+        transform: none;
+        box-shadow: none;
+        background: rgba(255, 255, 255, 0.05);
+        min-width: auto;
+        width: 100%;
+        padding-left: 1rem;
+        border: none;
+        border-left: 2px solid var(--primary);
+    }
+
+    .dropdown-content a {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
     
     .grid-container {
         grid-template-columns: 1fr;
