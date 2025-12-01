@@ -1,74 +1,104 @@
 /* Responsive */
 @media (max-width: 768px) {
     .site-header {
-        padding: 0.5rem var(--spacing-sm);
+        padding: 0.5rem 0; /* Remove side padding to allow full width scroll */
         height: auto;
         min-height: 60px;
         flex-direction: column;
         align-items: stretch;
-        position: relative; /* Allow scrolling away */
+        position: relative;
+        overflow: hidden; /* Prevent horizontal scroll on body */
     }
     
     .logo {
-        height: 50px;
+        height: 40px;
         width: 100%;
         justify-content: center;
         border-bottom: 1px solid rgba(255,255,255,0.1);
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
+        padding-bottom: 0.5rem;
     }
 
     .logo img {
-        height: 35px;
+        height: 30px;
     }
     
+    /* Horizontal Scrollable Menu */
     .nav-links {
         display: flex !important;
-        flex-direction: column;
+        flex-direction: row;
         width: 100%;
         gap: 0;
-        overflow: visible;
-        padding-bottom: 0;
+        overflow-x: auto; /* Enable horizontal scrolling */
+        overflow-y: hidden;
+        padding: 0.5rem 0;
+        -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+        scrollbar-width: none; /* Hide scrollbar Firefox */
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .nav-links::-webkit-scrollbar {
+        display: none; /* Hide scrollbar Chrome/Safari */
     }
 
     .nav-link {
-        display: block !important;
-        width: 100%;
-        text-align: center;
-        padding: 0.8rem;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        font-size: 0.9rem;
-    }
-
-    /* Mobile Dropdown Fix */
-    .dropdown {
-        display: block !important;
-        width: 100%;
-        height: auto;
+        display: inline-flex !important;
+        white-space: nowrap;
+        padding: 0.5rem 1rem;
+        border-bottom: none;
+        font-size: 0.85rem;
+        background: rgba(255,255,255,0.05);
+        margin: 0 4px;
+        border-radius: 15px; /* Pill shape */
+        flex-shrink: 0; /* Prevent shrinking */
     }
     
-    .dropdown-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 0.8rem;
+    .nav-link.active {
+        background: var(--primary);
+        color: #000;
+    }
+
+    /* Flatten Dropdowns for Mobile "One Line" feel */
+    .dropdown {
         display: flex !important;
+        align-items: center;
+    }
+    
+    /* Hide the dropdown category buttons (Missions, Dashboard) */
+    .dropdown-btn {
+        display: none !important;
     }
 
     .dropdown-content {
-        display: block !important; /* Always show on mobile */
+        display: flex !important;
         position: static;
-        width: 100%;
-        background: rgba(0, 0, 0, 0.2);
+        width: auto;
+        background: transparent;
         border: none;
         box-shadow: none;
         padding: 0;
+        transform: none !important; /* FIX: Remove the shift that was hiding content */
+        flex-direction: row;
+        align-items: center;
     }
 
     .dropdown-content a {
-        padding: 0.6rem 1rem;
+        padding: 0.5rem 1rem;
         text-align: center;
         font-size: 0.85rem;
         color: var(--text-light);
-        border-bottom: 1px solid rgba(255,255,255,0.02);
+        border: none;
+        white-space: nowrap;
+        background: rgba(255,255,255,0.05);
+        margin: 0 4px;
+        border-radius: 15px;
+        flex-shrink: 0;
+    }
+    
+    .dropdown-content a:hover {
+        background: var(--primary);
+        color: #000;
     }
     
     .grid-container {
