@@ -4,18 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Data Science Adventure</title>
-    <link rel="stylesheet" href="/styles/variables.css">
-    <link rel="stylesheet" href="/styles/base.css">
     <style>
-        :root {
-            --primary-color: #667eea;
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --text-color: #333;
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-            --shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -24,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--bg-color);
+            background: #06080a;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -34,53 +23,54 @@
         }
 
         .login-container {
-            background: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: var(--shadow);
+            background: #141b22;
+            border: 1px solid #1e293b;
+            border-radius: 4px;
             padding: 48px;
-            max-width: 420px;
+            max-width: 440px;
             width: 100%;
             text-align: center;
         }
 
         .logo {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #00dcff;
             margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .subtitle {
-            color: #666;
-            font-size: 0.95rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
             margin-bottom: 32px;
         }
 
         .restricted-notice {
-            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
-            border: 1px solid #feb2b2;
-            border-radius: 12px;
-            padding: 20px;
+            background: rgba(0, 220, 255, 0.05);
+            border: 1px solid #00dcff;
+            border-radius: 4px;
+            padding: 24px;
             margin-bottom: 32px;
         }
 
         .restricted-notice h2 {
-            color: #c53030;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
+            color: #00dcff;
+            font-size: 1rem;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .restricted-notice p {
-            color: #742a2a;
+            color: #e2e8f0;
             font-size: 0.9rem;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .google-btn {
@@ -88,26 +78,21 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
+            background: #00dcff;
+            border: none;
+            border-radius: 4px;
             padding: 14px 28px;
             font-size: 1rem;
             font-weight: 600;
-            color: var(--text-color);
+            color: #06080a;
             cursor: pointer;
             transition: all 0.2s ease;
             width: 100%;
         }
 
         .google-btn:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            background: #00a3cc;
             transform: translateY(-1px);
-        }
-
-        .google-btn:active {
-            transform: translateY(0);
         }
 
         .google-btn svg {
@@ -116,8 +101,8 @@
         }
 
         .divider {
-            margin: 24px 0;
-            color: #a0aec0;
+            margin: 28px 0;
+            color: #94a3b8;
             font-size: 0.85rem;
             position: relative;
         }
@@ -129,14 +114,14 @@
             top: 50%;
             width: 40%;
             height: 1px;
-            background: #e2e8f0;
+            background: #1e293b;
         }
 
         .divider::before { left: 0; }
         .divider::after { right: 0; }
 
         .back-link {
-            color: var(--primary-color);
+            color: #00dcff;
             text-decoration: none;
             font-size: 0.9rem;
             display: inline-flex;
@@ -150,10 +135,11 @@
         }
 
         .error-message {
-            background: #fed7d7;
-            color: #c53030;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #ef4444;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin-bottom: 20px;
             display: none;
         }
@@ -161,34 +147,28 @@
         .loading {
             display: none;
             margin-top: 20px;
-            color: #666;
+            color: #94a3b8;
         }
 
         .loading.active {
             display: block;
         }
-
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 32px 24px;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="logo">🚀 Data Science Adventure</div>
+        <div class="logo">DataScience Adventure</div>
         <p class="subtitle">Portfolio & ML Dashboard</p>
 
         <div class="restricted-notice">
             <h2>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-                Restricted Access
+                Authentication Required
             </h2>
-            <p>The Mission 7 Dashboard requires authentication. Please sign in with an authorized Google account to continue.</p>
+            <p>Access to the Dashboard requires authentication. Please sign in with your Google account to continue.</p>
         </div>
 
         <div id="error-message" class="error-message"></div>
@@ -203,9 +183,7 @@
             Sign in with Google
         </button>
 
-        <div id="loading" class="loading">
-            Authenticating...
-        </div>
+        <div id="loading" class="loading">Authenticating...</div>
 
         <div class="divider">or</div>
 
@@ -241,7 +219,6 @@
 
             const state = crypto.randomUUID();
             localStorage.setItem("oauth_state", state);
-            // Store the original destination if coming from a protected page
             const returnTo = new URLSearchParams(window.location.search).get('return_to') || '/mission7/';
             localStorage.setItem("oauth_return_to", returnTo);
 
@@ -255,8 +232,7 @@
                 prompt: "consent"
             });
 
-            const authUrl = `${GOOGLE_OAUTH_URL}?${params.toString()}`;
-            window.location.href = authUrl;
+            window.location.href = `${GOOGLE_OAUTH_URL}?${params.toString()}`;
         }
 
         function handleOAuthCallback() {
@@ -273,8 +249,6 @@
 
             if (code && state) {
                 const storedState = localStorage.getItem("oauth_state");
-                
-                // Clear URL params
                 window.history.replaceState({}, document.title, window.location.pathname);
 
                 if (state !== storedState) {
@@ -313,10 +287,7 @@
             }
         }
 
-        // Attach click listener
         document.getElementById("google-signin-button").addEventListener("click", initiateGoogleOAuth);
-
-        // Check for OAuth callback on page load
         handleOAuthCallback();
     </script>
 </body>
