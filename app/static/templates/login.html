@@ -153,6 +153,16 @@
         .loading.active {
             display: block;
         }
+        
+        .success-message {
+            color: #00dcff;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .success-message.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -184,6 +194,7 @@
         </button>
 
         <div id="loading" class="loading">Authenticating...</div>
+        <div id="success-message" class="success-message">Login successful! Redirecting...</div>
 
         <div class="divider">or</div>
 
@@ -204,6 +215,9 @@
             "https://www.googleapis.com/auth/userinfo.profile",
             "openid"
         ];
+        
+        // Detect if we're in a popup
+        const isPopup = window.opener && !window.opener.closed;
 
         function showError(message) {
             const errorEl = document.getElementById('error-message');
@@ -219,8 +233,12 @@
 
             const state = crypto.randomUUID();
             localStorage.setItem("oauth_state", state);
-            const returnTo = new URLSearchParams(window.location.search).get('return_to') || '/mission7/';
-            localStorage.setItem("oauth_return_to", returnTo);
+            
+            // Store return URL only if not in popup mode
+            if (!isPopup) {
+                const returnTo = new URLSearchParams(window.location.search).get('return_to') || '/';
+                localStorage.setItem("oauth_return_to", returnTo);
+            }
 
             const params = new URLSearchParams({
                 client_id: GOOGLE_CLIENT_ID,
@@ -232,7 +250,17 @@
                 prompt: "consent"
             });
 
-            window.location.href = `${GOOGLE_OAUTH_URL}?${params.toString()}`;
+            // If in popup, redirect within popup; otherwise open new popup
+            if (isPopup) {
+                window.location.href = `${GOOGLE_OAUTH_URL}?${params.toString()}`;
+            } else {
+                // Open as popup for standalone login page
+                const width = 500;
+                const height = 600;
+                const left = (window.screen.width - width) / 2;
+                const top = (window.screen.height - height) / 2;
+                window.open(`${GOOGLE_OAUTH_URL}?${params.toString()}`, 'google_login', `width=${width},height=${height},top=${top},left=${left}`);
+            }
         }
 
         function handleOAuthCallback() {
@@ -244,6 +272,9 @@
             if (error) {
                 showError("Authentication failed: " + error);
                 window.history.replaceState({}, document.title, window.location.pathname);
+                if (isPopup) {
+                    setTimeout(() => window.close(), 2000);
+                }
                 return;
             }
 
@@ -268,9 +299,21 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        const returnTo = localStorage.getItem("oauth_return_to") || '/mission7/';
-                        localStorage.removeItem("oauth_return_to");
-                        window.location.href = returnTo;
+                        document.getElementById('loading').classList.remove('active');
+                        document.getElementById('success-message').classList.add('active');
+                        
+                        // If we're in a popup, reload the opener and close
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.location.reload();
+                            setTimeout(() => window.close(), 500);
+                        } else {
+                            // Regular navigation - redirect to stored return URL or home
+                            const returnTo = localStorage.getItem("oauth_return_to") || '/';
+                            localStorage.removeItem("oauth_return_to");
+                            setTimeout(() => {
+                                window.location.href = returnTo;
+                            }, 500);
+                        }
                     } else {
                         showError("Login failed: " + data.error);
                         document.getElementById('loading').classList.remove('active');

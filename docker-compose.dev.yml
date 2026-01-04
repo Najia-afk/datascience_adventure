@@ -16,10 +16,8 @@ services:
     volumes:
       # Share the generated static files with Nginx
       - static_data:/var/www/htmx_website
-      # Mount client_secret.json for Google OAuth (optional for dev)
-      - ./client_secret.json:/app/client_secret.json:ro
     environment:
-      # Google OAuth - set these for testing auth flow
+      # Google OAuth - set these in .env file for testing auth flow
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8080/login}

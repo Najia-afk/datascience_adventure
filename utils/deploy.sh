@@ -19,6 +19,8 @@ REPOS=(
     "https://github.com/Najia-afk/mission4"
     "https://github.com/Najia-afk/mission5"
     "https://github.com/Najia-afk/mission6"
+    "https://github.com/Najia-afk/mission7"
+    "https://github.com/Najia-afk/mission8"
 )
 
 # Directory to clone/pull repos
@@ -198,15 +200,15 @@ for REPO_URL in "${REPOS[@]}"; do
         echo "No src directory found in $REPO_NAME"
     fi
 
-    # Copy Flask files if present
+    # NOTE: We do NOT copy server.py or wsgi.py from mission repos
+    # The main datascience_adventure app has its own server.py and wsgi.py
+    # that should not be overwritten by individual mission repos
     if [ -f "$REPO_DIR/app/server.py" ]; then
-        sudo cp "$REPO_DIR/app/server.py" "$FLASK_DIR/server.py"
-        echo "✅ Copied server.py to $FLASK_DIR/"
+        echo "⏭️  Skipping $REPO_NAME/app/server.py (using main app's server.py)"
     fi
     
     if [ -f "$REPO_DIR/app/wsgi.py" ]; then
-        sudo cp "$REPO_DIR/app/wsgi.py" "$FLASK_DIR/wsgi.py"
-        echo "✅ Copied wsgi.py to $FLASK_DIR/"
+        echo "⏭️  Skipping $REPO_NAME/app/wsgi.py (using main app's wsgi.py)"
     fi
 
     # Copy Nginx config if present

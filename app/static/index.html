@@ -17,6 +17,13 @@
     <link rel="stylesheet" href="/styles/responsive.css?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <!-- Google OAuth Configuration - rendered server-side -->
+    <script>
+        window.DSA_CONFIG = {
+            GOOGLE_CLIENT_ID: "{{ google_client_id }}",
+            GOOGLE_REDIRECT_URI: window.location.origin + "/login"
+        };
+    </script>
 </head>
 
 <body hx-boost="true" class="app-container">

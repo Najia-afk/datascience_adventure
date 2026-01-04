@@ -12,7 +12,7 @@ def load_google_credentials():
     credentials = {
         'client_id': '',
         'client_secret': '',
-        'redirect_uri': os.environ.get('GOOGLE_REDIRECT_URI', 'http://localhost:8080')
+        'redirect_uri': os.environ.get('GOOGLE_REDIRECT_URI', 'http://localhost:8080/login')
     }
     
     # Try to load from client_secret.json (mounted volume in Docker)
@@ -91,12 +91,12 @@ def create_app():
     # Route for main website pages
     @app.route('/')
     def index():
-        return render_template('index.html')
+        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID)
 
 
     @app.route('/header')
     def header():
-        return render_template('templates/header.html')
+        return render_template('templates/header.html', google_client_id=GOOGLE_CLIENT_ID)
 
 
     @app.route('/footer')
@@ -212,6 +212,13 @@ def create_app():
         if 'user_id' in session:
             return 'OK', 200
         return 'Unauthorized', 401
+    
+    @app.route('/auth/config')
+    def auth_config():
+        """Return OAuth config for client-side use."""
+        return jsonify({
+            'client_id': GOOGLE_CLIENT_ID
+        })
     
     @app.route('/auth/user')
     def auth_user():
