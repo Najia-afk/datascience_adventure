@@ -3,7 +3,12 @@ set -e
 
 echo "=================================================="
 echo "   Starting Docker Installation & Setup Script"
+echo "   For: Data Science Adventure Portfolio"
 echo "=================================================="
+
+# Configuration - can be overridden via environment variables
+DOMAIN="${DOMAIN:-datascience-adventure.xyz}"
+GITHUB_USER="${GITHUB_USER:-Najia-afk}"
 
 # 1. Install Docker Prerequisites
 echo ">>> Installing prerequisites..."
@@ -35,7 +40,7 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 echo ">>> Adding user $USER to docker group..."
 sudo usermod -aG docker $USER
 
-# 5b. Configure Swap (Critical for 1GB RAM)
+# 5b. Configure Swap (Critical for 1GB RAM servers)
 echo ">>> Checking for Swap space..."
 if [ $(sudo swapon --show | wc -l) -eq 0 ]; then
     echo ">>> No swap detected. Creating 2GB swap file for 1GB RAM server..."
@@ -57,14 +62,14 @@ cd ~/projects
 # 7. Clone Repositories
 echo ">>> Cloning repositories..."
 if [ ! -d "datascience_adventure" ]; then
-    git clone https://github.com/Najia-afk/datascience_adventure.git
+    git clone https://github.com/${GITHUB_USER}/datascience_adventure.git
 else
     echo "datascience_adventure already exists, pulling latest..."
     cd datascience_adventure && git pull && cd ..
 fi
 
 if [ ! -d "mission7" ]; then
-    git clone https://github.com/Najia-afk/mission7.git
+    git clone https://github.com/${GITHUB_USER}/mission7.git
 else
     echo "mission7 already exists, pulling latest..."
     cd mission7 && git pull && cd ..
@@ -87,16 +92,64 @@ sudo systemctl disable nginx 2>/dev/null || true
 sudo systemctl stop apache2 2>/dev/null || true
 sudo systemctl disable apache2 2>/dev/null || true
 
+# 10. Create helper script to connect mission7 to web_network
+echo ">>> Creating network connection helper script..."
+cat > ~/projects/connect_mission7_network.sh << 'SCRIPT'
+#!/bin/bash
+# Connect mission7 containers to web_network (run after mission7 is started)
+echo "Connecting mission7 containers to web_network..."
+
+# Wait for containers to be running
+sleep 5
+
+# Connect nginx (required for proxying)
+docker network connect web_network mission7_nginx_prod 2>/dev/null && \
+    echo "✅ Connected mission7_nginx_prod to web_network" || \
+    echo "ℹ️  mission7_nginx_prod already connected or not running"
+
+# Connect mlflow (for /mission7/mlflow/ proxy)
+docker network connect web_network mission7_mlflow_prod 2>/dev/null && \
+    echo "✅ Connected mission7_mlflow_prod to web_network" || \
+    echo "ℹ️  mission7_mlflow_prod already connected or not running"
+
+echo "Done! Mission7 should now be accessible via datascience_adventure proxy."
+SCRIPT
+chmod +x ~/projects/connect_mission7_network.sh
+
 echo "=================================================="
 echo "   Installation Complete!"
 echo "=================================================="
-echo "IMPORTANT NEXT STEPS:"
-echo "1. Log out and log back in to apply Docker group changes: 'exit' then SSH again."
-echo "2. Configure secrets for Mission 7:"
+echo ""
+echo "NEXT STEPS:"
+echo ""
+echo "1. Log out and log back in to apply Docker group changes:"
+echo "   exit"
+echo "   (then SSH back in)"
+echo ""
+echo "2. Configure Google OAuth for datascience_adventure:"
+echo "   cd ~/projects/datascience_adventure"
+echo "   # Option A: Create client_secret.json with your Google OAuth credentials"
+echo "   # Option B: Create .env file with:"
+echo "   #   GOOGLE_CLIENT_ID=your_client_id"
+echo "   #   GOOGLE_CLIENT_SECRET=your_secret"
+echo "   #   GOOGLE_REDIRECT_URI=https://${DOMAIN}/login"
+echo "   #   ALLOWED_EMAILS=user1@gmail.com,user2@gmail.com"
+echo "   #   SECRET_KEY=your_random_secret_key"
+echo ""
+echo "3. Start the services (ORDER MATTERS for first time):"
+echo "   # Start mission7 first"
 echo "   cd ~/projects/mission7"
-echo "   nano .env"
-echo "   (Add: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY)"
-echo "3. Start the services:"
-echo "   cd ~/projects/mission7 && docker compose up -d --build"
-echo "   cd ~/projects/datascience_adventure && docker compose up -d --build"
+echo "   docker compose -f docker-compose.prod.yml up -d --build"
+echo ""
+echo "   # Connect mission7 to web_network"
+echo "   ~/projects/connect_mission7_network.sh"
+echo ""
+echo "   # Start datascience_adventure"
+echo "   cd ~/projects/datascience_adventure"
+echo "   docker compose up -d --build"
+echo ""
+echo "4. (Optional) Set up HTTPS with Let's Encrypt:"
+echo "   cd ~/projects/datascience_adventure"
+echo "   ./utils/setup_https.sh"
+echo ""
 echo "=================================================="

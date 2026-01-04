@@ -1,3 +1,6 @@
 flask
 gunicorn
 pygments
+google-auth
+google-auth-oauthlib
+requests

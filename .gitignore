@@ -1,18 +1,31 @@
-echo "
 # Python-related files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 venv/
+.venv/
+
+# Environment and secrets
 .env
+client_secret.json
+*.secret
 
 # System files
 .DS_Store
+Thumbs.db
 
 # Logs
 *.log
 
-# SSL certificates
+# SSL certificates (local copies)
 /etc/letsencrypt/
-" > .gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker volumes (local)
+static_data/

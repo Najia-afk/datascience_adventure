@@ -8,8 +8,17 @@ services:
     volumes:
       # Share the generated static files with Nginx
       - static_data:/var/www/htmx_website
-    # When the container starts, we need to ensure the volume is populated
-    # Docker copies data from the image to the volume on first creation.
+      # Mount client_secret.json for Google OAuth (create this file with your credentials)
+      - ./client_secret.json:/app/client_secret.json:ro
+    environment:
+      # Google OAuth - can also be loaded from client_secret.json
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-https://datascience-adventure.xyz/login}
+      # Comma-separated list of allowed emails (leave empty to allow all)
+      - ALLOWED_EMAILS=${ALLOWED_EMAILS:-}
+      # Flask session secret key (CHANGE THIS IN PRODUCTION)
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key-in-production}
     networks:
       - web_network
     

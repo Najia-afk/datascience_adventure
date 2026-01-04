@@ -1,0 +1,55 @@
+# Docker Compose for LOCAL DEVELOPMENT
+# No SSL, simplified nginx config, works standalone without mission7
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml up --build
+#
+# Access: http://localhost:8080
+#
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: datascience_app_dev
+    restart: unless-stopped
+    volumes:
+      # Share the generated static files with Nginx
+      - static_data:/var/www/htmx_website
+      # Mount client_secret.json for Google OAuth (optional for dev)
+      - ./client_secret.json:/app/client_secret.json:ro
+    environment:
+      # Google OAuth - set these for testing auth flow
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8080/login}
+      # Allowed emails (leave empty to allow all authenticated users)
+      - ALLOWED_EMAILS=${ALLOWED_EMAILS:-}
+      # Flask session secret (dev only - change in production!)
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-for-local-testing}
+    networks:
+      - dev_network
+    # Expose for direct debugging if needed
+    ports:
+      - "8000:8000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: datascience_nginx_dev
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx-dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_data:/var/www/htmx_website
+    depends_on:
+      - app
+    networks:
+      - dev_network
+
+volumes:
+  static_data:
+
+networks:
+  dev_network:
+    driver: bridge

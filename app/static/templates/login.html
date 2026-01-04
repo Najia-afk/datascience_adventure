@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Data Science Adventure</title>
+    <link rel="stylesheet" href="/styles/variables.css">
+    <link rel="stylesheet" href="/styles/base.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --text-color: #333;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 48px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+
+        .restricted-notice {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: 1px solid #feb2b2;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+
+        .restricted-notice h2 {
+            color: #c53030;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .restricted-notice p {
+            color: #742a2a;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .google-btn:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .google-btn:active {
+            transform: translateY(0);
+        }
+
+        .google-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .divider {
+            margin: 24px 0;
+            color: #a0aec0;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        .back-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🚀 Data Science Adventure</div>
+        <p class="subtitle">Portfolio & ML Dashboard</p>
+
+        <div class="restricted-notice">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Restricted Access
+            </h2>
+            <p>The Mission 7 Dashboard requires authentication. Please sign in with an authorized Google account to continue.</p>
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+
+        <button id="google-signin-button" class="google-btn">
+            <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285f4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.715H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34a853"/>
+                <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#fbbc05"/>
+                <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.159 6.656 3.58 9 3.58z" fill="#ea4335"/>
+            </svg>
+            Sign in with Google
+        </button>
+
+        <div id="loading" class="loading">
+            Authenticating...
+        </div>
+
+        <div class="divider">or</div>
+
+        <a href="/" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Portfolio
+        </a>
+    </div>
+
+    <script>
+        const GOOGLE_CLIENT_ID = "{{ google_client_id }}";
+        const GOOGLE_REDIRECT_URI = window.location.origin + "/login";
+        const GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+        const GOOGLE_OAUTH_SCOPES = [
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "openid"
+        ];
+
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function initiateGoogleOAuth() {
+            if (!GOOGLE_CLIENT_ID) {
+                showError('Google OAuth not configured. Please contact the administrator.');
+                return;
+            }
+
+            const state = crypto.randomUUID();
+            localStorage.setItem("oauth_state", state);
+            // Store the original destination if coming from a protected page
+            const returnTo = new URLSearchParams(window.location.search).get('return_to') || '/mission7/';
+            localStorage.setItem("oauth_return_to", returnTo);
+
+            const params = new URLSearchParams({
+                client_id: GOOGLE_CLIENT_ID,
+                redirect_uri: GOOGLE_REDIRECT_URI,
+                access_type: "offline",
+                response_type: "code",
+                state: state,
+                scope: GOOGLE_OAUTH_SCOPES.join(" "),
+                prompt: "consent"
+            });
+
+            const authUrl = `${GOOGLE_OAUTH_URL}?${params.toString()}`;
+            window.location.href = authUrl;
+        }
+
+        function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get("code");
+            const state = urlParams.get("state");
+            const error = urlParams.get("error");
+
+            if (error) {
+                showError("Authentication failed: " + error);
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
+
+            if (code && state) {
+                const storedState = localStorage.getItem("oauth_state");
+                
+                // Clear URL params
+                window.history.replaceState({}, document.title, window.location.pathname);
+
+                if (state !== storedState) {
+                    showError("Security error: State mismatch. Please try again.");
+                    localStorage.removeItem("oauth_state");
+                    return;
+                }
+
+                document.getElementById('loading').classList.add('active');
+                document.getElementById('google-signin-button').style.display = 'none';
+
+                fetch("/auth/google/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ code })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const returnTo = localStorage.getItem("oauth_return_to") || '/mission7/';
+                        localStorage.removeItem("oauth_return_to");
+                        window.location.href = returnTo;
+                    } else {
+                        showError("Login failed: " + data.error);
+                        document.getElementById('loading').classList.remove('active');
+                        document.getElementById('google-signin-button').style.display = 'flex';
+                    }
+                })
+                .catch(err => {
+                    showError("Network error. Please try again.");
+                    document.getElementById('loading').classList.remove('active');
+                    document.getElementById('google-signin-button').style.display = 'flex';
+                });
+
+                localStorage.removeItem("oauth_state");
+            }
+        }
+
+        // Attach click listener
+        document.getElementById("google-signin-button").addEventListener("click", initiateGoogleOAuth);
+
+        // Check for OAuth callback on page load
+        handleOAuthCallback();
+    </script>
+</body>
+</html>
