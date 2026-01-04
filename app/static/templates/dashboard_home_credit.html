@@ -60,7 +60,7 @@
             document.getElementById('dashboard-loading').style.display = 'none';
             
             if (data.authenticated) {
-                // Show iframe with mission7 dashboard
+                // Show iframe with mission7 dashboard via authenticated proxy
                 var iframe = document.getElementById('dashboard-iframe');
                 iframe.src = '/dashboard_mission7/';
                 iframe.style.display = 'block';

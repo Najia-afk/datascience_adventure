@@ -27,6 +27,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-dev-secret-key-for-local-testing}
     networks:
       - dev_network
+      - web_network
     # Expose for direct debugging if needed
     ports:
       - "8000:8000"
@@ -44,6 +45,7 @@ services:
       - app
     networks:
       - dev_network
+      - web_network
 
 volumes:
   static_data:
@@ -51,3 +53,5 @@ volumes:
 networks:
   dev_network:
     driver: bridge
+  web_network:
+    external: true
