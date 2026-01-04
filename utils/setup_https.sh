@@ -70,7 +70,7 @@ server {
     }
 
     # Proxy for Mission 7 Dashboard
-    location /mission7/ {
+    location /dashboard_mission7/ {
         proxy_pass http://homecredit_nginx:80/;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
@@ -79,12 +79,12 @@ server {
 
         # Rewrite links and references for the subpath
         sub_filter_types text/html;
-        sub_filter 'href="/' 'href="/mission7/';
-        sub_filter 'src="/' 'src="/mission7/';
-        sub_filter 'action="/' 'action="/mission7/';
-        sub_filter "fetch('/" "fetch('/mission7/";
-        sub_filter 'fetch("/' 'fetch("/mission7/';
-        sub_filter 'const GOOGLE_REDIRECT_URI = window.location.origin;' 'const GOOGLE_REDIRECT_URI = window.location.origin + "/mission7";';
+        sub_filter 'href="/' 'href="/dashboard_mission7/';
+        sub_filter 'src="/' 'src="/dashboard_mission7/';
+        sub_filter 'action="/' 'action="/dashboard_mission7/';
+        sub_filter "fetch('/" "fetch('/dashboard_mission7/";
+        sub_filter 'fetch("/' 'fetch("/dashboard_mission7/';
+        sub_filter 'const GOOGLE_REDIRECT_URI = window.location.origin;' 'const GOOGLE_REDIRECT_URI = window.location.origin + "/dashboard_mission7";';
         sub_filter_once off;
     }
 

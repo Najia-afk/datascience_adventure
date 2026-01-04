@@ -60,9 +60,9 @@
             document.getElementById('dashboard-loading').style.display = 'none';
             
             if (data.authenticated) {
-                // Show iframe with mission7
+                // Show iframe with mission7 dashboard
                 var iframe = document.getElementById('dashboard-iframe');
-                iframe.src = '/mission7/';
+                iframe.src = '/dashboard_mission7/';
                 iframe.style.display = 'block';
             } else {
                 // Show auth required message

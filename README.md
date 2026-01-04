@@ -24,29 +24,29 @@ A unified Data Science portfolio platform that aggregates multiple projects ("mi
       ┌───────────────┼───────────────┬───────────────┐
       │               │               │               │
       ▼               ▼               ▼               ▼
-┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────────┐
-│  Static   │  │  /login   │  │ /mission7 │  │ /mission7/    │
-│  Content  │  │  (OAuth)  │  │ (proxy)   │  │ mlflow/       │
-│  (2-6)    │  │           │  │ Protected │  │ Protected     │
-└───────────┘  └───────────┘  └─────┬─────┘  └───────┬───────┘
-                                    │                │
-                                    ▼                ▼
-                              ┌─────────────────────────┐
-                              │      mission7           │
-                              │  (Separate Docker)      │
-                              │  Connected via          │
-                              │  web_network            │
-                              └─────────────────────────┘
+┌───────────┐  ┌───────────┐  ┌─────────────┐  ┌────────────────────┐
+│  Static   │  │  /login   │  │ /mission7   │  │ /dashboard_mission7│
+│  Content  │  │  (OAuth)  │  │ (notebook)  │  │ (dashboard)        │
+│  (2-8)    │  │           │  │             │  │ Protected + mlflow │
+└───────────┘  └───────────┘  └─────────────┘  └──────────┬─────────┘
+                                                          │
+                                                          ▼
+                                                 ┌────────────────────┐
+                                                 │      mission7      │
+                                                 │  (Separate Docker) │
+                                                 │  Connected via     │
+                                                 │  web_network       │
+                                                 └────────────────────┘
 ```
 
 ### Authentication Flow
 
-1. User visits `/mission7/` (protected route)
+1. User visits `/dashboard_mission7/` (protected route)
 2. Nginx checks auth via internal `/auth/check` endpoint
 3. If not authenticated → redirect to `/login`
 4. User signs in with Google OAuth
-5. On success → redirect back to `/mission7/`
-6. If Mission 7 is down → show friendly "Service Unavailable" page
+5. On success → redirect back to `/dashboard_mission7/`
+6. If Mission 7 dashboard is down → show friendly "Service Unavailable" page
 
 ## 🚀 Getting Started
 
