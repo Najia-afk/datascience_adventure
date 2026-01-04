@@ -177,7 +177,52 @@ docker compose up -d --build
 *   **Infrastructure**: Docker, Nginx, Bash Scripting
 *   **SSL**: Let's Encrypt / Certbot
 
-## 📝 Notes
+## � Mission 7 Integration (Protected Dashboard)
+
+Mission 7 is a credit scoring MLOps platform that runs as a separate Docker stack but is accessed **only through this proxy** with Google OAuth authentication.
+
+### Architecture
+```
+datascience_adventure (nginx)                    mission7 (separate docker-compose)
+        │                                                │
+        │  /dashboard_mission7/* ────────────────────►  nginx:80 (internal only)
+        │  (auth_request → /auth/check)                  │
+        │                                                ├── api:8000
+        │  /dashboard_mission7/mlflow/* ─────────────►  mlflow:5002
+        │                                                │
+        └── Connected via 'web_network' ─────────────────┘
+```
+
+### Security Features
+- **No direct port exposure**: Mission7 nginx only uses `expose: 80`, not `ports:`
+- **Authentication required**: All `/dashboard_mission7/*` routes require Google OAuth
+- **Referer-based routing**: API calls from the dashboard iframe are detected and proxied correctly
+
+### URLs
+| Route | Description |
+|-------|-------------|
+| `/dashboard_mission7/` | Main dashboard (protected) |
+| `/dashboard_mission7/predict` | Credit prediction |
+| `/dashboard_mission7/api/docs` | Swagger API documentation |
+| `/dashboard_mission7/mlflow/` | MLflow experiment tracking |
+
+### Deployment
+```bash
+# 1. Start mission7 first
+cd ~/projects/mission7
+docker compose -f docker-compose.prod.yml up -d --build
+
+# 2. Ensure both on same network
+docker network create web_network 2>/dev/null || true
+docker network connect web_network mission7_nginx_prod
+docker network connect web_network mission7_mlflow_prod
+
+# 3. Start datascience_adventure
+cd ~/projects/datascience_adventure
+docker compose up -d --build
+```
+
+## �📝 Notes
 
 - **Resilience**: The front server never goes down if backend services (Mission 7) are unavailable
 - **1GB RAM Servers**: The install script automatically creates 2GB swap space
