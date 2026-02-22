@@ -239,7 +239,21 @@ def create_app():
     # Dynamic route for mission pages
     @app.route('/<path:mission_path>')
     def mission_page(mission_path):
-        return render_template(f'{mission_path}.html')
+        # Try to render a specific mission template if it exists (e.g., mission7.html)
+        content_dir = app.config['CONTENT_DIR']
+        # First check in the content_dir (where template_folder points)
+        candidate_path = os.path.join(content_dir, f'{mission_path}.html')
+        if os.path.exists(candidate_path):
+            return render_template(f'{mission_path}.html')
+
+        # Next check templates subfolder
+        candidate_path2 = os.path.join(content_dir, 'templates', f'{mission_path}.html')
+        if os.path.exists(candidate_path2):
+            return render_template(f'templates/{mission_path}.html')
+
+        # Fallback: return the generic mission layout which contains the iframe and HTMX hooks
+        # This allows HTMX calls like hx-get="/mission7" to return the interactive layout.
+        return render_template('mission_layout.html')
 
     # Dynamic route for mission content HTML files
     @app.route('/<path:mission_path>_content.html')
@@ -247,9 +261,30 @@ def create_app():
         content_file = f'{mission_path}_content.html'
         # Use the configured content directory
         content_dir = app.config['CONTENT_DIR']
+
+        # 1) Check content directory (production location)
         file_path = os.path.join(content_dir, content_file)
         if os.path.exists(file_path):
             return send_from_directory(content_dir, content_file)
+
+        # 2) Check templates subfolder inside content_dir (local generated layout)
+        templates_subpath = os.path.join(content_dir, 'templates', content_file)
+        if os.path.exists(templates_subpath):
+            return send_from_directory(os.path.join(content_dir, 'templates'), content_file)
+
+        # 3) If a regular template with the mission name exists, render it as a fallback
+        #    This allows local development without generating the _content.html files.
+        try:
+            # Flask's render_template will look in app.template_folder (we set template_folder to content_dir)
+            template_name = f'templates/{mission_path}_content.html'
+            # If that template exists on disk, render it
+            template_path = os.path.join(app.template_folder or content_dir, 'templates', f'{mission_path}_content.html')
+            if os.path.exists(template_path):
+                return render_template(template_name)
+        except Exception:
+            pass
+
+        # Not found in any known location
         abort(404)
 
     # Generic route for static files - properly fixed version
