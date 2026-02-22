@@ -140,13 +140,13 @@ def create_app():
         # If it's a social crawler, serve the full page with OG tags
         if _is_social_crawler():
             og['og_url'] = f"https://datascience-adventure.xyz{route_path}"
-            return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, initial_route=route_path, **og)
+            return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, **og)
         # If it's an HTMX request, return the fragment
         if request.headers.get('HX-Request'):
             return render_template(template)
-        # Direct browser visit — return full page with OG tags + correct initial route
+        # Direct browser visit — return full page with OG tags
         og['og_url'] = f"https://datascience-adventure.xyz{route_path}"
-        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, initial_route=route_path, **og)
+        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, **og)
 
     # Route for serving converted script HTML files
     @app.route('/<path:repo>_src/<path:filename>')
