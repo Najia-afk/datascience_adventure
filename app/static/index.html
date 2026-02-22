@@ -60,8 +60,8 @@
 
     <div class="main-wrapper">
         <main id="main-content" class="content-area">
-            <!-- Summary will be dynamically loaded by default -->
-            <div id="default-content" hx-get="/summary" hx-target="#main-content" hx-trigger="load"></div>
+            <!-- Load the appropriate page: article/project for direct visits, or summary for home -->
+            <div id="default-content" hx-get="{{ initial_route | default('/summary') }}" hx-target="#main-content" hx-trigger="load"></div>
         </main>
     </div>
 
