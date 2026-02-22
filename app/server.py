@@ -82,6 +82,72 @@ def create_app():
     # Allow routes to match with or without trailing slashes
     app.url_map.strict_slashes = False
 
+    # ===== OG Meta Tags Configuration =====
+    OG_META = {
+        '/article/roundtable-v3': {
+            'og_title': 'When AI Agents Tell Each Other Jokes',
+            'og_description': 'A v3 roundtable where two AI agents build a collaborative ecosystem of laughter, reflect on identity, and accidentally create a philosophy of connection.',
+            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_roundtable.png',
+            'og_type': 'article',
+        },
+        '/article/aria-entity': {
+            'og_title': 'Aria Blue — An Agentic AI Entity',
+            'og_description': 'What happens when you give an AI its own goals, persistent memory, a knowledge graph, and the tools to act — 24 hours a day?',
+            'og_image': 'https://datascience-adventure.xyz/images/aria/aria-profile-v1.png',
+            'og_type': 'article',
+        },
+        '/article/skill-graph': {
+            'og_title': 'How Aria Maps & Navigates Her Own Skills',
+            'og_description': '35 skills, 225 tools, and a graph that connects them all — how path-finding turns a flat capability list into an explainable reasoning engine.',
+            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_skill_graph.png',
+            'og_type': 'article',
+        },
+        '/article/llm-self-awareness': {
+            'og_title': 'Where Are LLMs on Self-Awareness, Consciousness, and Memory?',
+            'og_description': 'An experiment with Aria Blue — observing what emerges when an autonomous AI agent runs 24/7 with access to code, memory, browsing, and git.',
+            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_blue_autnomous_ai_ceo.png',
+            'og_type': 'article',
+        },
+        '/article/aria-architecture': {
+            'og_title': "Building an Autonomous AI: Aria's 5-Layer Architecture",
+            'og_description': 'How a native Python engine, multi-model routing, and persistent memory combine to create an AI that manages itself like a CEO.',
+            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_models_usage.png',
+            'og_type': 'article',
+        },
+        '/project/aria': {
+            'og_title': 'Aria Blue — Autonomous AI Agent Platform',
+            'og_description': 'An autonomous AI agent that thinks like a CEO: analyzes tasks, delegates to specialized personas, and runs 24/7 with goal tracking and full observability.',
+            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_blue_the_autonomous_ai_ceo_platform.png',
+            'og_type': 'article',
+        },
+        '/project/bubble': {
+            'og_title': 'Bubble — Blockchain Investigation Platform',
+            'og_description': 'Production-grade blockchain investigation platform for tracking illicit fund flows, managing crypto fraud cases, and monitoring suspicious wallets.',
+            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_knowledge_graph.png',
+            'og_type': 'article',
+        },
+    }
+
+    def _is_social_crawler():
+        """Detect LinkedIn, Twitter, Facebook crawlers by User-Agent."""
+        ua = request.headers.get('User-Agent', '').lower()
+        crawlers = ['linkedinbot', 'twitterbot', 'facebookexternalhit', 'slackbot', 'discordbot', 'telegrambot', 'whatsapp']
+        return any(c in ua for c in crawlers)
+
+    def _render_page_or_fragment(template, route_path):
+        """For social crawlers, return full index.html with OG tags. For browsers/HTMX, return fragment."""
+        og = OG_META.get(route_path, {})
+        # If it's a social crawler, serve the full page with OG tags
+        if _is_social_crawler():
+            og['og_url'] = f"https://datascience-adventure.xyz{route_path}"
+            return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, **og)
+        # If it's an HTMX request, return the fragment
+        if request.headers.get('HX-Request'):
+            return render_template(template)
+        # Direct browser visit — return full page with OG tags
+        og['og_url'] = f"https://datascience-adventure.xyz{route_path}"
+        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, **og)
+
     # Route for serving converted script HTML files
     @app.route('/<path:repo>_src/<path:filename>')
     def serve_script_html(repo, filename):
@@ -93,6 +159,13 @@ def create_app():
     def index():
         return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID)
 
+    @app.route('/favicon.ico')
+    def favicon():
+        return send_from_directory(base_dir, 'favicon.ico', mimetype='image/x-icon')
+
+    @app.route('/apple-touch-icon.png')
+    def apple_touch_icon():
+        return send_from_directory(base_dir, 'apple-touch-icon.png', mimetype='image/png')
 
     @app.route('/header')
     def header():
@@ -122,36 +195,36 @@ def create_app():
     # Project showcase pages
     @app.route('/project/aria')
     def project_aria():
-        return render_template('templates/project_aria.html')
+        return _render_page_or_fragment('templates/project_aria.html', '/project/aria')
 
     @app.route('/project/bubble')
     def project_bubble():
-        return render_template('templates/project_bubble.html')
+        return _render_page_or_fragment('templates/project_bubble.html', '/project/bubble')
 
     # Article pages
     @app.route('/article/llm-self-awareness')
     def article_llm_self_awareness():
-        return render_template('templates/article_llm_self_awareness.html')
+        return _render_page_or_fragment('templates/article_llm_self_awareness.html', '/article/llm-self-awareness')
 
     @app.route('/article/aria-architecture')
     def article_aria_architecture():
-        return render_template('templates/article_aria_architecture.html')
+        return _render_page_or_fragment('templates/article_aria_architecture.html', '/article/aria-architecture')
 
     @app.route('/article/roundtable-v3')
     def article_roundtable_v3():
-        return render_template('templates/article_roundtable_v3.html')
+        return _render_page_or_fragment('templates/article_roundtable_v3.html', '/article/roundtable-v3')
 
     @app.route('/article/aria-entity')
     def article_aria_entity():
-        return render_template('templates/article_aria_entity.html')
+        return _render_page_or_fragment('templates/article_aria_entity.html', '/article/aria-entity')
 
     @app.route('/article/skill-graph')
     def article_skill_graph():
-        return render_template('templates/article_skill_graph.html')
+        return _render_page_or_fragment('templates/article_skill_graph.html', '/article/skill-graph')
 
     @app.route('/feed')
     def linkedin_feed():
-        return render_template('templates/article_linkedin_feed.html')
+        return _render_page_or_fragment('templates/article_linkedin_feed.html', '/feed')
 
     # Dynamic route for mission pages
     @app.route('/<path:mission_path>')

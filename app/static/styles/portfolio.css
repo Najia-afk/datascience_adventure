@@ -445,6 +445,7 @@
 .project-showcase {
     max-width: 1000px;
     margin: 0 auto;
+    padding: 0 1rem;
     animation: fadeInUp 0.4s ease-out;
 }
 
@@ -485,7 +486,7 @@
 }
 
 .showcase-header-content h1 {
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
     margin-bottom: 0.25rem;
 }
 
@@ -814,7 +815,8 @@
 
     .showcase-header {
         flex-direction: column;
-        padding: 1.5rem;
+        padding: 1.25rem;
+        gap: 1rem;
     }
 
     .showcase-header-image {
@@ -823,18 +825,81 @@
     }
 
     .showcase-avatar {
-        width: 120px;
-        height: 120px;
-    }
-
-    .showcase-icon-large {
         width: 100px;
         height: 100px;
     }
 
+    .showcase-icon-large {
+        width: 80px;
+        height: 80px;
+    }
+
     .showcase-icon-large svg {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .showcase-section {
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .showcase-section h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .showcase-tagline {
+        font-size: 1rem;
+    }
+
+    .showcase-description {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .showcase-actions {
+        flex-direction: column;
+    }
+
+    .showcase-actions .btn {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .tech-stack-item {
+        padding: 0.75rem;
+    }
+
+    .tech-stack-label {
+        font-size: 0.65rem;
+    }
+
+    .tech-stack-value {
+        font-size: 0.85rem;
+    }
+
+    .arch-layer {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+        min-width: 80px;
+    }
+
+    .feature-item {
+        padding: 1rem;
+    }
+
+    .feature-item h4 {
+        font-size: 0.9rem;
+    }
+
+    .feature-item p {
+        font-size: 0.85rem;
+    }
+
+    .gallery-item img {
+        height: 160px;
     }
 
     .architecture-flow {
@@ -864,5 +929,25 @@
 
     .features-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 400px) {
+    .project-showcase {
+        padding: 0 0.5rem;
+    }
+
+    .showcase-header {
+        padding: 1rem;
+    }
+
+    .showcase-section {
+        padding: 1rem;
+    }
+
+    .showcase-actions .btn {
+        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
     }
 }

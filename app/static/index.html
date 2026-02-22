@@ -4,7 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datascience Adventure</title>
+    <title>{{ og_title | default('DataScience Adventure — Adrien Music') }}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="{{ og_type | default('website') }}">
+    <meta property="og:title" content="{{ og_title | default('DataScience Adventure — Adrien Music') }}">
+    <meta property="og:description" content="{{ og_description | default('Data Scientist & AI Engineer — building intelligent systems from data to production. Autonomous AI agents, ML pipelines, and production-grade platforms.') }}">
+    <meta property="og:image" content="{{ og_image | default('https://datascience-adventure.xyz/logos/logo_dsa.png') }}">
+    <meta property="og:url" content="{{ og_url | default('https://datascience-adventure.xyz') }}">
+    <meta property="og:site_name" content="DataScience Adventure">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ og_title | default('DataScience Adventure — Adrien Music') }}">
+    <meta name="twitter:description" content="{{ og_description | default('Data Scientist & AI Engineer — building intelligent systems from data to production.') }}">
+    <meta name="twitter:image" content="{{ og_image | default('https://datascience-adventure.xyz/logos/logo_dsa.png') }}">
+
     <link rel="stylesheet" href="/styles/variables.css?v=3">
     <link rel="stylesheet" href="/styles/base.css?v=3">
     <link rel="stylesheet" href="/styles/layout.css?v=3">
@@ -18,6 +37,14 @@
     <link rel="stylesheet" href="/styles/responsive.css?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <!-- Scroll to top after HTMX content swap -->
+    <script>
+        document.addEventListener('htmx:afterSwap', function(e) {
+            if (e.detail.target.id === 'main-content') {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        });
+    </script>
     <!-- Google OAuth Configuration - rendered server-side -->
     <script>
         window.DSA_CONFIG = {
