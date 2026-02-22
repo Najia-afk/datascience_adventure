@@ -8,15 +8,29 @@
     <a href="#" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML" class="nav-link">Home</a>
     
     <div class="dropdown">
-        <button class="nav-link dropdown-btn">Missions ▾</button>
+        <button class="nav-link dropdown-btn">Projects ▾</button>
         <div class="dropdown-content">
-            <a href="#" hx-get="/mission2" hx-target="body" hx-swap="innerHTML">Mission 2</a>
-            <a href="#" hx-get="/mission3" hx-target="body" hx-swap="innerHTML">Mission 3</a>
-            <a href="#" hx-get="/mission4" hx-target="body" hx-swap="innerHTML">Mission 4</a>
-            <a href="#" hx-get="/mission5" hx-target="body" hx-swap="innerHTML">Mission 5</a>
-            <a href="#" hx-get="/mission6" hx-target="body" hx-swap="innerHTML">Mission 6</a>
-            <a href="#" hx-get="/mission7" hx-target="body" hx-swap="innerHTML">Mission 7</a>
-            <a href="#" hx-get="/mission8" hx-target="body" hx-swap="innerHTML">Mission 8</a>
+            <a href="#" hx-get="/project/aria" hx-target="#main-content" hx-swap="innerHTML">⚡ Aria Blue</a>
+            <a href="#" hx-get="/project/bubble" hx-target="#main-content" hx-swap="innerHTML">🔍 Bubble</a>
+            <a href="#" style="border-top: 1px solid var(--border); opacity: 0.5; pointer-events: none; font-size: 0.7rem;">DATA SCIENCE PROJECTS</a>
+            <a href="#" hx-get="/mission2" hx-target="body" hx-swap="innerHTML">📊 World Bank Education Analysis</a>
+            <a href="#" hx-get="/mission3" hx-target="body" hx-swap="innerHTML">🍎 Nutriscore Correlations</a>
+            <a href="#" hx-get="/mission4" hx-target="body" hx-swap="innerHTML">⚡ Energy Consumption Forecasting</a>
+            <a href="#" hx-get="/mission5" hx-target="body" hx-swap="innerHTML">👥 Client Segmentation</a>
+            <a href="#" hx-get="/mission6" hx-target="body" hx-swap="innerHTML">🏷️ Product Classification (DL)</a>
+            <a href="#" hx-get="/mission7" hx-target="body" hx-swap="innerHTML">💳 Credit Scoring MLOps</a>
+            <a href="#" hx-get="/mission8" hx-target="body" hx-swap="innerHTML">🧠 Deep Context-Aware Networks</a>
+        </div>
+    </div>
+
+    <div class="dropdown">
+        <button class="nav-link dropdown-btn">Articles ▾</button>
+        <div class="dropdown-content">
+            <a href="#" hx-get="/article/aria-entity" hx-target="#main-content" hx-swap="innerHTML">Aria: Agentic Entity</a>
+            <a href="#" hx-get="/article/skill-graph" hx-target="#main-content" hx-swap="innerHTML">Skill Graph & Path Finding</a>
+            <a href="#" hx-get="/article/llm-self-awareness" hx-target="#main-content" hx-swap="innerHTML">LLM Self-Awareness</a>
+            <a href="#" hx-get="/article/aria-architecture" hx-target="#main-content" hx-swap="innerHTML">Aria Architecture</a>
+            <a href="#" hx-get="/article/roundtable-v3" hx-target="#main-content" hx-swap="innerHTML">AI Roundtable: Jokes</a>
         </div>
     </div>
 
@@ -27,6 +41,7 @@
         </div>
     </div>
 
+    <a href="#" hx-get="/feed" hx-target="#main-content" hx-swap="innerHTML" class="nav-link">Feed</a>
     <a href="#" hx-get="/contact" hx-target="#main-content" hx-swap="innerHTML" class="nav-link">Contact</a>
     
     <!-- Login/User section - will be populated by JavaScript -->

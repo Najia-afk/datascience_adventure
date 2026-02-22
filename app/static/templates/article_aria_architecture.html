@@ -1,0 +1,109 @@
+<!-- Article: Aria's 5-Layer Architecture -->
+<div class="article-page">
+    <a href="#" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML" class="back-nav">&larr; Back to Portfolio</a>
+    
+    <article class="article-content">
+        <header class="article-header">
+            <div class="article-meta">
+                <span class="tag tag-ai">Architecture</span>
+                <span class="article-date">February 2026</span>
+            </div>
+            <h1>Building an Autonomous AI: Aria's 5-Layer Architecture</h1>
+            <p class="article-subtitle">How a native Python engine, multi-model routing, and persistent memory combine to create an AI that manages itself like a CEO</p>
+            <div class="article-author">
+                <strong>Author:</strong> Najia &nbsp;|&nbsp; 
+                <strong>Project:</strong> <a href="https://github.com/Najia-afk/Aria_moltbot" target="_blank" style="color: var(--primary)">Aria Blue</a>
+            </div>
+        </header>
+
+        <div class="article-hero-image">
+            <img src="/images/aria/aria_infra_structure.png" alt="Aria Infrastructure" loading="lazy">
+        </div>
+
+        <section class="article-section">
+            <h2>The Problem</h2>
+            <p>Most AI "agents" are glorified chain-of-thought wrappers. They follow a script, call tools in sequence, and return results. They don't <em>think</em> about what they're doing. They don't manage priorities, track long-term goals, or improve their own workflows.</p>
+            <p>Aria Blue was built to be different &mdash; an autonomous agent that operates like a CEO with specialized departments, each handling a domain of expertise, all coordinated through a centralized orchestration engine.</p>
+        </section>
+
+        <section class="article-section">
+            <h2>The 5-Layer Architecture</h2>
+            <p>Every component in Aria follows a strict layering principle. No layer may skip another &mdash; this prevents the spaghetti dependencies that kill most agent systems.</p>
+            
+            <div class="architecture-flow" style="margin: 2rem 0;">
+                <div class="arch-layer">Database<br><small>PostgreSQL 16</small></div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-layer">ORM<br><small>SQLAlchemy 2.0</small></div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-layer">API<br><small>FastAPI</small></div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-layer">Skills<br><small>api_client (httpx)</small></div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-layer arch-layer-highlight">ARIA Mind<br><small>Agents</small></div>
+            </div>
+
+            <h3>Layer 1: Database</h3>
+            <p>PostgreSQL 16 with dual database isolation &mdash; one for Aria's data (goals, memories, skills, conversations), one for LiteLLM's routing and usage tracking. No cross-database queries. Clean boundaries.</p>
+
+            <h3>Layer 2: ORM</h3>
+            <p>SQLAlchemy 2.0 with full async support via psycopg 3. All models live in <code>src/database/</code>. No raw SQL anywhere else in the codebase.</p>
+
+            <h3>Layer 3: API</h3>
+            <p>FastAPI with Strawberry GraphQL. This is the only layer that talks to the ORM. Everything above goes through HTTP endpoints.</p>
+
+            <h3>Layer 4: Skills</h3>
+            <p>Skills are Aria's capabilities &mdash; browsing, file operations, git, memory management. Every skill communicates with the API via <code>api_client</code> (httpx). No skill may import SQLAlchemy or call another skill directly.</p>
+
+            <h3>Layer 5: ARIA Mind &amp; Agents</h3>
+            <p>The orchestration layer. Aria's "mind" coordinates specialized focus personas (DevOps Agent, Research Agent, Writing Agent) through roundtable discussions, delegates tasks, and synthesizes results. This layer only talks to Skills.</p>
+        </section>
+
+        <section class="article-section">
+            <h2>The Multi-Model Router</h2>
+            <p>Aria doesn't depend on a single LLM. Through LiteLLM, she routes requests to the best model for each task:</p>
+            <div class="tech-stack-grid" style="margin-top: 1rem;">
+                <div class="tech-stack-item">
+                    <span class="tech-stack-label">Orchestration</span>
+                    <span class="tech-stack-value">Claude Opus/Sonnet via OpenRouter</span>
+                </div>
+                <div class="tech-stack-item">
+                    <span class="tech-stack-label">Fast Tasks</span>
+                    <span class="tech-stack-value">Claude Haiku / GPT-4o-mini</span>
+                </div>
+                <div class="tech-stack-item">
+                    <span class="tech-stack-label">Long Context</span>
+                    <span class="tech-stack-value">Moonshot/Kimi (128K context)</span>
+                </div>
+                <div class="tech-stack-item">
+                    <span class="tech-stack-label">Local Inference</span>
+                    <span class="tech-stack-value">MLX on Apple Silicon Metal GPU</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="article-section">
+            <h2>The Autonomous Work Cycle</h2>
+            <p>Every 6 hours, Aria runs a goals review: she assesses priorities, evaluates progress, identifies new opportunities, and schedules tasks. Between reviews, she runs exploration pulses &mdash; browsing, researching, learning &mdash; and stores findings in her persistent memory.</p>
+            <p>This isn't a cron job running a script. Aria <em>decides</em> what to research, <em>evaluates</em> what she finds, and <em>files</em> it with context about why it matters to her work.</p>
+        </section>
+
+        <section class="article-section">
+            <h2>Observability</h2>
+            <div class="gallery-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                <div class="gallery-item">
+                    <img src="/images/aria/aria_skills_monitoring.png" alt="Skills Monitoring" loading="lazy">
+                    <span class="gallery-caption">Prometheus + Grafana Dashboards</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/aria/aria_models_usage.png" alt="Model Usage" loading="lazy">
+                    <span class="gallery-caption">Multi-Model Usage Analytics</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="article-section" style="text-align: center; margin-top: 2rem;">
+            <a href="https://github.com/Najia-afk/Aria_moltbot" target="_blank" class="btn btn-primary btn-lg">Explore on GitHub</a>
+            <a href="#" hx-get="/project/aria" hx-target="#main-content" hx-swap="innerHTML" class="btn btn-outline btn-lg" style="margin-left: 1rem;">View Aria Project</a>
+        </section>
+    </article>
+</div>

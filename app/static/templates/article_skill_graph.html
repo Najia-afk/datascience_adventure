@@ -1,0 +1,510 @@
+<!-- ==================== ARTICLE: SKILL GRAPH — EXPLAINABLE AI PATH FINDING ==================== -->
+<article class="article-page">
+    <header class="article-header">
+        <div class="article-meta">
+            <span class="tag tag-ai">Explainable AI</span>
+            <span class="tag tag-prod">Knowledge Graph</span>
+            <span class="article-date">February 2026</span>
+        </div>
+        <h1 class="article-title">How Aria Maps &amp; Navigates Her Own Skills</h1>
+        <p class="article-subtitle">
+            35 skills, 225 tools, and a graph that connects them all &mdash; how path-finding algorithms turn a flat capability list into an explainable reasoning engine.
+        </p>
+    </header>
+
+    <section class="article-body">
+        <style>
+            .sg-callout {
+                background: linear-gradient(135deg, rgba(0,220,255,0.06), rgba(0,220,255,0.02));
+                border-left: 3px solid var(--primary, #00dcff);
+                padding: 1.5rem 2rem;
+                margin: 2rem 0;
+                border-radius: 0 6px 6px 0;
+                color: var(--text-secondary, var(--text-light));
+                line-height: 1.7;
+            }
+            .sg-callout strong { color: var(--primary, #00dcff); }
+            .sg-section {
+                margin: 3rem 0;
+            }
+            .sg-section h2 {
+                font-size: 1.5rem;
+                color: var(--text-primary, var(--text-main));
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid var(--border, #1e293b);
+            }
+            .sg-section h3 {
+                font-size: 1.15rem;
+                color: var(--primary-light, #38e8ff);
+                margin: 1.5rem 0 0.75rem;
+            }
+            .sg-section p, .sg-section li {
+                color: var(--text-secondary, var(--text-light));
+                line-height: 1.8;
+                margin-bottom: 0.75rem;
+            }
+            .sg-section ul, .sg-section ol {
+                padding-left: 1.5rem;
+                margin: 0.5rem 0 1rem;
+            }
+            .sg-section li { margin-bottom: 0.4rem; }
+            .concept-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.25rem;
+                margin: 1.5rem 0;
+            }
+            .concept-card {
+                background: var(--bg-secondary, var(--surface));
+                border: 1px solid var(--border, #1e293b);
+                border-radius: 6px;
+                padding: 1.25rem;
+                transition: border-color 0.25s;
+            }
+            .concept-card:hover { border-color: var(--primary, #00dcff); }
+            .concept-card h4 {
+                font-size: 0.95rem;
+                color: var(--text-primary, var(--text-main));
+                margin-bottom: 0.5rem;
+            }
+            .concept-card p {
+                font-size: 0.85rem;
+                color: var(--text-muted, #64748b);
+                line-height: 1.5;
+                margin: 0;
+            }
+            .code-block {
+                background: #0d1117;
+                border: 1px solid var(--border, #1e293b);
+                border-radius: 6px;
+                padding: 1.25rem 1.5rem;
+                overflow-x: auto;
+                margin: 1.5rem 0;
+                font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #e6edf3;
+            }
+            .code-block .comment { color: #8b949e; }
+            .code-block .keyword { color: #ff7b72; }
+            .code-block .string { color: #a5d6ff; }
+            .code-block .func { color: #d2a8ff; }
+            .code-block .number { color: #79c0ff; }
+            .path-demo {
+                background: var(--bg-tertiary, #111820);
+                border: 1px solid var(--border, #1e293b);
+                border-radius: 8px;
+                padding: 2rem;
+                margin: 2rem 0;
+            }
+            .path-demo h4 {
+                color: var(--primary, #00dcff);
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+            .path-nodes {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin: 1rem 0;
+            }
+            .path-node {
+                background: var(--bg-secondary, var(--surface));
+                border: 2px solid var(--primary, #00dcff);
+                border-radius: 6px;
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: var(--text-primary, var(--text-main));
+                text-align: center;
+                min-width: 80px;
+            }
+            .path-node.start {
+                background: rgba(0, 220, 255, 0.15);
+                border-color: var(--primary, #00dcff);
+            }
+            .path-node.end {
+                background: rgba(0, 184, 148, 0.15);
+                border-color: #00b894;
+            }
+            .path-arrow {
+                color: var(--primary, #00dcff);
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+            .path-explanation {
+                text-align: center;
+                font-size: 0.85rem;
+                color: var(--text-muted, #64748b);
+                margin-top: 1rem;
+                font-style: italic;
+            }
+            .vis-container {
+                width: 100%;
+                height: 500px;
+                background: #0a0e12;
+                border: 1px solid var(--border, #1e293b);
+                border-radius: 8px;
+                margin: 2rem 0;
+            }
+            .graph-legend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+                justify-content: center;
+                margin: 0.75rem 0 1.5rem;
+            }
+            .graph-legend-item {
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                font-size: 0.8rem;
+                color: var(--text-muted, #64748b);
+            }
+            .graph-legend-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+            .insight-box {
+                background: var(--bg-tertiary, #111820);
+                border: 1px solid var(--border, #1e293b);
+                border-radius: 8px;
+                padding: 2rem;
+                margin: 2rem 0;
+                text-align: center;
+            }
+            .insight-box h3 {
+                color: var(--primary, #00dcff);
+                margin-bottom: 1rem;
+                font-size: 1.2rem;
+            }
+            .insight-box p {
+                color: var(--text-secondary, var(--text-light));
+                max-width: 600px;
+                margin: 0 auto;
+                line-height: 1.7;
+            }
+            .related-links {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                margin-top: 2rem;
+            }
+            .related-links a {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                padding: 0.5rem 1rem;
+                background: var(--bg-secondary, var(--surface));
+                border: 1px solid var(--border, #1e293b);
+                border-radius: 4px;
+                color: var(--primary, #00dcff);
+                font-size: 0.85rem;
+                text-decoration: none;
+                transition: border-color 0.2s;
+            }
+            .related-links a:hover { border-color: var(--primary, #00dcff); }
+        </style>
+
+        <!-- vis.js CDN -->
+        <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+
+        <!-- ===== OPENER ===== -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2rem;">
+            <div>
+                <img src="/images/aria/aria_knowledge_graph.png" alt="Knowledge Graph" style="width:100%; border-radius:8px; border:1px solid var(--border, #1e293b);" loading="lazy">
+                <p style="text-align:center; font-size:0.75rem; color:var(--text-muted, #64748b); margin-top:0.5rem;">Knowledge Graph</p>
+            </div>
+            <div>
+                <img src="/images/aria/aria_skill_graph.png" alt="Skill Graph" style="width:100%; border-radius:8px; border:1px solid var(--border, #1e293b);" loading="lazy">
+                <p style="text-align:center; font-size:0.75rem; color:var(--text-muted, #64748b); margin-top:0.5rem;">Skill Graph</p>
+            </div>
+        </div>
+
+        <div class="sg-callout">
+            Most AI systems treat their capabilities as a flat list: &ldquo;I can do X, Y, Z.&rdquo; Aria treats hers as a <strong>graph</strong> &mdash; a web of interconnected skills where the relationships between capabilities matter just as much as the capabilities themselves. The result? An AI that can reason about <em>how</em> to combine skills, not just <em>which</em> skills it has.
+        </div>
+
+        <!-- ===== THE PROBLEM ===== -->
+        <div class="sg-section">
+            <h2>The Problem With Flat Capability Lists</h2>
+            <p>
+                When you ask a typical AI agent &ldquo;Can you help me deploy a machine learning model?&rdquo;, it searches its tool list for something tagged &ldquo;deployment.&rdquo; If it finds one, great. If not, it either fails or hallucinates a capability it doesn't have.
+            </p>
+            <p>
+                But deployment isn't a single skill &mdash; it's a <strong>chain</strong>. You need model serialization, Docker containerization, API framework knowledge, reverse proxy configuration, and monitoring setup. A flat tool list doesn't encode these relationships. A graph does.
+            </p>
+        </div>
+
+        <!-- ===== ACTUAL SKILL GRAPH SCREENSHOT ===== -->
+        <div class="sg-section">
+            <h2>Aria&rsquo;s Skill Graph in Practice</h2>
+            <p>Here&rsquo;s the actual skill graph as rendered inside Aria&rsquo;s monitoring dashboard &mdash; 35 interconnected skill domains with tool counts and proficiency scores:</p>
+            <div style="margin: 1.5rem 0; text-align: center;">
+                <img src="/images/aria/aria_skill_graph.png" alt="Aria Skill Graph" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border, #1e293b);" loading="lazy">
+            </div>
+        </div>
+
+        <!-- ===== GRAPH STRUCTURE ===== -->
+        <div class="sg-section">
+            <h2>Anatomy of the Skill Graph</h2>
+            <p>
+                Aria's knowledge graph has three types of nodes and multiple edge types:
+            </p>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h4>🎯 Skill Nodes</h4>
+                    <p><strong>35 total.</strong> High-level capabilities like &ldquo;Data Processing,&rdquo; &ldquo;Model Training,&rdquo; &ldquo;API Development,&rdquo; &ldquo;Infrastructure.&rdquo; Each skill has a proficiency score and usage frequency.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>🔧 Tool Nodes</h4>
+                    <p><strong>225 total.</strong> Concrete tools: &ldquo;pandas_read_csv,&rdquo; &ldquo;docker_build,&rdquo; &ldquo;git_commit,&rdquo; &ldquo;psql_query.&rdquo; Each tool belongs to one or more skill categories.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>🔗 Edge Types</h4>
+                    <p><strong>requires</strong> (skill A needs skill B), <strong>enables</strong> (completing A unlocks B), <strong>contains</strong> (skill has tools), <strong>synergizes</strong> (A + B is more than the sum).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== VIS.JS GRAPH ===== -->
+        <div class="sg-section">
+            <h2>Interactive Skill Map</h2>
+            <p>Explore a simplified view of Aria's skill graph. Drag nodes to rearrange, scroll to zoom, click a node to highlight its connections.</p>
+
+            <div class="graph-legend">
+                <div class="graph-legend-item"><div class="graph-legend-dot" style="background:#00dcff;"></div> Core Skills</div>
+                <div class="graph-legend-item"><div class="graph-legend-dot" style="background:#00b894;"></div> Data Skills</div>
+                <div class="graph-legend-item"><div class="graph-legend-dot" style="background:#6c5ce7;"></div> AI/ML Skills</div>
+                <div class="graph-legend-item"><div class="graph-legend-dot" style="background:#fd79a8;"></div> Infra Skills</div>
+                <div class="graph-legend-item"><div class="graph-legend-dot" style="background:#fdcb6e;"></div> Communication</div>
+            </div>
+
+            <div id="skill-graph" class="vis-container"></div>
+        </div>
+
+        <script>
+        (function() {
+            var CORE = '#00dcff', DATA = '#00b894', AIML = '#6c5ce7', INFRA = '#fd79a8', COMM = '#fdcb6e';
+
+            var nodes = new vis.DataSet([
+                // Core
+                {id: 1,  label: 'Python Engine',       color: {background: CORE, border: CORE}, font: {color:'#fff'}},
+                {id: 2,  label: 'Task Planning',        color: {background: CORE, border: CORE}, font: {color:'#fff'}},
+                {id: 3,  label: 'Memory System',        color: {background: CORE, border: CORE}, font: {color:'#fff'}},
+                {id: 4,  label: 'Tool Registry',        color: {background: CORE, border: CORE}, font: {color:'#fff'}},
+                // Data
+                {id: 10, label: 'Data Ingestion',       color: {background: DATA, border: DATA}, font: {color:'#fff'}},
+                {id: 11, label: 'Data Processing',      color: {background: DATA, border: DATA}, font: {color:'#fff'}},
+                {id: 12, label: 'Feature Engineering',  color: {background: DATA, border: DATA}, font: {color:'#fff'}},
+                {id: 13, label: 'Data Visualization',   color: {background: DATA, border: DATA}, font: {color:'#fff'}},
+                {id: 14, label: 'SQL / PostgreSQL',     color: {background: DATA, border: DATA}, font: {color:'#fff'}},
+                // AI/ML
+                {id: 20, label: 'Model Training',       color: {background: AIML, border: AIML}, font: {color:'#fff'}},
+                {id: 21, label: 'Model Evaluation',     color: {background: AIML, border: AIML}, font: {color:'#fff'}},
+                {id: 22, label: 'NLP / Embeddings',     color: {background: AIML, border: AIML}, font: {color:'#fff'}},
+                {id: 23, label: 'LLM Routing',          color: {background: AIML, border: AIML}, font: {color:'#fff'}},
+                {id: 24, label: 'Explainability\n(SHAP)', color: {background: AIML, border: AIML}, font: {color:'#fff'}},
+                {id: 25, label: 'Knowledge Graph',      color: {background: AIML, border: AIML}, font: {color:'#fff'}},
+                // Infra
+                {id: 30, label: 'Docker',               color: {background: INFRA, border: INFRA}, font: {color:'#fff'}},
+                {id: 31, label: 'API (FastAPI)',         color: {background: INFRA, border: INFRA}, font: {color:'#fff'}},
+                {id: 32, label: 'Git / CI',             color: {background: INFRA, border: INFRA}, font: {color:'#fff'}},
+                {id: 33, label: 'Monitoring\n(Prometheus)', color: {background: INFRA, border: INFRA}, font: {color:'#fff'}},
+                {id: 34, label: 'Nginx / Reverse Proxy', color: {background: INFRA, border: INFRA}, font: {color:'#fff'}},
+                // Communication
+                {id: 40, label: 'Report Writing',       color: {background: COMM, border: COMM}, font: {color:'#000'}},
+                {id: 41, label: 'Roundtable\nProtocol',  color: {background: COMM, border: COMM}, font: {color:'#000'}},
+                {id: 42, label: 'Self-Reflection',      color: {background: COMM, border: COMM}, font: {color:'#000'}},
+            ]);
+
+            var edges = new vis.DataSet([
+                // Core connections
+                {from:1, to:2,  label:'drives'},
+                {from:1, to:4,  label:'manages'},
+                {from:2, to:3,  label:'queries'},
+                {from:4, to:1,  label:'extends'},
+                // Data pipeline
+                {from:10, to:11, label:'feeds', color:{color:DATA}},
+                {from:11, to:12, label:'enables', color:{color:DATA}},
+                {from:12, to:20, label:'enables', color:{color:DATA}},
+                {from:11, to:13, label:'enables', color:{color:DATA}},
+                {from:14, to:10, label:'enables', color:{color:DATA}},
+                {from:14, to:3,  label:'stores', dashes:true},
+                // AI/ML chain
+                {from:20, to:21, label:'validates', color:{color:AIML}},
+                {from:21, to:24, label:'explains', color:{color:AIML}},
+                {from:22, to:23, label:'enables', color:{color:AIML}},
+                {from:23, to:1,  label:'powers', dashes:true},
+                {from:25, to:22, label:'uses', color:{color:AIML}},
+                {from:25, to:4,  label:'indexes', dashes:true},
+                {from:3,  to:25, label:'feeds', dashes:true},
+                // Infra
+                {from:30, to:31, label:'deploys', color:{color:INFRA}},
+                {from:31, to:34, label:'behind', color:{color:INFRA}},
+                {from:32, to:30, label:'triggers', color:{color:INFRA}},
+                {from:33, to:30, label:'monitors', color:{color:INFRA}},
+                {from:31, to:1,  label:'exposes', dashes:true},
+                // Communication
+                {from:40, to:42, label:'uses', color:{color:COMM}},
+                {from:41, to:42, label:'enables', color:{color:COMM}},
+                {from:42, to:3,  label:'writes to', dashes:true},
+                {from:41, to:23, label:'uses', dashes:true},
+            ]);
+
+            var container = document.getElementById('skill-graph');
+            if (!container) return;
+            var data = {nodes: nodes, edges: edges};
+            var options = {
+                physics: {
+                    solver: 'forceAtlas2Based',
+                    forceAtlas2Based: {gravitationalConstant: -40, centralGravity: 0.005, springLength: 140, springConstant: 0.04},
+                    stabilization: {iterations: 200}
+                },
+                nodes: {
+                    shape: 'dot',
+                    size: 18,
+                    font: {size: 11, face: 'Inter, sans-serif'},
+                    borderWidth: 2,
+                    shadow: {enabled: true, size: 6, color: 'rgba(0,0,0,0.3)'}
+                },
+                edges: {
+                    font: {size: 9, color: '#64748b', strokeWidth: 0, face: 'Inter, sans-serif'},
+                    arrows: {to: {enabled: true, scaleFactor: 0.6}},
+                    color: {color: '#334155', highlight: '#00dcff'},
+                    smooth: {type: 'continuous'}
+                },
+                interaction: {hover: true, tooltipDelay: 200, zoomView: true, dragView: true}
+            };
+            new vis.Network(container, data, options);
+        })();
+        </script>
+
+        <!-- ===== PATH FINDING ===== -->
+        <div class="sg-section">
+            <h2>Path Finding: From Question to Action</h2>
+            <p>
+                The killer feature of a graph representation is <strong>path finding</strong>. When Aria receives a task she hasn't done before, she doesn't just search for the closest matching tool &mdash; she finds the <em>shortest path</em> in her skill graph from what she knows to what she needs.
+            </p>
+
+            <div class="path-demo">
+                <h4>Example: &ldquo;Build me a dashboard for model performance&rdquo;</h4>
+                <div class="path-nodes">
+                    <div class="path-node start">SQL /<br>PostgreSQL</div>
+                    <span class="path-arrow">&rarr;</span>
+                    <div class="path-node">Data<br>Ingestion</div>
+                    <span class="path-arrow">&rarr;</span>
+                    <div class="path-node">Data<br>Processing</div>
+                    <span class="path-arrow">&rarr;</span>
+                    <div class="path-node">Data<br>Visualization</div>
+                    <span class="path-arrow">&rarr;</span>
+                    <div class="path-node">API<br>(FastAPI)</div>
+                    <span class="path-arrow">&rarr;</span>
+                    <div class="path-node end">Docker<br>Deploy</div>
+                </div>
+                <p class="path-explanation">
+                    Aria traces the path: query metrics from PostgreSQL → ingest raw data → process into dashboard-ready format → generate visualizations → wrap in an API → deploy via Docker. Each step maps to concrete tools.
+                </p>
+            </div>
+
+            <div class="path-demo">
+                <h4>Example: &ldquo;Why did the model reject that application?&rdquo;</h4>
+                <div class="path-nodes">
+                    <div class="path-node start">Model<br>Evaluation</div>
+                    <span class="path-arrow">&rarr;</span>
+                    <div class="path-node">Explainability<br>(SHAP)</div>
+                    <span class="path-arrow">&rarr;</span>
+                    <div class="path-node">Report<br>Writing</div>
+                    <span class="path-arrow">&rarr;</span>
+                    <div class="path-node end">Self-<br>Reflection</div>
+                </div>
+                <p class="path-explanation">
+                    From evaluation results, Aria traverses to SHAP explainability, generates a human-readable report, then reflects on whether the explanation was satisfying &mdash; and stores that feedback in memory.
+                </p>
+            </div>
+        </div>
+
+        <!-- ===== WHY THIS MATTERS ===== -->
+        <div class="sg-section">
+            <h2>Why Graph &gt; List</h2>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h4>Composability</h4>
+                    <p>The graph reveals skill chains that aren't obvious from a flat list. &ldquo;Data Ingestion → Processing → Feature Engineering → Training&rdquo; is a pipeline you can only discover by traversing edges.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Explainability</h4>
+                    <p>&ldquo;I used SHAP because the path from Model Evaluation to Report Writing goes through Explainability.&rdquo; The graph <em>is</em> the explanation.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Gap Detection</h4>
+                    <p>If there's no path between &ldquo;Raw Data&rdquo; and &ldquo;Production API,&rdquo; that gap is a concrete learning objective. The graph makes capability holes visible.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Novel Combinations</h4>
+                    <p>Path finding can discover tool combinations that were never explicitly programmed. The synergy edges enable creative problem-solving.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PSEUDO-CODE ===== -->
+        <div class="sg-section">
+            <h2>Under the Hood</h2>
+            <p>The path-finding algorithm is a weighted BFS that factors in skill proficiency, tool reliability scores, and edge type weights:</p>
+
+            <div class="code-block">
+<span class="keyword">def</span> <span class="func">find_skill_path</span>(graph, start_skill, target_skill):
+    <span class="comment"># Weighted BFS — prefer high-proficiency, high-reliability paths</span>
+    queue = [(start_skill, [start_skill], <span class="number">0</span>)]
+    visited = <span class="keyword">set</span>()
+
+    <span class="keyword">while</span> queue:
+        queue.sort(key=<span class="keyword">lambda</span> x: x[<span class="number">2</span>])  <span class="comment"># sort by cost</span>
+        current, path, cost = queue.pop(<span class="number">0</span>)
+
+        <span class="keyword">if</span> current == target_skill:
+            <span class="keyword">return</span> path, cost
+
+        visited.add(current)
+
+        <span class="keyword">for</span> neighbor, edge <span class="keyword">in</span> graph.neighbors(current):
+            <span class="keyword">if</span> neighbor <span class="keyword">not in</span> visited:
+                edge_cost = compute_edge_cost(
+                    edge_type=edge.type,
+                    proficiency=neighbor.proficiency,
+                    reliability=neighbor.avg_success_rate
+                )
+                queue.append((neighbor, path + [neighbor], cost + edge_cost))
+
+    <span class="keyword">return</span> <span class="keyword">None</span>  <span class="comment"># no path → capability gap detected</span>
+            </div>
+        </div>
+
+        <!-- ===== INSIGHT ===== -->
+        <div class="insight-box">
+            <h3>The Map Is the Territory</h3>
+            <p>
+                When your AI's capabilities are a graph, every task becomes a pathfinding problem, every explanation becomes a traversal log, and every failure becomes a discoverable gap. The graph isn't documentation — it's the reasoning engine itself.
+            </p>
+        </div>
+
+        <!-- ===== RELATED ===== -->
+        <div class="sg-section">
+            <h2>Related</h2>
+            <div class="related-links">
+                <a href="#" hx-get="/article/aria-entity" hx-target="#main-content" hx-swap="innerHTML">🧬 Aria: An Agentic Entity</a>
+                <a href="#" hx-get="/article/aria-architecture" hx-target="#main-content" hx-swap="innerHTML">🏗️ 5-Layer Architecture</a>
+                <a href="#" hx-get="/project/aria" hx-target="#main-content" hx-swap="innerHTML">⚡ Aria Project Page</a>
+                <a href="#" hx-get="/article/roundtable-v3" hx-target="#main-content" hx-swap="innerHTML">🎭 AI Roundtable: Jokes</a>
+                <a href="#" hx-get="/feed" hx-target="#main-content" hx-swap="innerHTML">📰 LinkedIn Feed</a>
+            </div>
+        </div>
+    </section>
+</article>

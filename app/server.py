@@ -118,7 +118,41 @@ def create_app():
     @app.route('/dashboard/home-credit')
     def dashboard_home_credit():
         return render_template('templates/dashboard_home_credit.html')
-    
+
+    # Project showcase pages
+    @app.route('/project/aria')
+    def project_aria():
+        return render_template('templates/project_aria.html')
+
+    @app.route('/project/bubble')
+    def project_bubble():
+        return render_template('templates/project_bubble.html')
+
+    # Article pages
+    @app.route('/article/llm-self-awareness')
+    def article_llm_self_awareness():
+        return render_template('templates/article_llm_self_awareness.html')
+
+    @app.route('/article/aria-architecture')
+    def article_aria_architecture():
+        return render_template('templates/article_aria_architecture.html')
+
+    @app.route('/article/roundtable-v3')
+    def article_roundtable_v3():
+        return render_template('templates/article_roundtable_v3.html')
+
+    @app.route('/article/aria-entity')
+    def article_aria_entity():
+        return render_template('templates/article_aria_entity.html')
+
+    @app.route('/article/skill-graph')
+    def article_skill_graph():
+        return render_template('templates/article_skill_graph.html')
+
+    @app.route('/feed')
+    def linkedin_feed():
+        return render_template('templates/article_linkedin_feed.html')
+
     # Dynamic route for mission pages
     @app.route('/<path:mission_path>')
     def mission_page(mission_path):

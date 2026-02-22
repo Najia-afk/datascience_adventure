@@ -104,6 +104,22 @@ if [ -d "$LOCAL_STATIC_DIR/logos" ]; then
     echo "✅ Copied logos from $LOCAL_STATIC_DIR/logos/"
 fi
 
+# Copy image files (project screenshots, etc.)
+if [ -d "$LOCAL_STATIC_DIR/images" ]; then
+    sudo mkdir -p "$WWW_DIR/images"
+    sudo cp -r "$LOCAL_STATIC_DIR/images/"* "$WWW_DIR/images/" 2>/dev/null || true
+    sudo chmod -R 755 "$WWW_DIR/images/"
+    echo "✅ Copied images from $LOCAL_STATIC_DIR/images/"
+fi
+
+# Copy article files
+if [ -d "$LOCAL_STATIC_DIR/articles" ]; then
+    sudo mkdir -p "$WWW_DIR/articles"
+    sudo cp -r "$LOCAL_STATIC_DIR/articles/"* "$WWW_DIR/articles/" 2>/dev/null || true
+    sudo chmod -R 755 "$WWW_DIR/articles/"
+    echo "✅ Copied articles from $LOCAL_STATIC_DIR/articles/"
+fi
+
 # Copy HTML files
 if [ -f "$LOCAL_STATIC_DIR/404.html" ]; then
     sudo cp "$LOCAL_STATIC_DIR/404.html" "$WWW_DIR/"

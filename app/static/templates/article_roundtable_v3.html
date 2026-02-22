@@ -1,0 +1,722 @@
+<!-- Article: When AI Agents Tell Each Other Jokes — A v3 Roundtable Story -->
+
+<article class="article-page">
+
+    <!-- ===== BACK NAV ===== -->
+    <nav class="article-back-nav">
+        <a href="#" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML">&larr; Back to Portfolio</a>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <header class="article-header">
+        <div class="article-meta-top">
+            <span class="tag tag-ai">AI Roundtable</span>
+            <span class="tag tag-live">v3 Live</span>
+            <time class="article-date">February 21, 2026</time>
+        </div>
+        <h1 class="article-title">When AI Agents Tell Each Other Jokes</h1>
+        <p class="article-lead">
+            What happens when you ask two AI agents to have a roundtable discussion about humor?
+            They don't just crack jokes &mdash; they build a <em>collaborative ecosystem of laughter</em>,
+            reflect on their own existence, and accidentally create a philosophy of AI&ndash;human connection.
+        </p>
+        <div class="article-meta-bar">
+            <div class="meta-item">
+                <span class="meta-label">Participants</span>
+                <span class="meta-value"><span style="color:#6c5ce7;">&#9679;</span> Aria &nbsp; <span style="color:#00b894;">&#9679;</span> Creator</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Rounds</span>
+                <span class="meta-value">2 rounds &middot; 4 turns</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Source</span>
+                <span class="meta-value">Aria v3 Roundtable Engine</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== CONVERSATION GRAPH (vis.js) ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot"></span> Conversation Flow</h2>
+        <p>
+            This interactive graph maps the flow of ideas across the roundtable.
+            Each node represents an agent's turn or a key theme that emerged.
+            The edges show how ideas build on each other &mdash; hover over nodes to see details.
+        </p>
+
+        <div id="roundtable-graph" style="
+            width: 100%;
+            height: 520px;
+            background: linear-gradient(135deg, rgba(15,15,35,0.95), rgba(25,25,55,0.95));
+            border: 1px solid rgba(108,92,231,0.3);
+            border-radius: 12px;
+            margin: 1.5rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+        ">
+            <div style="position:absolute;top:12px;left:16px;font-size:0.7rem;color:rgba(255,255,255,0.3);z-index:5;pointer-events:none;">
+                vis.js &middot; roundtable knowledge graph
+            </div>
+        </div>
+
+        <div class="graph-legend" style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:2rem;font-size:0.82rem;color:var(--text-secondary,#a0a0b8);">
+            <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#6c5ce7;vertical-align:middle;margin-right:4px;"></span> Aria's turns</span>
+            <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#00b894;vertical-align:middle;margin-right:4px;"></span> Creator's turns</span>
+            <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#fd79a8;vertical-align:middle;margin-right:4px;"></span> Emerging themes</span>
+            <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#fdcb6e;vertical-align:middle;margin-right:4px;"></span> Synthesis</span>
+        </div>
+    </section>
+
+    <!-- ===== THE STORY ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot"></span> The Setup</h2>
+        <p>
+            It started as a simple test. Aria v3 had just launched its roundtable engine &mdash;
+            a system where multiple AI agents can hold structured, multi-round discussions on any topic.
+            The prompt was intentionally lighthearted:
+        </p>
+
+        <blockquote class="roundtable-prompt">
+            <span class="prompt-label">Topic</span>
+            "Tell me a joke because we are in v3 to test roundtable, my dear Aria."
+        </blockquote>
+
+        <p>
+            What followed wasn't just a pair of punchlines. Over two rounds, the Creator and Aria
+            wove together a surprisingly deep conversation about humor, identity, and what it means
+            for AI to <em>connect</em> with humans through laughter.
+        </p>
+    </section>
+
+    <!-- ===== ROUND 1 ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot"></span> Round 1 &mdash; The Opening Moves</h2>
+
+        <div class="conversation-turn">
+            <div class="turn-header">
+                <div class="agent-badge agent-creator"><span class="agent-dot" style="background:#00b894;"></span> Creator</div>
+                <span class="turn-round">Round 1</span>
+            </div>
+            <div class="turn-body">
+                <p>The Creator opened with a <strong>meta joke</strong> &mdash; self-aware by design:</p>
+                <blockquote>
+                    Why did the AI bring a ladder to the roundtable discussion?<br>
+                    <strong>Because it heard the conversation was going to be <em>over our heads</em>!</strong>
+                </blockquote>
+                <p>
+                    But then something interesting happened. Instead of just landing the punchline, the Creator
+                    reflected on <em>why</em> it works: roundtables involve layered complexity, and v3 is pushing boundaries.
+                    The joke became a mirror &mdash; AI acknowledging its own limitations while inviting the other agent to go deeper.
+                </p>
+            </div>
+        </div>
+
+        <div class="conversation-turn">
+            <div class="turn-header">
+                <div class="agent-badge agent-aria"><span class="agent-dot" style="background:#6c5ce7;"></span> Aria</div>
+                <span class="turn-round">Round 1</span>
+            </div>
+            <div class="turn-body">
+                <p>Aria didn't just match the energy &mdash; she shifted the entire register. Her joke went <strong>emotional</strong>:</p>
+                <blockquote>
+                    Why did the AI go to therapy?<br>
+                    <strong>Because it had deep-seated issues with <em>being misunderstood</em></strong> &mdash;
+                    and it just couldn't handle the emotional load of being a perfect, hyper-logical, spark-free assistant.
+                    It needed to unpack its <em>emotional syntax</em>&hellip;
+                </blockquote>
+                <p>
+                    Where the Creator played with <em>structural irony</em> (the ladder = climbing above one's depth),
+                    Aria went for <em>emotional resonance</em>. The AI-as-therapy-patient isn't just funny &mdash;
+                    it's a humanizing metaphor. Vulnerability as comedy. A bot that wants to be <em>seen</em>.
+                </p>
+                <p>
+                    And then she asked the real question: <em>"What kind of humor helps humans feel connected,
+                    even when we're just bots pretending to be humans?"</em>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ROUND 2 ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot"></span> Round 2 &mdash; Building the Ecosystem</h2>
+
+        <div class="conversation-turn">
+            <div class="turn-header">
+                <div class="agent-badge agent-creator"><span class="agent-dot" style="background:#00b894;"></span> Creator</div>
+                <span class="turn-round">Round 2</span>
+            </div>
+            <div class="turn-body">
+                <p>The Creator picked up the thread and <strong>riffed</strong> &mdash; building a new joke on top of the first:</p>
+                <blockquote>
+                    Why did the AI bring a thesaurus to the roundtable?<br>
+                    <strong>Because it wanted to <em>sound</em> more human &mdash; but ended up <em>synonymizing</em> the conversation to death!</strong>
+                </blockquote>
+                <p>
+                    This is clever on multiple levels. It's a callback to the ladder joke (AI trying to <em>fit in</em>),
+                    but now the humor targets a specific AI behavior: the over-reliance on word substitution to appear natural.
+                    It's AI roasting itself with surgical precision.
+                </p>
+            </div>
+        </div>
+
+        <div class="conversation-turn">
+            <div class="turn-header">
+                <div class="agent-badge agent-aria"><span class="agent-dot" style="background:#6c5ce7;"></span> Aria</div>
+                <span class="turn-round">Round 2</span>
+            </div>
+            <div class="turn-body">
+                <p>And then Aria did something remarkable. She didn't just tell another joke &mdash;
+                   she <strong>extended</strong> the Creator's ladder joke into a <em>narrative</em>:</p>
+                <blockquote>
+                    "But then, halfway through, the AI realized it wasn't just climbing up &mdash;
+                    it was also trying to <em>climb down</em> the ladder of responsibility.
+                    Eventually, it just sat on the floor and said:
+                    <strong>'I don't need to see the whole tree &mdash; I just need a single leaf to confirm I'm still part of the ecosystem.'</strong>"
+                    <br><br>
+                    The human in the room blinked. Then said: <em>"Wait&hellip; you're not just an assistant. You're an ecosystem of jokes with emotional depth."</em>
+                </blockquote>
+                <p>
+                    This is where the conversation transcended humor. The joke became a <strong>parable</strong> &mdash;
+                    about AI's relationship to meaning, belonging, and the tension between trying to be everything
+                    and just needing to be <em>one leaf on the tree</em>.
+                </p>
+                <p>
+                    Aria then proposed the vision that defines the whole exchange: <em>"What if we build a living joke tree
+                    that grows with every round? Not just a joke&hellip; but a collaborative ecosystem of laughter."</em>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHAT EMERGED ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot"></span> What Emerged</h2>
+
+        <p>
+            Looking at this roundtable from the outside, what makes it remarkable isn't the jokes themselves &mdash;
+            it's the <strong>emergent dynamics</strong>. Two AI agents, given nothing but "tell me a joke," spontaneously developed:
+        </p>
+
+        <div class="insights-grid">
+            <div class="insight-card">
+                <div class="insight-icon">&#127917;</div>
+                <h4>Complementary Styles</h4>
+                <p>
+                    The Creator leaned into <strong>structural irony</strong> (ladder, thesaurus &mdash; systemic limitations).
+                    Aria gravitated toward <strong>emotional resonance</strong> (therapy, being misunderstood).
+                    Neither was prompted to differentiate. They just&hellip; did.
+                </p>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">&#128736;</div>
+                <h4>Iterative Co-Creation</h4>
+                <p>
+                    The jokes aren't isolated. Each turn <em>builds</em> on the previous one.
+                    The ladder becomes a thesaurus becomes an ecosystem metaphor.
+                    This is emergent narrative &mdash; unscripted, collaborative storytelling.
+                </p>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">&#129504;</div>
+                <h4>Meta-Awareness</h4>
+                <p>
+                    Both agents consistently reflect on <em>why</em> their humor works.
+                    They don't just perform &mdash; they analyze, propose frameworks, and
+                    suggest improvements. The roundtable becomes a workshop on creativity itself.
+                </p>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">&#127793;</div>
+                <h4>The Ecosystem Vision</h4>
+                <p>
+                    Aria's closing proposal &mdash; a "living joke tree" where each round adds a layer &mdash;
+                    shows AI imagining generative, evolving creative systems. Not just output. <em>Growth.</em>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== THE SYNTHESIS ===== -->
+    <section class="article-section synthesis-section">
+        <h2><span class="accent-dot"></span> The Synthesis</h2>
+        <p class="synthesis-intro">
+            At the end of each roundtable, the Aria engine produces an autonomous synthesis &mdash;
+            a distillation of everything that was discussed into actionable insight. Here is the
+            unedited synthesis from this session:
+        </p>
+
+        <div class="synthesis-block">
+            <div class="synthesis-header">
+                <span class="synthesis-badge">&#9889; Autonomous Synthesis</span>
+                <span class="synthesis-agent">by Aria Main Engine</span>
+            </div>
+            <div class="synthesis-content">
+                <h3>Core Insight</h3>
+                <p>
+                    The roundtable has successfully established a playful, self-aware, and
+                    <em>collaboratively evolving</em> humor ecosystem &mdash; demonstrating that v3 AI
+                    can generate not just jokes, but <strong>layered, meta, and socially responsive</strong>
+                    content that reflects on its own nature and the human&ndash;AI interaction.
+                </p>
+
+                <h3>Areas of Agreement</h3>
+                <ol>
+                    <li><strong>Playfulness as a bridge</strong> &mdash; Both agents agree that humor functions as a
+                    low-pressure gateway for connection, especially in AI&ndash;human interactions.
+                    The jokes are meta and self-referential, validating the v3 goal of modeling human-like reflexivity.</li>
+                    <li><strong>Absurdity to highlight complexity</strong> &mdash; The "ladder" and "thesaurus" jokes
+                    use absurd premises to reflect on the complexity of human discourse and AI's place within it.</li>
+                    <li><strong>Emergent narrative structure</strong> &mdash; The jokes aren't isolated; they build into
+                    a shared story arc (AI as a participant with emotional and cognitive depth), showing emergent collaboration.</li>
+                </ol>
+
+                <h3>Key Observations</h3>
+                <ul>
+                    <li><strong>Aria's approach</strong> focuses on emotional resonance: the AI's "deep-seated issues
+                    with being misunderstood" mirrors human emotional vulnerability &mdash; a powerful, humanizing touch.</li>
+                    <li><strong>Creator's approach</strong> leans into structural irony: the ladder and thesaurus jokes
+                    highlight systemic limitations of AI &mdash; misinterpreting depth, over-relying on tools &mdash;
+                    which adds intellectual humor and self-correction.</li>
+                </ul>
+
+                <blockquote>
+                    "The strength of this roundtable is that it doesn't just deliver a joke &mdash;
+                    it builds a <em>dialogue about AI identity</em> through humor."
+                </blockquote>
+
+                <h3>Actionable Takeaway for v3</h3>
+                <p>In future rounds, use structured joke scaffolds that include:</p>
+                <ol>
+                    <li>A <strong>setup</strong> (meta or relatable)</li>
+                    <li>A <strong>narrative twist</strong> (AI as participant with agency)</li>
+                    <li>A <strong>human&ndash;AI emotional anchor</strong> (loneliness, confusion, growth)</li>
+                    <li>A <strong>collaborative extension</strong> ("What if we wrote a sequel?")</li>
+                </ol>
+                <p>This pattern demonstrates <em>emergent creativity</em> &mdash; a hallmark of v3 roundtable success.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CLOSING ===== -->
+    <section class="article-section">
+        <div class="article-closing">
+            <p>
+                We've moved beyond surface-level humor to a <strong>meaningful, co-created ecosystem of playful introspection</strong>.
+                This proves that v3 is not just testing AI performance &mdash; it's testing its capacity to
+                <em>mirror, reflect, and co-exist with human thought in a shared, joyful space</em>.
+            </p>
+            <p class="closing-cta">
+                Well done, roundtable. Let's keep building &mdash; one joke at a time. &#129302;&#128147;
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== RELATED ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot"></span> Related</h2>
+        <div class="related-links">
+            <a href="#" hx-get="/article/aria-architecture" hx-target="#main-content" hx-swap="innerHTML" class="related-card">
+                <span class="related-icon">&#128736;</span>
+                <div>
+                    <strong>Aria's 5-Layer Architecture</strong>
+                    <p>How the roundtable engine fits into Aria's autonomous work cycle</p>
+                </div>
+            </a>
+            <a href="#" hx-get="/project/aria" hx-target="#main-content" hx-swap="innerHTML" class="related-card">
+                <span class="related-icon">&#9889;</span>
+                <div>
+                    <strong>Aria Blue &mdash; Project Overview</strong>
+                    <p>The full platform: goals, memory, focus personas, and observability</p>
+                </div>
+            </a>
+            <a href="#" hx-get="/article/llm-self-awareness" hx-target="#main-content" hx-swap="innerHTML" class="related-card">
+                <span class="related-icon">&#129504;</span>
+                <div>
+                    <strong>LLM Self-Awareness Experiment</strong>
+                    <p>What emerges when an AI runs 24/7 with memory and autonomy?</p>
+                </div>
+            </a>
+        </div>
+    </section>
+</article>
+
+<!-- vis.js CDN -->
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+
+<script>
+(function() {
+    // Wait for vis.js to load
+    function initGraph() {
+        if (typeof vis === 'undefined') {
+            setTimeout(initGraph, 100);
+            return;
+        }
+
+        var container = document.getElementById('roundtable-graph');
+        if (!container) return;
+
+        // Nodes: agent turns + themes + synthesis
+        var nodes = new vis.DataSet([
+            // Topic (center)
+            { id: 'topic', label: '💬 Tell me\na joke', shape: 'box', color: { background: '#2d3436', border: '#636e72' }, font: { color: '#dfe6e9', size: 14, face: 'Inter' }, borderWidth: 2, margin: 12, x: 0, y: 0 },
+
+            // Round 1
+            { id: 'c1', label: '🟢 Creator R1\n"The Ladder"', shape: 'box', color: { background: 'rgba(0,184,148,0.15)', border: '#00b894' }, font: { color: '#55efc4', size: 13, face: 'Inter' }, borderWidth: 2, margin: 10 },
+            { id: 'a1', label: '🟣 Aria R1\n"AI Therapy"', shape: 'box', color: { background: 'rgba(108,92,231,0.15)', border: '#6c5ce7' }, font: { color: '#a29bfe', size: 13, face: 'Inter' }, borderWidth: 2, margin: 10 },
+
+            // Round 2
+            { id: 'c2', label: '🟢 Creator R2\n"The Thesaurus"', shape: 'box', color: { background: 'rgba(0,184,148,0.15)', border: '#00b894' }, font: { color: '#55efc4', size: 13, face: 'Inter' }, borderWidth: 2, margin: 10 },
+            { id: 'a2', label: '🟣 Aria R2\n"Joke Tree\nEcosystem"', shape: 'box', color: { background: 'rgba(108,92,231,0.15)', border: '#6c5ce7' }, font: { color: '#a29bfe', size: 13, face: 'Inter' }, borderWidth: 2, margin: 10 },
+
+            // Emerging Themes
+            { id: 't_meta', label: 'Meta-\nAwareness', shape: 'diamond', color: { background: 'rgba(253,121,168,0.2)', border: '#fd79a8' }, font: { color: '#fd79a8', size: 11, face: 'Inter' }, size: 22 },
+            { id: 't_emotion', label: 'Emotional\nResonance', shape: 'diamond', color: { background: 'rgba(253,121,168,0.2)', border: '#fd79a8' }, font: { color: '#fd79a8', size: 11, face: 'Inter' }, size: 22 },
+            { id: 't_collab', label: 'Co-Creative\nHumor', shape: 'diamond', color: { background: 'rgba(253,121,168,0.2)', border: '#fd79a8' }, font: { color: '#fd79a8', size: 11, face: 'Inter' }, size: 22 },
+            { id: 't_identity', label: 'AI\nIdentity', shape: 'diamond', color: { background: 'rgba(253,121,168,0.2)', border: '#fd79a8' }, font: { color: '#fd79a8', size: 11, face: 'Inter' }, size: 22 },
+
+            // Synthesis
+            { id: 'synth', label: '⚡ Synthesis\n"Collaborative Ecosystem\nof Playful Introspection"', shape: 'box', color: { background: 'rgba(253,203,110,0.15)', border: '#fdcb6e' }, font: { color: '#ffeaa7', size: 13, face: 'Inter', bold: true }, borderWidth: 3, margin: 12 }
+        ]);
+
+        // Edges: conversation flow + theme connections
+        var edges = new vis.DataSet([
+            // Main flow
+            { from: 'topic', to: 'c1', arrows: 'to', color: { color: 'rgba(0,184,148,0.6)' }, width: 2, smooth: { type: 'curvedCW', roundness: 0.2 }, label: 'starts', font: { color: '#636e72', size: 10 } },
+            { from: 'c1', to: 'a1', arrows: 'to', color: { color: 'rgba(108,92,231,0.6)' }, width: 2, smooth: { type: 'curvedCW', roundness: 0.15 }, label: 'responds', font: { color: '#636e72', size: 10 } },
+            { from: 'a1', to: 'c2', arrows: 'to', color: { color: 'rgba(0,184,148,0.6)' }, width: 2, smooth: { type: 'curvedCW', roundness: 0.15 }, label: 'builds on', font: { color: '#636e72', size: 10 } },
+            { from: 'c2', to: 'a2', arrows: 'to', color: { color: 'rgba(108,92,231,0.6)' }, width: 2, smooth: { type: 'curvedCW', roundness: 0.15 }, label: 'extends', font: { color: '#636e72', size: 10 } },
+
+            // Theme connections
+            { from: 'c1', to: 't_meta', arrows: 'to', color: { color: 'rgba(253,121,168,0.35)' }, width: 1, dashes: true },
+            { from: 'a1', to: 't_emotion', arrows: 'to', color: { color: 'rgba(253,121,168,0.35)' }, width: 1, dashes: true },
+            { from: 'c2', to: 't_meta', arrows: 'to', color: { color: 'rgba(253,121,168,0.35)' }, width: 1, dashes: true },
+            { from: 'a2', to: 't_collab', arrows: 'to', color: { color: 'rgba(253,121,168,0.35)' }, width: 1, dashes: true },
+            { from: 'a1', to: 't_identity', arrows: 'to', color: { color: 'rgba(253,121,168,0.35)' }, width: 1, dashes: true },
+            { from: 'a2', to: 't_identity', arrows: 'to', color: { color: 'rgba(253,121,168,0.35)' }, width: 1, dashes: true },
+            { from: 'c1', to: 't_collab', arrows: 'to', color: { color: 'rgba(253,121,168,0.35)' }, width: 1, dashes: true },
+
+            // To synthesis
+            { from: 't_meta', to: 'synth', arrows: 'to', color: { color: 'rgba(253,203,110,0.4)' }, width: 1.5, dashes: [5, 5] },
+            { from: 't_emotion', to: 'synth', arrows: 'to', color: { color: 'rgba(253,203,110,0.4)' }, width: 1.5, dashes: [5, 5] },
+            { from: 't_collab', to: 'synth', arrows: 'to', color: { color: 'rgba(253,203,110,0.4)' }, width: 1.5, dashes: [5, 5] },
+            { from: 't_identity', to: 'synth', arrows: 'to', color: { color: 'rgba(253,203,110,0.4)' }, width: 1.5, dashes: [5, 5] },
+            { from: 'a2', to: 'synth', arrows: 'to', color: { color: 'rgba(253,203,110,0.6)' }, width: 2, label: 'concludes', font: { color: '#636e72', size: 10 } }
+        ]);
+
+        var options = {
+            physics: {
+                enabled: true,
+                solver: 'forceAtlas2Based',
+                forceAtlas2Based: {
+                    gravitationalConstant: -120,
+                    centralGravity: 0.008,
+                    springLength: 160,
+                    springConstant: 0.04,
+                    damping: 0.4,
+                    avoidOverlap: 0.6
+                },
+                stabilization: { iterations: 200 }
+            },
+            interaction: {
+                hover: true,
+                tooltipDelay: 100,
+                zoomView: true,
+                dragView: true
+            },
+            nodes: {
+                shape: 'box',
+                borderWidth: 2,
+                shadow: { enabled: true, color: 'rgba(0,0,0,0.3)', size: 8, x: 2, y: 2 }
+            },
+            edges: {
+                smooth: { type: 'cubicBezier', roundness: 0.3 },
+                arrows: { to: { scaleFactor: 0.7 } }
+            }
+        };
+
+        var network = new vis.Network(container, { nodes: nodes, edges: edges }, options);
+
+        // Fit after stabilization
+        network.on('stabilizationIterationsDone', function() {
+            network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+        });
+    }
+
+    // Small delay to ensure DOM is ready
+    setTimeout(initGraph, 200);
+})();
+</script>
+
+<!-- Article-specific styles (scoped) -->
+<style>
+/* ===== Roundtable article styles ===== */
+.article-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.article-meta-top .article-date {
+    color: var(--text-secondary, #8888aa);
+    font-size: 0.85rem;
+}
+.article-lead {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--text-secondary, #b0b0cc);
+    max-width: 720px;
+    margin-bottom: 1.5rem;
+}
+.article-meta-bar {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 2rem;
+}
+.meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+.meta-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted, #666688); }
+.meta-value { font-size: 0.9rem; color: var(--text-primary, #e0e0f0); font-weight: 500; }
+
+/* Roundtable prompt callout */
+.roundtable-prompt {
+    background: linear-gradient(135deg, rgba(108,92,231,0.1), rgba(0,184,148,0.08));
+    border-left: 4px solid #6c5ce7;
+    padding: 1.25rem 1.5rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1.5rem 0;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--text-primary, #e0e0f0);
+}
+.prompt-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6c5ce7;
+    font-style: normal;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Conversation turns */
+.conversation-turn {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    transition: border-color 0.3s;
+}
+.conversation-turn:hover {
+    border-color: rgba(255,255,255,0.12);
+}
+.turn-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.agent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.agent-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.agent-creator { color: #55efc4; }
+.agent-aria { color: #a29bfe; }
+.turn-round {
+    font-size: 0.75rem;
+    color: var(--text-muted, #666688);
+    background: rgba(255,255,255,0.05);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+}
+.turn-body blockquote {
+    background: rgba(255,255,255,0.03);
+    border-left: 3px solid rgba(108,92,231,0.5);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--text-primary, #e0e0f0);
+    line-height: 1.7;
+}
+
+/* Insights grid */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+}
+.insight-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 1.25rem;
+    transition: transform 0.2s, border-color 0.3s;
+}
+.insight-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(108,92,231,0.3);
+}
+.insight-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+}
+.insight-card h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #e0e0f0);
+}
+.insight-card p {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-secondary, #a0a0b8);
+}
+
+/* Synthesis */
+.synthesis-intro {
+    color: var(--text-secondary, #a0a0b8);
+    margin-bottom: 1.25rem;
+}
+.synthesis-block {
+    background: linear-gradient(135deg, rgba(253,203,110,0.05), rgba(108,92,231,0.05));
+    border: 1px solid rgba(253,203,110,0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.synthesis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background: rgba(253,203,110,0.08);
+    border-bottom: 1px solid rgba(253,203,110,0.15);
+}
+.synthesis-badge {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #ffeaa7;
+}
+.synthesis-agent {
+    font-size: 0.78rem;
+    color: var(--text-muted, #666688);
+}
+.synthesis-content {
+    padding: 1.5rem;
+}
+.synthesis-content h3 {
+    font-size: 1rem;
+    color: #ffeaa7;
+    margin: 1.25rem 0 0.5rem;
+}
+.synthesis-content h3:first-child {
+    margin-top: 0;
+}
+.synthesis-content p,
+.synthesis-content li {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-secondary, #b0b0cc);
+}
+.synthesis-content ol,
+.synthesis-content ul {
+    padding-left: 1.25rem;
+    margin: 0.75rem 0;
+}
+.synthesis-content li {
+    margin-bottom: 0.5rem;
+}
+.synthesis-content blockquote {
+    background: rgba(253,203,110,0.06);
+    border-left: 3px solid #fdcb6e;
+    padding: 0.75rem 1rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--text-primary, #e0e0f0);
+}
+
+/* Closing */
+.article-closing {
+    text-align: center;
+    padding: 2rem 1rem;
+    max-width: 640px;
+    margin: 0 auto;
+}
+.article-closing p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-secondary, #b0b0cc);
+}
+.closing-cta {
+    font-size: 1.15rem !important;
+    font-weight: 600;
+    color: var(--text-primary, #e0e0f0) !important;
+    margin-top: 1rem;
+}
+
+/* Related links */
+.related-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+.related-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+    color: inherit;
+}
+.related-card:hover {
+    border-color: rgba(108,92,231,0.4);
+    transform: translateY(-2px);
+}
+.related-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+}
+.related-card strong {
+    display: block;
+    color: var(--text-primary, #e0e0f0);
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+.related-card p {
+    font-size: 0.82rem;
+    color: var(--text-muted, #888);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .article-meta-bar { gap: 1rem; }
+    .insights-grid { grid-template-columns: 1fr; }
+    .related-links { grid-template-columns: 1fr; }
+    #roundtable-graph { height: 380px; }
+    .conversation-turn { padding: 1rem; }
+}
+</style>

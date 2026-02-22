@@ -1,69 +1,270 @@
-<header class="project-header">
-    <h1>Data Scientist Training</h1>
-    <p>A collection of data science projects and missions.</p>
-</header>
-
-<div class="grid-container">
-    <article class="card">
-        <h3>Mission 2: World Bank Educational Data Analysis</h3>
-        <p class="text-light">September, 2024</p>
-        <p>Academy EdTech eLearning platform would like to expand its activities...</p>
-        <div class="card-footer">
-            <a href="#" hx-get="/mission2" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+<!-- ==================== HERO SECTION ==================== -->
+<section class="hero-section">
+    <div class="hero-content">
+        <div class="hero-badge">Data Scientist &middot; AI Engineer &middot; Full-Stack Builder</div>
+        <h1 class="hero-title">Building <span class="text-gradient">Intelligent Systems</span><br>From Data to Production</h1>
+        <p class="hero-subtitle">
+            I design and ship end-to-end ML pipelines, autonomous AI agents, and production-grade data platforms.
+            From exploratory analysis to Dockerized microservices &mdash; this is my adventure.
+        </p>
+        <div class="hero-actions">
+            <a href="#featured-projects" class="btn btn-primary btn-lg" onclick="document.getElementById('featured-projects').scrollIntoView({behavior:'smooth'});return false;">Explore Projects</a>
+            <a href="#" hx-get="/contact" hx-target="#main-content" hx-swap="innerHTML" class="btn btn-outline btn-lg">Get in Touch</a>
         </div>
-    </article>
-
-    <article class="card">
-        <h3>Mission 3: Nutriscore Correlations Analysis</h3>
-        <p class="text-light">February 13, 2025</p>
-        <p>The Public Health Agency wishes to improve the quality of Open Food Facts data...</p>
-        <div class="card-footer">
-            <a href="#" hx-get="/mission3" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <span class="stat-number">10+</span>
+                <span class="stat-label">Projects</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">3</span>
+                <span class="stat-label">Production Apps</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Aria Running</span>
+            </div>
         </div>
-    </article>
+    </div>
+</section>
 
-    <article class="card">
-        <h3>Mission 4: Energyscore Supervised Forecasting</h3>
-        <p class="text-light">March 07, 2025</p>
-        <p>Building Energy Consumption Prediction for Seattle...</p>
-        <div class="card-footer">
-            <a href="#" hx-get="/mission4" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
-        </div>
-    </article>
+<!-- ==================== FEATURED PROJECTS ==================== -->
+<section id="featured-projects" class="section-block">
+    <div class="section-header">
+        <h2 class="section-title"><span class="accent-dot"></span> Featured Projects</h2>
+        <p class="section-subtitle">Flagship builds &mdash; from autonomous AI to blockchain forensics</p>
+    </div>
 
-    <article class="card">
-        <h3>Mission 5: Client Segmentation Unsupervised Analysis</h3>
-        <p class="text-light">May 25, 2025</p>
-        <p>Olist E-commerce would like several dashboards for its customer segmentation...</p>
-        <div class="card-footer">
-            <a href="#" hx-get="/mission5" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
-        </div>
-    </article>
+    <div class="featured-grid">
+        <!-- ARIA BLUE -->
+        <article class="featured-card featured-card-large">
+            <div class="featured-card-image">
+                <img src="/images/aria/aria_blue_the_autonomous_ai_ceo_platform.png" alt="Aria Blue Platform" loading="lazy">
+                <div class="featured-card-overlay">
+                    <span class="tag tag-live">LIVE 24/7</span>
+                    <span class="tag tag-ai">AI Agent</span>
+                </div>
+            </div>
+            <div class="featured-card-body">
+                <h3>Aria Blue &mdash; Autonomous AI Agent Platform</h3>
+                <p class="text-light">February 2026</p>
+                <p>An autonomous AI agent that thinks like a CEO: analyzes tasks, delegates to specialized focus personas, runs parallel roundtable discussions, and synthesizes results &mdash; all on a self-driven 24/7 work cycle with goal tracking, persistent memory, and full observability.</p>
+                <div class="tech-tags">
+                    <span class="tech-tag">Python 3.13</span>
+                    <span class="tech-tag">FastAPI</span>
+                    <span class="tech-tag">PostgreSQL</span>
+                    <span class="tech-tag">Docker</span>
+                    <span class="tech-tag">LiteLLM</span>
+                    <span class="tech-tag">Prometheus</span>
+                    <span class="tech-tag">Grafana</span>
+                </div>
+                <div class="card-footer">
+                    <a href="#" hx-get="/project/aria" hx-target="#main-content" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+                    <a href="https://github.com/Najia-afk/Aria_moltbot" target="_blank" class="btn btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </article>
 
-    <article class="card">
-        <h3>Mission 6: Feasibility Study of Product Classification Engine</h3>
-        <p class="text-light">November 13, 2025</p>
-        <p>Evaluate the feasibility of automatic product classification using text...</p>
-        <div class="card-footer">
-            <a href="#" hx-get="/mission6" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
-        </div>
-    </article>
+        <!-- BUBBLE -->
+        <article class="featured-card featured-card-large">
+            <div class="featured-card-image">
+                <img src="/images/aria/aria_knowledge_graph.png" alt="Bubble Analytics" loading="lazy">
+                <div class="featured-card-overlay">
+                    <span class="tag tag-prod">Production</span>
+                    <span class="tag tag-blockchain">Blockchain</span>
+                </div>
+            </div>
+            <div class="featured-card-body">
+                <h3>Bubble &mdash; Blockchain Investigation Platform</h3>
+                <p class="text-light">January 2026</p>
+                <p>Production-grade blockchain investigation platform for tracking illicit fund flows, managing crypto fraud cases, and monitoring suspicious wallets across multiple EVM networks. Features interactive graph exploration, Sankey diagrams, and real-time wallet monitoring.</p>
+                <div class="tech-tags">
+                    <span class="tech-tag">Flask</span>
+                    <span class="tech-tag">SQLAlchemy</span>
+                    <span class="tech-tag">PostgreSQL</span>
+                    <span class="tech-tag">Celery</span>
+                    <span class="tech-tag">GraphQL</span>
+                    <span class="tech-tag">vis.js</span>
+                    <span class="tech-tag">Docker</span>
+                </div>
+                <div class="card-footer">
+                    <a href="#" hx-get="/project/bubble" hx-target="#main-content" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+                    <a href="https://github.com/Najia-afk/Bubble" target="_blank" class="btn btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
 
-    <article class="card">
-        <h3>Mission 7: Credit Scoring MLOps Platform</h3>
-        <p class="text-light">December 15, 2025</p>
-        <p>Production-grade credit scoring API with full MLOps pipeline, SHAP explainability...</p>
-        <div class="card-footer">
-            <a href="#" hx-get="/mission7" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
-        </div>
-    </article>
+<!-- ==================== LATEST ARTICLES ==================== -->
+<section class="section-block">
+    <div class="section-header">
+        <h2 class="section-title"><span class="accent-dot"></span> Latest Articles</h2>
+        <p class="section-subtitle">Research notes, experiments, and deep dives</p>
+    </div>
 
-    <article class="card">
-        <h3>Mission 8: Deep Context-Aware Networks for Multi-Label Classification</h3>
-        <p class="text-light">January 04, 2026</p>
-        <p>Technical Watch: PanCAN Implementation & Multi-Model Comparison for e-commerce...</p>
-        <div class="card-footer">
-            <a href="#" hx-get="/mission8" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
-        </div>
-    </article>
-</div>
+    <div class="articles-grid">
+        <article class="article-card" onclick="htmx.ajax('GET', '/article/aria-entity', {target:'#main-content', swap:'innerHTML'})">
+            <div class="article-card-image">
+                <img src="/images/aria/aria-profile-v1.png" alt="Aria Agentic Entity" loading="lazy">
+            </div>
+            <div class="article-card-body">
+                <div class="article-meta">
+                    <span class="tag tag-ai">AI Agent</span>
+                    <span class="tag tag-prod">Deep Dive</span>
+                    <span class="article-date">February 2026</span>
+                </div>
+                <h3>Aria Blue &mdash; An Agentic AI Entity</h3>
+                <p>What happens when you give an AI its own goals, persistent memory, a knowledge graph, and the tools to act &mdash; 24 hours a day?</p>
+                <span class="article-read-more">Read Article &rarr;</span>
+            </div>
+        </article>
+
+        <article class="article-card" onclick="htmx.ajax('GET', '/article/skill-graph', {target:'#main-content', swap:'innerHTML'})">
+            <div class="article-card-image">
+                <img src="/images/aria/aria_knowledge_graph.png" alt="Skill Graph" loading="lazy">
+            </div>
+            <div class="article-card-body">
+                <div class="article-meta">
+                    <span class="tag tag-ai">Explainable AI</span>
+                    <span class="tag tag-prod">Knowledge Graph</span>
+                    <span class="article-date">February 2026</span>
+                </div>
+                <h3>How Aria Maps &amp; Navigates Her Own Skills</h3>
+                <p>35 skills, 225 tools, and a graph that connects them all &mdash; how path-finding algorithms turn a flat capability list into an explainable reasoning engine.</p>
+                <span class="article-read-more">Read Article &rarr;</span>
+            </div>
+        </article>
+
+        <article class="article-card" onclick="htmx.ajax('GET', '/article/llm-self-awareness', {target:'#main-content', swap:'innerHTML'})">
+            <div class="article-card-image">
+                <img src="/images/aria/aria_blue_autnomous_ai_ceo.png" alt="LLM Self-Awareness" loading="lazy">
+            </div>
+            <div class="article-card-body">
+                <div class="article-meta">
+                    <span class="tag tag-ai">AI Research</span>
+                    <span class="article-date">February 2026</span>
+                </div>
+                <h3>Where Are LLMs on Self-Awareness, Consciousness, and Memory?</h3>
+                <p>An experiment with Aria Blue &mdash; observing what emerges when an autonomous AI agent runs 24/7 with access to code, memory, browsing, and git.</p>
+                <span class="article-read-more">Read Article &rarr;</span>
+            </div>
+        </article>
+
+        <article class="article-card" onclick="htmx.ajax('GET', '/article/aria-architecture', {target:'#main-content', swap:'innerHTML'})">
+            <div class="article-card-image">
+                <img src="/images/aria/aria_models_usage.png" alt="Aria Architecture" loading="lazy">
+            </div>
+            <div class="article-card-body">
+                <div class="article-meta">
+                    <span class="tag tag-ai">Architecture</span>
+                    <span class="article-date">February 2026</span>
+                </div>
+                <h3>Building an Autonomous AI: Aria's 5-Layer Architecture</h3>
+                <p>How a native Python engine, multi-model routing, and persistent memory combine to create an AI that manages itself like a CEO.</p>
+                <span class="article-read-more">Read Article &rarr;</span>
+            </div>
+        </article>
+
+        <article class="article-card" onclick="htmx.ajax('GET', '/article/roundtable-v3', {target:'#main-content', swap:'innerHTML'})">
+            <div class="article-card-image">
+                <img src="/images/aria/aria_roundtable.png" alt="AI Roundtable" loading="lazy">
+            </div>
+            <div class="article-card-body">
+                <div class="article-meta">
+                    <span class="tag tag-ai">AI Roundtable</span>
+                    <span class="article-date">February 2026</span>
+                </div>
+                <h3>When AI Agents Tell Each Other Jokes</h3>
+                <p>A v3 roundtable where two AI agents build a collaborative ecosystem of laughter, reflect on identity, and accidentally create a philosophy of connection.</p>
+                <span class="article-read-more">Read Article &rarr;</span>
+            </div>
+        </article>
+    </div>
+</section>
+
+<!-- ==================== DATA SCIENCE MISSIONS ==================== -->
+<section class="section-block">
+    <div class="section-header">
+        <h2 class="section-title"><span class="accent-dot"></span> Data Science Missions</h2>
+        <p class="section-subtitle">End-to-end ML projects &mdash; from EDA to deployment</p>
+    </div>
+
+    <div class="grid-container">
+        <article class="card">
+            <div class="card-number">02</div>
+            <h3>World Bank Educational Data Analysis</h3>
+            <p class="text-light">September, 2024</p>
+            <p>Academy EdTech eLearning platform expansion through World Bank educational data exploration and analysis.</p>
+            <div class="card-footer">
+                <a href="#" hx-get="/mission2" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-number">03</div>
+            <h3>Nutriscore Correlations Analysis</h3>
+            <p class="text-light">February 13, 2025</p>
+            <p>Improving Open Food Facts data quality through statistical analysis and correlation studies for the Public Health Agency.</p>
+            <div class="card-footer">
+                <a href="#" hx-get="/mission3" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-number">04</div>
+            <h3>Energy Consumption Forecasting</h3>
+            <p class="text-light">March 07, 2025</p>
+            <p>Building Energy Consumption Prediction for Seattle using supervised learning and feature engineering.</p>
+            <div class="card-footer">
+                <a href="#" hx-get="/mission4" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-number">05</div>
+            <h3>Client Segmentation Analysis</h3>
+            <p class="text-light">May 25, 2025</p>
+            <p>Unsupervised customer segmentation dashboards for Olist E-commerce using clustering and dimensionality reduction.</p>
+            <div class="card-footer">
+                <a href="#" hx-get="/mission5" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-number">06</div>
+            <h3>Product Classification Engine</h3>
+            <p class="text-light">November 13, 2025</p>
+            <p>Feasibility study for automatic product classification using text and image processing with deep learning.</p>
+            <div class="card-footer">
+                <a href="#" hx-get="/mission6" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-number">07</div>
+            <h3>Credit Scoring MLOps Platform</h3>
+            <p class="text-light">December 15, 2025</p>
+            <p>Production-grade credit scoring API with full MLOps pipeline, SHAP explainability, and live dashboard.</p>
+            <div class="card-footer">
+                <a href="#" hx-get="/mission7" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="card-number">08</div>
+            <h3>Deep Context-Aware Networks</h3>
+            <p class="text-light">January 04, 2026</p>
+            <p>PanCAN Implementation &amp; Multi-Model Comparison for e-commerce multi-label classification.</p>
+            <div class="card-footer">
+                <a href="#" hx-get="/mission8" hx-target="body" hx-swap="innerHTML" class="btn btn-primary">View Project</a>
+            </div>
+        </article>
+    </div>
+</section>

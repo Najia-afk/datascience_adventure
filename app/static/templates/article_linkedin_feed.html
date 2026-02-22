@@ -1,0 +1,213 @@
+<!-- ==================== LINKEDIN FEED ==================== -->
+<article class="article-page">
+    <header class="article-header">
+        <div class="article-meta">
+            <span class="tag tag-ai">Social</span>
+            <span class="article-date">February 2026</span>
+        </div>
+        <h1 class="article-title">From the Feed</h1>
+        <p class="article-subtitle">
+            Short-form thoughts, project updates, and behind-the-scenes moments &mdash; straight from LinkedIn.
+        </p>
+    </header>
+
+    <section class="article-body">
+        <style>
+            .linkedin-feed-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr));
+                gap: 2rem;
+                margin: 2rem 0;
+            }
+            .linkedin-card {
+                background: var(--bg-secondary, var(--surface));
+                border: 1px solid var(--border, #1e293b);
+                border-radius: 8px;
+                overflow: hidden;
+                transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            }
+            .linkedin-card:hover {
+                border-color: var(--primary, #00dcff);
+                box-shadow: 0 0 20px rgba(0, 220, 255, 0.08);
+            }
+            .linkedin-card-header {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 1rem 1.25rem 0.5rem;
+            }
+            .linkedin-card-header .li-icon {
+                width: 28px;
+                height: 28px;
+                flex-shrink: 0;
+            }
+            .linkedin-card-label {
+                font-size: 0.8rem;
+                color: var(--text-secondary, var(--text-light));
+                font-weight: 500;
+            }
+            .linkedin-card-label .li-category {
+                display: block;
+                font-size: 0.7rem;
+                color: var(--text-muted, #64748b);
+                margin-top: 2px;
+            }
+            .linkedin-card iframe {
+                width: 100%;
+                border: none;
+                display: block;
+            }
+            .linkedin-section-title {
+                font-size: 1.3rem;
+                color: var(--text-primary, var(--text-main));
+                margin: 3rem 0 0.5rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid var(--border, #1e293b);
+            }
+            .linkedin-section-title:first-of-type {
+                margin-top: 1rem;
+            }
+            .linkedin-section-desc {
+                color: var(--text-muted, #64748b);
+                font-size: 0.9rem;
+                margin-bottom: 1.5rem;
+            }
+            .feed-cta {
+                text-align: center;
+                margin: 3rem 0 1rem;
+                padding: 2rem;
+                background: var(--bg-tertiary, #111820);
+                border: 1px solid var(--border, #1e293b);
+                border-radius: 8px;
+            }
+            .feed-cta p {
+                color: var(--text-secondary, var(--text-light));
+                margin-bottom: 1rem;
+            }
+            .feed-cta a {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #0a66c2;
+                font-weight: 600;
+                text-decoration: none;
+                font-size: 1rem;
+                transition: opacity 0.2s;
+            }
+            .feed-cta a:hover { opacity: 0.8; }
+        </style>
+
+        <!-- ===== PROJECT UPDATES ===== -->
+        <h3 class="linkedin-section-title">🔬 Project Updates</h3>
+        <p class="linkedin-section-desc">Deep dives, milestones, and technical showcases from Aria and Bubble.</p>
+
+        <div class="linkedin-feed-grid">
+            <!-- Aria as PO / Scrum Master -->
+            <div class="linkedin-card">
+                <div class="linkedin-card-header">
+                    <svg class="li-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                    <div class="linkedin-card-label">
+                        Aria Blue &mdash; AI as PO & Scrum Master
+                        <span class="li-category">Agent Autonomy</span>
+                    </div>
+                </div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7428091419321454592" height="633" allowfullscreen></iframe>
+            </div>
+
+            <!-- Skill Graph Path Finding -->
+            <div class="linkedin-card">
+                <div class="linkedin-card-header">
+                    <svg class="li-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                    <div class="linkedin-card-label">
+                        Explainable AI &mdash; Skill Graph Path Finding
+                        <span class="li-category">Knowledge Graph</span>
+                    </div>
+                </div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7428831381859905536" height="595" allowfullscreen></iframe>
+            </div>
+
+            <!-- Knowledge Graph 35 Skills -->
+            <div class="linkedin-card">
+                <div class="linkedin-card-header">
+                    <svg class="li-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                    <div class="linkedin-card-label">
+                        35 Skills, 225 Tools
+                        <span class="li-category">Capability Map</span>
+                    </div>
+                </div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7427852354567266304" height="669" allowfullscreen></iframe>
+            </div>
+
+            <!-- Blockchain / AML -->
+            <div class="linkedin-card">
+                <div class="linkedin-card-header">
+                    <svg class="li-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                    <div class="linkedin-card-label">
+                        Bubble &mdash; Blockchain Investigation
+                        <span class="li-category">AML / Forensics</span>
+                    </div>
+                </div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7426243449047199744" height="642" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- ===== QUICK TAKES ===== -->
+        <h3 class="linkedin-section-title">💬 Quick Takes</h3>
+        <p class="linkedin-section-desc">Shorter posts, reflections, and community engagement.</p>
+
+        <div class="linkedin-feed-grid">
+            <div class="linkedin-card">
+                <div class="linkedin-card-header">
+                    <svg class="li-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                    <div class="linkedin-card-label">
+                        Post
+                        <span class="li-category">Thought</span>
+                    </div>
+                </div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7427475934552702976" height="669" allowfullscreen></iframe>
+            </div>
+
+            <div class="linkedin-card">
+                <div class="linkedin-card-header">
+                    <svg class="li-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                    <div class="linkedin-card-label">
+                        Post
+                        <span class="li-category">Thought</span>
+                    </div>
+                </div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7426252605527461888" height="669" allowfullscreen></iframe>
+            </div>
+
+            <div class="linkedin-card">
+                <div class="linkedin-card-header">
+                    <svg class="li-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                    <div class="linkedin-card-label">
+                        Post
+                        <span class="li-category">Update</span>
+                    </div>
+                </div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7425317129643712512" height="595" allowfullscreen></iframe>
+            </div>
+
+            <div class="linkedin-card">
+                <div class="linkedin-card-header">
+                    <svg class="li-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                    <div class="linkedin-card-label">
+                        Post
+                        <span class="li-category">Thread</span>
+                    </div>
+                </div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7421280801784385536" height="1068" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- ===== CTA ===== -->
+        <div class="feed-cta">
+            <p>Want to see more? Follow the journey on LinkedIn.</p>
+            <a href="https://www.linkedin.com/in/music-adrien/" target="_blank" rel="noopener">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>
+                Follow on LinkedIn &rarr;
+            </a>
+        </div>
+    </section>
+</article>
