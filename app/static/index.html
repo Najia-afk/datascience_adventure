@@ -60,8 +60,20 @@
 
     <div class="main-wrapper">
         <main id="main-content" class="content-area">
-            <!-- Summary will be dynamically loaded by default -->
+            <!-- Load correct page on direct visits (articles/projects), or summary for home -->
             <div id="default-content" hx-get="/summary" hx-target="#main-content" hx-trigger="load"></div>
+            <script>
+                (function() {
+                    var p = window.location.pathname;
+                    var spa = ['/article/', '/project/', '/feed', '/contact', '/dashboard/'];
+                    for (var i = 0; i < spa.length; i++) {
+                        if (p.indexOf(spa[i]) === 0) {
+                            document.getElementById('default-content').setAttribute('hx-get', p);
+                            break;
+                        }
+                    }
+                })();
+            </script>
         </main>
     </div>
 

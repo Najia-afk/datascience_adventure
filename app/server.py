@@ -126,6 +126,12 @@ def create_app():
             'og_image': 'https://datascience-adventure.xyz/images/aria/aria_knowledge_graph.png',
             'og_type': 'article',
         },
+        '/article/shadows-of-absalom': {
+            'og_title': 'Shadows of Absalom — When AI Agents Play D&D',
+            'og_description': 'What happens when you give an AI engine 35 RPG tools, 4 specialized agents, and a Pathfinder 2e campaign? It builds a living world, runs tactical combat, and remembers everything.',
+            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_roundtable.png',
+            'og_type': 'article',
+        },
     }
 
     def _is_social_crawler():
@@ -221,6 +227,10 @@ def create_app():
     @app.route('/article/skill-graph')
     def article_skill_graph():
         return _render_page_or_fragment('templates/article_skill_graph.html', '/article/skill-graph')
+
+    @app.route('/article/shadows-of-absalom')
+    def article_shadows_of_absalom():
+        return _render_page_or_fragment('templates/article_shadows_of_absalom.html', '/article/shadows-of-absalom')
 
     @app.route('/feed')
     def linkedin_feed():
