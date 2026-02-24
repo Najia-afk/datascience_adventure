@@ -108,6 +108,21 @@
 
     <!-- Footer will be dynamically loaded -->
     <footer id="footer" class="site-footer" hx-get="/footer" hx-target="#footer" hx-trigger="load"></footer>
+
+    <!-- Email obfuscation: assemble mailto links from data attributes so bots can't scrape -->
+    <script>
+        function deobfuscateEmails() {
+            document.querySelectorAll('.obfuscated-email:not([data-deobfuscated])').forEach(function(el) {
+                var addr = el.dataset.name + '@' + el.dataset.domain;
+                el.href = 'mail' + 'to:' + addr;
+                el.setAttribute('data-deobfuscated', '1');
+                var txt = el.querySelector('.obfuscated-email-text');
+                if (txt) txt.textContent = addr;
+            });
+        }
+        document.addEventListener('DOMContentLoaded', deobfuscateEmails);
+        document.body.addEventListener('htmx:afterSettle', deobfuscateEmails);
+    </script>
 </body>
 </html>
 
