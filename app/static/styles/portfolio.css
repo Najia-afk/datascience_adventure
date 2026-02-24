@@ -249,6 +249,20 @@
     transform: scale(1.05);
 }
 
+.featured-card-svg-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 50%, rgba(0, 220, 255, 0.06) 0%, transparent 70%);
+}
+
+.featured-card:hover .featured-card-svg-wrapper svg {
+    transform: scale(1.05);
+    transition: transform 0.4s ease;
+}
+
 .featured-card-overlay {
     position: absolute;
     top: 1rem;
@@ -793,6 +807,105 @@
     font-family: var(--font-mono);
     font-size: 0.85em;
     color: var(--primary-light);
+}
+
+/* Article tables */
+.article-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+.article-section thead {
+    background: var(--bg-tertiary);
+}
+
+.article-section thead tr {
+    border-bottom: 2px solid var(--primary);
+    text-align: left;
+}
+
+.article-section th {
+    padding: 0.75rem;
+    color: var(--text-primary);
+    text-align: left;
+    font-weight: 600;
+}
+
+.article-section td {
+    padding: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.article-section tr {
+    border-bottom: 1px solid var(--border);
+}
+
+.article-section a {
+    color: var(--primary);
+}
+
+.article-section th a,
+.article-section td a {
+    color: var(--primary);
+}
+
+/* Article lists */
+.article-section ul,
+.article-section ol {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin: 0.5rem 0 1rem 1.5rem;
+    padding: 0;
+}
+
+.article-section ul {
+    list-style: disc;
+}
+
+.article-section ol {
+    list-style: decimal;
+}
+
+.article-section li {
+    margin-bottom: 0.25rem;
+}
+
+/* Article pre/code blocks */
+.article-section pre {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.article-section pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    white-space: pre;
+}
+
+/* Table wrapper for horizontal scroll */
+.table-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+/* Article link sections (appendix) */
+.article-section .appendix-links ul {
+    line-height: 2;
+}
+
+.article-section .appendix-links a {
+    color: var(--primary);
 }
 
 /* ==================== RESPONSIVE ==================== */

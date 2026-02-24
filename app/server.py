@@ -2,6 +2,7 @@ from flask import Flask, render_template, send_from_directory, abort, request, j
 import os
 import re
 import json
+import time
 import requests
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -77,7 +78,15 @@ def create_app():
     app.config['CONTENT_DIR'] = content_dir
     
     # Session configuration for Google OAuth
-    app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    secret_key = os.environ.get('SECRET_KEY', '')
+    if not secret_key and not os.environ.get('FLASK_DEBUG'):
+        import warnings
+        warnings.warn('SECRET_KEY not set! Using insecure default. Set SECRET_KEY env var in production.', stacklevel=2)
+        secret_key = 'dev-secret-key-DO-NOT-USE-IN-PRODUCTION'
+    app.secret_key = secret_key
+
+    # Cache-bust version: changes on each server restart
+    CACHE_VERSION = str(int(time.time()))
     
     # Allow routes to match with or without trailing slashes
     app.url_map.strict_slashes = False
@@ -146,13 +155,13 @@ def create_app():
         # If it's a social crawler, serve the full page with OG tags
         if _is_social_crawler():
             og['og_url'] = f"https://datascience-adventure.xyz{route_path}"
-            return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, **og)
+            return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, cache_v=CACHE_VERSION, **og)
         # If it's an HTMX request, return the fragment
         if request.headers.get('HX-Request'):
             return render_template(template)
         # Direct browser visit — return full page with OG tags
         og['og_url'] = f"https://datascience-adventure.xyz{route_path}"
-        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, **og)
+        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, cache_v=CACHE_VERSION, **og)
 
     # Route for serving converted script HTML files
     @app.route('/<path:repo>_src/<path:filename>')
@@ -163,7 +172,7 @@ def create_app():
     # Route for main website pages
     @app.route('/')
     def index():
-        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID)
+        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, cache_v=CACHE_VERSION)
 
     @app.route('/favicon.ico')
     def favicon():
@@ -185,10 +194,6 @@ def create_app():
     @app.route('/summary')
     def summary():
         return render_template('templates/summary.html')
-
-    @app.route('/load-home')
-    def load_home():
-        return render_template('templates/home.html')
 
     @app.route('/contact')
     def contact():

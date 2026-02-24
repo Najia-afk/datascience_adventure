@@ -6,9 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ og_title | default('DataScience Adventure — Adrien Music') }}</title>
 
+    <!-- SEO -->
+    <meta name="description" content="{{ og_description | default('Data Scientist & AI Engineer — building intelligent systems from data to production. Autonomous AI agents, ML pipelines, and production-grade platforms.') }}">
+
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="/styles/variables.css?v={{ cache_v }}" as="style">
+    <link rel="preload" href="/styles/base.css?v={{ cache_v }}" as="style">
+    <link rel="preload" href="/styles/layout.css?v={{ cache_v }}" as="style">
 
     <!-- Open Graph -->
     <meta property="og:type" content="{{ og_type | default('website') }}">
@@ -24,24 +32,45 @@
     <meta name="twitter:description" content="{{ og_description | default('Data Scientist & AI Engineer — building intelligent systems from data to production.') }}">
     <meta name="twitter:image" content="{{ og_image | default('https://datascience-adventure.xyz/logos/logo_dsa.png') }}">
 
-    <link rel="stylesheet" href="/styles/variables.css?v=3">
-    <link rel="stylesheet" href="/styles/base.css?v=3">
-    <link rel="stylesheet" href="/styles/layout.css?v=3">
-    <link rel="stylesheet" href="/styles/header.css?v=3">
-    <link rel="stylesheet" href="/styles/footer.css?v=3">
-    <link rel="stylesheet" href="/styles/components.css?v=3">
-    <link rel="stylesheet" href="/styles/sidebar.css?v=3">
-    <link rel="stylesheet" href="/styles/interactive.css?v=3">
-    <link rel="stylesheet" href="/styles/contact.css?v=3">
-    <link rel="stylesheet" href="/styles/portfolio.css?v=3">
-    <link rel="stylesheet" href="/styles/responsive.css?v=3">
+    <link rel="stylesheet" href="/styles/variables.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/base.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/layout.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/header.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/footer.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/components.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/sidebar.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/interactive.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/contact.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/portfolio.css?v={{ cache_v }}">
+    <link rel="stylesheet" href="/styles/responsive.css?v={{ cache_v }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-    <!-- Scroll to top after HTMX content swap -->
+    <!-- Scroll to top after HTMX content swap + error handling -->
     <script>
         document.addEventListener('htmx:afterSwap', function(e) {
             if (e.detail.target.id === 'main-content') {
                 window.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        });
+        document.addEventListener('htmx:responseError', function(e) {
+            var target = e.detail.target;
+            if (target && target.id === 'main-content') {
+                var status = e.detail.xhr ? e.detail.xhr.status : 0;
+                target.innerHTML = '<div style="text-align:center;padding:4rem 2rem;">'
+                    + '<h2 style="color:var(--primary);margin-bottom:1rem;">Something went wrong</h2>'
+                    + '<p style="color:var(--text-light);margin-bottom:2rem;">Could not load the page (HTTP ' + status + '). Please try again.</p>'
+                    + '<a href="/" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML" class="btn btn-primary">Back to Home</a>'
+                    + '</div>';
+            }
+        });
+        document.addEventListener('htmx:sendError', function(e) {
+            var target = e.detail.target;
+            if (target && target.id === 'main-content') {
+                target.innerHTML = '<div style="text-align:center;padding:4rem 2rem;">'
+                    + '<h2 style="color:var(--primary);margin-bottom:1rem;">Connection Error</h2>'
+                    + '<p style="color:var(--text-light);margin-bottom:2rem;">Unable to reach the server. Please check your connection.</p>'
+                    + '<a href="/" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML" class="btn btn-primary">Retry</a>'
+                    + '</div>';
             }
         });
     </script>

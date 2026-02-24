@@ -2,9 +2,48 @@
 .site-footer {
     background-color: var(--secondary);
     border-top: 1px solid var(--border);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
     margin-top: auto;
-    text-align: center;
     color: var(--text-light);
     font-size: 0.85rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.footer-section h4 {
+    color: var(--text-main);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+}
+
+.footer-section a {
+    display: block;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    padding: 0.25rem 0;
+    transition: color 0.2s ease;
+}
+
+.footer-section a:hover {
+    color: var(--primary);
+}
+
+.footer-bottom {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.8rem;
 }
