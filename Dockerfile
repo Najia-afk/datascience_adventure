@@ -27,4 +27,4 @@ WORKDIR /srv/htmx_website
 EXPOSE 8000
 
 # Command to run the application (sync generated content into mounted volume first)
-CMD ["./utils/start_app.sh"]
+CMD ["/app/utils/start_app.sh"]
