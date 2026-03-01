@@ -14,6 +14,8 @@ if [ ! -f "$FULLCHAIN" ] || [ ! -f "$PRIVKEY" ]; then
         -out "$FULLCHAIN" \
         -subj "/CN=datascience-adventure.xyz" 2>/dev/null
     echo "==> Temporary self-signed cert created. Certbot will replace it."
+    # Reload nginx after 30s so it picks up real cert once certbot obtains it
+    (sleep 30 && nginx -s reload 2>/dev/null && echo "==> Nginx reloaded with new certs") &
 else
     echo "==> SSL certs found. Starting nginx normally."
 fi
