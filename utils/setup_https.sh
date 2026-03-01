@@ -18,10 +18,11 @@ docker compose up -d --build app
 echo ">>> Stopping nginx to free port 80..."
 docker compose stop nginx 2>/dev/null || true
 
-# 4. Obtain certificate using certbot container with standalone mode
+# 4. Obtain certificate using certbot standalone (override entrypoint)
 echo ">>> Obtaining SSL Certificate for datascience-adventure.xyz..."
-docker compose run --rm -p 80:80 certbot \
-    certbot certonly --standalone \
+docker run --rm -p 80:80 \
+    -v datascience_adventure_letsencrypt_data:/etc/letsencrypt \
+    certbot/certbot certonly --standalone \
     -d datascience-adventure.xyz \
     --non-interactive --agree-tos -m "$EMAIL_ADDRESS" \
     --force-renewal
