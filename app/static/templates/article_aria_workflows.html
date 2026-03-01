@@ -1,0 +1,1973 @@
+<!-- Article: Aria's Workflow Engine — Pipelines, Graphs & Autonomous Orchestration -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+    <style>
+/* ===== Base Reset & Theme ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg-primary: #0a0a1a;
+    --bg-secondary: #12122a;
+    --bg-card: rgba(255,255,255,0.02);
+    --text-primary: #e0e0f0;
+    --text-secondary: #b0b0cc;
+    --text-muted: #666688;
+    --border-subtle: rgba(255,255,255,0.06);
+    --border-hover: rgba(255,255,255,0.12);
+    --accent-purple: #6c5ce7;
+    --accent-green: #00b894;
+    --accent-pink: #fd79a8;
+    --accent-yellow: #fdcb6e;
+    --accent-red: #e17055;
+    --accent-blue: #74b9ff;
+    --accent-amber: #f0932b;
+    --accent-teal: #00cec9;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+}
+
+.article-page { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.article-back-nav { margin-bottom: 2rem; }
+.article-back-nav a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+.article-back-nav a:hover { color: var(--accent-purple); }
+
+/* ===== Header ===== */
+.article-header { margin-bottom: 3rem; }
+.article-meta-top { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.tag { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 4px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.tag-workflow { background: rgba(108,92,231,0.2); color: #a29bfe; border: 1px solid rgba(108,92,231,0.3); }
+.tag-pipeline { background: rgba(0,184,148,0.15); color: #55efc4; border: 1px solid rgba(0,184,148,0.3); }
+.tag-vector { background: rgba(253,203,110,0.15); color: #ffeaa7; border: 1px solid rgba(253,203,110,0.3); }
+.tag-graph { background: rgba(0,206,201,0.15); color: #00cec9; border: 1px solid rgba(0,206,201,0.3); }
+.tag-automation { background: rgba(253,121,168,0.15); color: #fd79a8; border: 1px solid rgba(253,121,168,0.3); }
+.tag-live { background: rgba(116,185,255,0.15); color: #74b9ff; border: 1px solid rgba(116,185,255,0.3); }
+
+.article-date { color: var(--text-secondary); font-size: 0.85rem; }
+.article-title {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 2.6rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem;
+    background: linear-gradient(135deg, #e0e0f0 0%, #6c5ce7 25%, #00b894 50%, #00cec9 75%, #fd79a8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.article-lead { font-size: 1.15rem; line-height: 1.7; color: var(--text-secondary); max-width: 720px; margin-bottom: 1.5rem; }
+.article-meta-bar { display: flex; gap: 2rem; flex-wrap: wrap; padding: 1rem 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); margin-bottom: 2rem; }
+.meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+.meta-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+.meta-value { font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
+
+/* ===== Sections ===== */
+.article-section { margin-bottom: 3rem; }
+.article-section h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary); }
+.article-section h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text-primary); }
+.article-section p { color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.95rem; }
+.accent-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 0.5rem; vertical-align: middle; }
+.dot-purple { background: var(--accent-purple); }
+.dot-green { background: var(--accent-green); }
+.dot-yellow { background: var(--accent-yellow); }
+.dot-blue { background: var(--accent-blue); }
+.dot-teal { background: var(--accent-teal); }
+.dot-pink { background: var(--accent-pink); }
+.dot-red { background: var(--accent-red); }
+.dot-amber { background: var(--accent-amber); }
+
+/* ===== Code Blocks ===== */
+.code-block {
+    background: linear-gradient(135deg, rgba(15,15,35,0.95), rgba(25,25,55,0.95));
+    border: 1px solid rgba(108,92,231,0.25); border-radius: 10px; padding: 1.25rem;
+    margin: 1rem 0; font-family: 'Courier New', monospace; font-size: 0.85rem; line-height: 1.6;
+    overflow-x: auto; color: var(--text-secondary);
+}
+.code-block .c-kw { color: #a29bfe; }
+.code-block .c-str { color: #55efc4; }
+.code-block .c-num { color: #ffeaa7; }
+.code-block .c-cm { color: var(--text-muted); font-style: italic; }
+.code-block .c-fn { color: #fd79a8; }
+.code-block .c-var { color: #74b9ff; }
+.code-block-label { display: inline-block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-purple); font-weight: 600; margin-bottom: 0.5rem; }
+
+/* ===== Stats Grid ===== */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.25rem; text-align: center; transition: border-color 0.3s; }
+.stat-card:hover { border-color: rgba(108,92,231,0.3); }
+.stat-number { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+.stat-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+.stat-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem; }
+.num-red { color: #fab1a0; }
+.num-yellow { color: #ffeaa7; }
+.num-green { color: #55efc4; }
+.num-blue { color: #74b9ff; }
+.num-purple { color: #a29bfe; }
+.num-teal { color: #00cec9; }
+.num-pink { color: #fd79a8; }
+.num-amber { color: #f0932b; }
+
+/* ===== Charts ===== */
+.chart-container { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.5rem; margin: 1.25rem 0; }
+.chart-container h4 { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 1rem; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+
+/* ===== Info Cards ===== */
+.info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+.info-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.25rem; transition: transform 0.2s, border-color 0.3s; }
+.info-card:hover { transform: translateY(-2px); border-color: rgba(108,92,231,0.3); }
+.info-card .icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+.info-card h4 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+.info-card p { font-size: 0.88rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0; }
+
+/* ===== Network Graph ===== */
+.network-wrap { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+#workflowGraph { height: 580px; border-radius: 8px; background: rgba(0,0,0,0.2); }
+#pipelineGraph { height: 420px; border-radius: 8px; background: rgba(0,0,0,0.2); }
+#knowledgeGraph { height: 500px; border-radius: 8px; background: rgba(0,0,0,0.2); }
+.network-legend { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1rem; font-size: 0.82rem; color: var(--text-secondary); }
+.legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: middle; margin-right: 4px; }
+
+/* ===== Cron Table ===== */
+.cron-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.82rem; }
+.cron-table th { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 2px solid rgba(108,92,231,0.3); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+.cron-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
+.cron-table tr:hover td { background: rgba(255,255,255,0.02); }
+.cron-freq { font-family: monospace; color: var(--accent-teal); font-size: 0.75rem; }
+
+/* ===== Pipeline Flow ===== */
+.pipeline-flow { display: flex; align-items: center; gap: 0; margin: 1.5rem 0; flex-wrap: wrap; justify-content: center; }
+.pipeline-node {
+    padding: 0.75rem 1.25rem; border-radius: 10px; text-align: center;
+    font-size: 0.85rem; font-weight: 600; min-width: 130px;
+}
+.pipeline-arrow { font-size: 1.5rem; color: var(--text-muted); padding: 0 0.5rem; }
+.pipe-trigger { background: rgba(108,92,231,0.2); color: #a29bfe; border: 1px solid rgba(108,92,231,0.3); }
+.pipe-skill { background: rgba(0,184,148,0.15); color: #55efc4; border: 1px solid rgba(0,184,148,0.3); }
+.pipe-data { background: rgba(116,185,255,0.15); color: #74b9ff; border: 1px solid rgba(116,185,255,0.3); }
+.pipe-store { background: rgba(253,203,110,0.15); color: #ffeaa7; border: 1px solid rgba(253,203,110,0.3); }
+.pipe-output { background: rgba(253,121,168,0.15); color: #fd79a8; border: 1px solid rgba(253,121,168,0.3); }
+.pipe-label { display: block; font-size: 0.68rem; color: var(--text-muted); font-weight: 400; margin-top: 0.2rem; }
+
+/* ===== Layer Stack ===== */
+.layer-stack { margin: 1.5rem 0; }
+.layer-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+.layer-label { min-width: 100px; font-weight: 600; font-size: 0.85rem; text-align: right; }
+.layer-bar { flex: 1; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+/* ===== Vector Bars ===== */
+.vector-bar-wrap { margin: 0.5rem 0; }
+.vector-bar-label { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.25rem; }
+.vector-bar-track { height: 10px; background: rgba(255,255,255,0.03); border-radius: 5px; overflow: hidden; }
+.vector-bar-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease-out; }
+
+/* ===== Focus Cards ===== */
+.focus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.focus-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem; text-align: center; transition: transform 0.2s, border-color 0.3s; }
+.focus-card:hover { transform: translateY(-2px); border-color: rgba(108,92,231,0.3); }
+.focus-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+.focus-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+.focus-desc { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ===== Synthesis ===== */
+.synthesis-block { background: linear-gradient(135deg, rgba(108,92,231,0.05), rgba(0,206,201,0.05)); border: 1px solid rgba(108,92,231,0.2); border-radius: 12px; overflow: hidden; }
+.synthesis-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem; background: rgba(108,92,231,0.08); border-bottom: 1px solid rgba(108,92,231,0.15); }
+.synthesis-badge { font-weight: 600; font-size: 0.9rem; color: #a29bfe; }
+.synthesis-agent { font-size: 0.78rem; color: var(--text-muted); }
+.synthesis-content { padding: 1.5rem; }
+.synthesis-content h3 { font-size: 1rem; color: #a29bfe; margin: 1.25rem 0 0.5rem; }
+.synthesis-content h3:first-child { margin-top: 0; }
+.synthesis-content p, .synthesis-content li { font-size: 0.9rem; line-height: 1.7; color: var(--text-secondary); }
+.synthesis-content ol, .synthesis-content ul { padding-left: 1.25rem; margin: 0.75rem 0; }
+.synthesis-content li { margin-bottom: 0.5rem; }
+.synthesis-content blockquote { background: rgba(108,92,231,0.06); border-left: 3px solid var(--accent-purple); padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-style: italic; color: var(--text-primary); }
+
+/* ===== Related ===== */
+.related-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.related-card { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; text-decoration: none; transition: border-color 0.2s, transform 0.2s; color: inherit; }
+.related-card:hover { border-color: rgba(108,92,231,0.4); transform: translateY(-2px); }
+.related-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 0.15rem; }
+.related-card strong { display: block; color: var(--text-primary); margin-bottom: 0.25rem; font-size: 0.95rem; }
+.related-card p { font-size: 0.82rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+/* ===== Closing ===== */
+.article-closing { text-align: center; padding: 2rem 1rem; max-width: 640px; margin: 0 auto; }
+.article-closing p { font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 0.75rem; }
+.closing-cta { font-size: 1.15rem !important; font-weight: 600; color: var(--text-primary) !important; }
+
+.tool-tag { display: inline-block; background: rgba(0,184,148,0.1); border: 1px solid rgba(0,184,148,0.25); padding: 0.1rem 0.45rem; border-radius: 3px; font-size: 0.72rem; font-family: monospace; color: #55efc4; margin: 0.1rem; }
+.file-link { color: #a29bfe; text-decoration: none; border-bottom: 1px dotted rgba(162,155,254,0.4); transition: border-color 0.2s; }
+.file-link:hover { border-bottom-color: #a29bfe; }
+
+/* ===== Timeline ===== */
+.timeline { position: relative; margin: 1.5rem 0; padding-left: 2rem; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border-subtle); }
+.tl-event { position: relative; margin-bottom: 1.5rem; }
+.tl-event::before { content: ''; position: absolute; left: -2rem; top: 0.4rem; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--accent-purple); background: var(--bg-primary); }
+.tl-event.tl-critical::before { border-color: var(--accent-red); background: rgba(225,112,85,0.2); }
+.tl-event.tl-success::before { border-color: var(--accent-green); background: rgba(0,184,148,0.2); }
+.tl-date { font-size: 0.75rem; color: var(--text-muted); font-family: monospace; }
+.tl-text { font-size: 0.9rem; color: var(--text-secondary); }
+.tl-text strong { color: var(--text-primary); }
+
+/* ===== Embedding Diagram ===== */
+.embed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+.embed-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.25rem; text-align: center; transition: border-color 0.3s; }
+.embed-card:hover { border-color: rgba(108,92,231,0.3); }
+.embed-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.embed-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; color: var(--text-primary); }
+.embed-dim { font-family: monospace; font-size: 0.82rem; margin-bottom: 0.25rem; }
+.embed-desc { font-size: 0.75rem; color: var(--text-muted); }
+
+/* ===== Docker Grid ===== */
+.docker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+.docker-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem; font-size: 0.85rem; transition: border-color 0.3s; }
+.docker-card:hover { border-color: rgba(108,92,231,0.3); }
+.docker-name { font-weight: 600; color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.25rem; }
+.docker-port { font-family: monospace; color: var(--accent-teal); font-size: 0.78rem; }
+.docker-desc { color: var(--text-muted); font-size: 0.78rem; margin-top: 0.25rem; }
+
+@media (max-width: 768px) {
+    .article-title { font-size: 1.8rem; }
+    .article-meta-bar { gap: 1rem; }
+    .info-grid { grid-template-columns: 1fr; }
+    .docker-grid { grid-template-columns: 1fr 1fr; }
+    .related-links { grid-template-columns: 1fr; }
+    .chart-row { grid-template-columns: 1fr; }
+    #workflowGraph { height: 400px !important; }
+    #pipelineGraph { height: 320px !important; }
+    #knowledgeGraph { height: 350px !important; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .pipeline-flow { flex-direction: column; }
+    .pipeline-arrow { transform: rotate(90deg); }
+    .layer-row { flex-direction: column; }
+    .layer-label { min-width: auto; text-align: left; }
+    .embed-grid { grid-template-columns: 1fr; }
+}
+    </style>
+
+<article class="article-page">
+
+    <nav class="article-back-nav">
+        <a href="#" hx-get="/project/aria" hx-target="#main-content" hx-swap="innerHTML">&larr; Back to Aria Blue</a>
+    </nav>
+
+    <!-- ===== HERO HEADER ===== -->
+    <header class="article-header">
+        <div class="article-meta-top">
+            <span class="tag tag-workflow">Workflows</span>
+            <span class="tag tag-pipeline">Pipelines</span>
+            <span class="tag tag-vector">pgvector</span>
+            <span class="tag tag-graph">Knowledge Graph</span>
+            <span class="tag tag-automation">Automation</span>
+            <span class="tag tag-live">Live System</span>
+            <span class="article-date">&mdash; March 1, 2026</span>
+        </div>
+
+        <h1 class="article-title">The Workflow Engine:<br>Pipelines, Graphs &amp; Autonomous Orchestration</h1>
+
+        <p class="article-lead">
+            6 YAML pipelines with DAG execution. 12 cron jobs running 24/7. A knowledge graph with 200+
+            entity-relationship pairs. A vector database holding 768-dimensional semantic memories.
+            Pheromone-scored agent routing. A skill tree generated from 41 manifests.
+            This isn't a prompt chain. It's an <em>operating system for cognition</em>.
+        </p>
+
+        <div class="article-meta-bar">
+            <div class="meta-item">
+                <span class="meta-label">YAML Pipelines</span>
+                <span class="meta-value">6 DAG workflows</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Cron Jobs</span>
+                <span class="meta-value">12 scheduled</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Vector Dim</span>
+                <span class="meta-value">768 + 1536</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Graph Entities</span>
+                <span class="meta-value">200+ nodes</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Skills Graphed</span>
+                <span class="meta-value">41 manifests</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Work Cycle</span>
+                <span class="meta-value">Every 15 min</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Images -->
+    <figure class="article-hero-image" style="margin:2rem 0;text-align:center;">
+        <img src="/images/aria/aria_workflow_engine.png" alt="Aria Workflow Engine — Pipelines, Graphs & Autonomous Orchestration"
+             style="width:100%;max-width:900px;border-radius:12px;border:1px solid var(--border-subtle);box-shadow:0 8px 32px rgba(0,0,0,0.4);" loading="lazy">
+        <figcaption style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);font-style:italic;">
+            The Workflow Engine &mdash; Aria orchestrates pipelines, knowledge graphs, and autonomous work cycles from the center of her command lattice.
+        </figcaption>
+    </figure>
+
+    <!-- ===== STATS ROW ===== -->
+    <section class="article-section">
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number num-purple">6</div>
+                <div class="stat-label">YAML Pipelines</div>
+                <div class="stat-sub">DAG-executed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number num-teal">12</div>
+                <div class="stat-label">Cron Jobs</div>
+                <div class="stat-sub">PostgreSQL-persisted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number num-green">41</div>
+                <div class="stat-label">Skill Manifests</div>
+                <div class="stat-sub">Auto-graphed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number num-blue">768d</div>
+                <div class="stat-label">Semantic Vectors</div>
+                <div class="stat-sub">pgvector cosine</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number num-yellow">15m</div>
+                <div class="stat-label">Work Cycle</div>
+                <div class="stat-sub">Autonomous heartbeat</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number num-pink">50+</div>
+                <div class="stat-label">Prometheus Metrics</div>
+                <div class="stat-sub">Counters + histograms</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WORKFLOW GRAPH (vis.js) ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-purple"></span> The Workflow Map</h2>
+        <p>
+            Aria's automation isn't one loop&mdash;it's a <strong>lattice of interconnected workflow types</strong>,
+            each operating at a different timescale. Cron jobs trigger work cycles. Work cycles invoke pipelines.
+            Pipelines compose skills. Skills write to databases. Databases feed graphs. Graphs inform decisions.
+            The graph below maps every workflow surface in the system.
+        </p>
+
+        <div class="network-wrap">
+            <div class="network-legend">
+                <span><span class="legend-dot" style="background:#6c5ce7;"></span> Schedulers</span>
+                <span><span class="legend-dot" style="background:#00b894;"></span> Work Cycles</span>
+                <span><span class="legend-dot" style="background:#fd79a8;"></span> Pipelines</span>
+                <span><span class="legend-dot" style="background:#74b9ff;"></span> Storage</span>
+                <span><span class="legend-dot" style="background:#fdcb6e;"></span> Intelligence</span>
+                <span><span class="legend-dot" style="background:#e17055;"></span> Observability</span>
+            </div>
+            <div id="workflowGraph"></div>
+        </div>
+    </section>
+
+    <!-- ===== THE WORK CYCLE ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-green"></span> The Autonomous Work Cycle</h2>
+        <p>
+            Every 15 minutes, Aria's engine wakes up and runs a complete work cycle. This isn't a script replaying
+            the same steps. The cycle is <strong>goal-driven</strong>: what Aria works on depends on her current
+            priorities, the state of in-progress goals, and the active focus level.
+        </p>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="icon">📋</div>
+                <h4>1. Context Loading</h4>
+                <p>
+                    Read <code>active_focus_level</code> and <code>active_goal_reference</code> from working memory.
+                    Focus level determines how many goals to load: L1=1, L2=3, L3=5.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🎯</div>
+                <h4>2. Priority Selection</h4>
+                <p>
+                    Fetch in-progress goals, rank by urgency and strategic importance.
+                    Pick the single highest-priority actionable goal. One action per cycle.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🧠</div>
+                <h4>3. Agent Routing</h4>
+                <p>
+                    Pheromone scoring selects the best agent for the task.
+                    Score = success_rate &times; 0.6 + speed &times; 0.3 + cost &times; 0.1.
+                    Daily decay of 0.95.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">⚡</div>
+                <h4>4. Skill Execution</h4>
+                <p>
+                    Execute exactly <strong>one concrete action</strong> via the selected agent's skill set.
+                    Budget: max 10 tool calls per cycle. Circuit breaker halts if API fails.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">📝</div>
+                <h4>5. Progress Update</h4>
+                <p>
+                    Update goal progress, refresh <code>active_goal_reference</code> in working memory.
+                    Write artifact to <code>aria_memories/logs/</code>. Log to <code>activity_log</code> table.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🧹</div>
+                <h4>6. Session Cleanup</h4>
+                <p>
+                    Prune stale sessions (&gt;24h). Archive completed work.
+                    If circuit breaker tripped, write degraded artifact and halt gracefully.
+                </p>
+            </div>
+        </div>
+
+        <figure style="margin:2rem 0;text-align:center;">
+            <img src="/images/aria/aria_workflow_session2.png" alt="Aria Workflow Session Detail"
+                 style="width:100%;max-width:800px;border-radius:12px;border:1px solid var(--border-subtle);box-shadow:0 8px 32px rgba(0,0,0,0.4);" loading="lazy">
+            <figcaption style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);font-style:italic;">
+                Detailed view of a work cycle session &mdash; goal selection, agent delegation, and result capture.
+            </figcaption>
+        </figure>
+    </section>
+
+    <!-- ===== THE CRON SCHEDULE ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-teal"></span> The Heartbeat &mdash; 12 Cron Jobs</h2>
+        <p>
+            Aria's autonomy comes from APScheduler 4.x with <strong>PostgreSQL persistence</strong>. Jobs survive
+            container restarts. Each runs in an <strong>isolated session</strong> with its own agent context.
+            The source of truth is
+            <a class="file-link" href="https://github.com/Najia-afk/Aria_moltbot/tree/main/aria_mind/cron_jobs.yaml" target="_blank" rel="noopener">aria_mind/cron_jobs.yaml</a>.
+        </p>
+
+        <table class="cron-table">
+            <thead>
+                <tr>
+                    <th>Job</th>
+                    <th>Schedule</th>
+                    <th>Description</th>
+                    <th>Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>work_cycle</strong></td>
+                    <td><span class="cron-freq">*/15 * * * *</span></td>
+                    <td>Primary goal-driven work loop &mdash; one action per cycle</td>
+                    <td>Core</td>
+                </tr>
+                <tr>
+                    <td><strong>six_hour_review</strong></td>
+                    <td><span class="cron-freq">0 0,6,12,18 * * *</span></td>
+                    <td>Strategic analysis of the last 6 hours</td>
+                    <td>Strategic</td>
+                </tr>
+                <tr>
+                    <td><strong>morning_checkin</strong></td>
+                    <td><span class="cron-freq">0 6 * * *</span></td>
+                    <td>Set daily priorities, read overnight reports</td>
+                    <td>Strategic</td>
+                </tr>
+                <tr>
+                    <td><strong>daily_reflection</strong></td>
+                    <td><span class="cron-freq">0 7 * * *</span></td>
+                    <td>Summarize day, plan tomorrow, write diary entry</td>
+                    <td>Meta</td>
+                </tr>
+                <tr>
+                    <td><strong>weekly_summary</strong></td>
+                    <td><span class="cron-freq">0 2 * * MON</span></td>
+                    <td>Weekly metrics synthesis, progress report</td>
+                    <td>Meta</td>
+                </tr>
+                <tr>
+                    <td><strong>nightly_tests</strong></td>
+                    <td><span class="cron-freq">0 3 * * *</span></td>
+                    <td>Run full pytest suite autonomously</td>
+                    <td>DevOps</td>
+                </tr>
+                <tr>
+                    <td><strong>db_maintenance</strong></td>
+                    <td><span class="cron-freq">0 4 * * *</span></td>
+                    <td>VACUUM, REINDEX, update statistics</td>
+                    <td>Infra</td>
+                </tr>
+                <tr>
+                    <td><strong>session_cleanup</strong></td>
+                    <td><span class="cron-freq">0 5 * * *</span></td>
+                    <td>Archive sessions older than 24 hours</td>
+                    <td>Infra</td>
+                </tr>
+                <tr>
+                    <td><strong>memory_consolidation</strong></td>
+                    <td><span class="cron-freq">0 5 * * SUN</span></td>
+                    <td>Deduplicate (&ge;0.95 cosine), compress, archive memories</td>
+                    <td>Memory</td>
+                </tr>
+                <tr>
+                    <td><strong>memory_bridge</strong></td>
+                    <td><span class="cron-freq">0 */3 * * *</span></td>
+                    <td>Bridge activity_log &amp; thoughts into pgvector semantic_memories</td>
+                    <td>Memory</td>
+                </tr>
+                <tr>
+                    <td><strong>weekly_security_scan</strong></td>
+                    <td><span class="cron-freq">0 4 * * SUN</span></td>
+                    <td>Security scan workspace, check for vulnerabilities</td>
+                    <td>Security</td>
+                </tr>
+                <tr>
+                    <td><strong>roundtable_arch_review</strong></td>
+                    <td><span class="cron-freq">0 3 * * WED</span></td>
+                    <td>Multi-agent architecture review roundtable</td>
+                    <td>Strategic</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ===== YAML PIPELINES ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-pink"></span> YAML Pipelines &mdash; DAG-Executed Skill Composition</h2>
+        <p>
+            Pipelines are Aria's compound workflows. Each is defined in YAML, parsed into a <strong>directed
+            acyclic graph</strong>, topologically sorted, and executed with parallel branches via
+            <code>asyncio.gather()</code>. Steps can reference outputs from prior steps using
+            <code>{{context.step_name.field}}</code> templates.
+        </p>
+
+        <div class="code-block">
+            <div class="code-block-label">aria_skills/pipelines/daily_research.yaml</div>
+<span class="c-kw">name:</span> daily_research
+<span class="c-kw">steps:</span>
+  - <span class="c-kw">name:</span> <span class="c-str">check_goals</span>
+    <span class="c-kw">skill:</span> goals
+    <span class="c-kw">method:</span> <span class="c-fn">get_active_goals</span>
+    <span class="c-kw">depends_on:</span> []
+    <span class="c-kw">on_failure:</span> <span class="c-str">stop</span>
+
+  - <span class="c-kw">name:</span> <span class="c-str">research</span>
+    <span class="c-kw">skill:</span> research
+    <span class="c-kw">method:</span> <span class="c-fn">deep_search</span>
+    <span class="c-kw">params:</span>
+      <span class="c-var">topics:</span> <span class="c-str">"{{context.check_goals.focus_areas}}"</span>
+    <span class="c-kw">depends_on:</span> [<span class="c-str">check_goals</span>]
+    <span class="c-kw">on_failure:</span> <span class="c-str">retry:2</span>
+
+  - <span class="c-kw">name:</span> <span class="c-str">analyze</span>
+    <span class="c-kw">skill:</span> pattern_recognition
+    <span class="c-kw">method:</span> <span class="c-fn">analyze_findings</span>
+    <span class="c-kw">depends_on:</span> [<span class="c-str">research</span>]
+    <span class="c-kw">on_failure:</span> <span class="c-str">skip</span>
+
+  - <span class="c-kw">name:</span> <span class="c-str">save_report</span>
+    <span class="c-kw">skill:</span> memory_compression
+    <span class="c-kw">method:</span> <span class="c-fn">store_summary</span>
+    <span class="c-kw">depends_on:</span> [<span class="c-str">analyze</span>]
+
+  - <span class="c-kw">name:</span> <span class="c-str">post_summary</span>
+    <span class="c-kw">skill:</span> social
+    <span class="c-kw">method:</span> <span class="c-fn">share_insight</span>
+    <span class="c-kw">depends_on:</span> [<span class="c-str">save_report</span>]
+    <span class="c-kw">on_failure:</span> <span class="c-str">fallback:moltbook.draft_post</span>
+        </div>
+
+        <h3>Pipeline Execution Engine</h3>
+        <p>
+            The executor in
+            <a class="file-link" href="https://github.com/Najia-afk/Aria_moltbot/tree/main/aria_skills/pipeline_executor.py" target="_blank" rel="noopener">pipeline_executor.py</a>
+            implements:
+        </p>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="icon">📐</div>
+                <h4>Kahn's Algorithm</h4>
+                <p>
+                    Topological sort with cycle detection. If a cycle exists, the pipeline is rejected before
+                    any step executes. Guarantees deterministic ordering.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">⚡</div>
+                <h4>Parallel Waves</h4>
+                <p>
+                    Independent branches execute concurrently via <code>asyncio.gather()</code>.
+                    Steps only wait for their declared <code>depends_on</code> set.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🔄</div>
+                <h4>Failure Strategies</h4>
+                <p>
+                    <strong>stop</strong> &mdash; halt entire pipeline.
+                    <strong>skip</strong> &mdash; mark step as skipped, continue.
+                    <strong>retry:N</strong> &mdash; retry N times.
+                    <strong>fallback:skill.method</strong> &mdash; run alternative.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🔗</div>
+                <h4>Template Resolution</h4>
+                <p>
+                    Parameters support <code>{{context.step.field}}</code> templates, resolved at runtime
+                    from prior step outputs. Enables dynamic data flow across the pipeline.
+                </p>
+            </div>
+        </div>
+
+        <h3>The Six Pipelines</h3>
+
+        <table class="cron-table">
+            <thead>
+                <tr>
+                    <th>Pipeline</th>
+                    <th>Steps</th>
+                    <th>Trigger</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>daily_research</strong></td>
+                    <td>5</td>
+                    <td>Cron / Manual</td>
+                    <td>Goal-driven research &rarr; analysis &rarr; memory &rarr; social share</td>
+                </tr>
+                <tr>
+                    <td><strong>health_and_report</strong></td>
+                    <td>4</td>
+                    <td>Cron / Alert</td>
+                    <td>Health check &rarr; issue analysis &rarr; auto-create goals &rarr; report</td>
+                </tr>
+                <tr>
+                    <td><strong>social_engagement</strong></td>
+                    <td>4</td>
+                    <td>Cron</td>
+                    <td>Feed scan &rarr; trend analysis &rarr; draft (with fallback) &rarr; publish (retry:3)</td>
+                </tr>
+                <tr>
+                    <td><strong>deep_research</strong></td>
+                    <td>6</td>
+                    <td>Manual</td>
+                    <td>Multi-source deep dive with citation tracking &rarr; structured report</td>
+                </tr>
+                <tr>
+                    <td><strong>conversation_summary</strong></td>
+                    <td>3</td>
+                    <td>Session close</td>
+                    <td>Summarize conversation &rarr; extract learnings &rarr; store to memory</td>
+                </tr>
+                <tr>
+                    <td><strong>bug_fix</strong></td>
+                    <td>5</td>
+                    <td>Issue/Alert</td>
+                    <td>Reproduce &rarr; diagnose &rarr; patch &rarr; test &rarr; deploy</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pipeline interactive graph -->
+        <div class="network-wrap" style="margin-top:1.5rem;">
+            <h4 style="font-size:0.9rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1rem;">
+                Pipeline DAG: daily_research
+            </h4>
+            <div id="pipelineGraph"></div>
+        </div>
+    </section>
+
+    <!-- ===== VECTOR DATABASE ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-yellow"></span> Vector Database &mdash; pgvector Semantic Memory</h2>
+        <p>
+            Aria doesn't use a separate vector database. All embeddings live inside
+            <strong>PostgreSQL 16 + pgvector</strong>&mdash;same instance, same transactions, zero network
+            latency between relational queries and semantic search. Two distinct embedding spaces operate
+            in parallel.
+        </p>
+
+        <div class="embed-grid">
+            <div class="embed-card">
+                <div class="embed-icon">🧠</div>
+                <div class="embed-title">Semantic Memories</div>
+                <div class="embed-dim" style="color:#a29bfe;">Vector(768)</div>
+                <div class="embed-desc">Long-term knowledge<br>Importance-scored 0.0&ndash;1.0<br>Access-tracked &amp; consolidated</div>
+            </div>
+            <div class="embed-card">
+                <div class="embed-icon">💬</div>
+                <div class="embed-title">Chat Messages</div>
+                <div class="embed-dim" style="color:#55efc4;">Vector(1536)</div>
+                <div class="embed-desc">Conversation context<br>OpenAI-compatible embeddings<br>Archived with embeddings intact</div>
+            </div>
+            <div class="embed-card">
+                <div class="embed-icon">🔗</div>
+                <div class="embed-title">Cosine Similarity</div>
+                <div class="embed-dim" style="color:#ffeaa7;">&lt;=&gt; operator</div>
+                <div class="embed-desc">Dedup threshold: 0.95<br>Semantic search: top-k<br>Memory consolidation trigger</div>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-label">src/api/db/models.py &mdash; SemanticMemory</div>
+<span class="c-kw">class</span> <span class="c-fn">SemanticMemory</span>(Base):
+    __tablename__ = <span class="c-str">"semantic_memories"</span>
+    __table_args__ = {<span class="c-str">"schema"</span>: <span class="c-str">"aria_data"</span>}
+
+    content:      Mapped[<span class="c-var">str</span>]           <span class="c-cm"># Full text content</span>
+    summary:      Mapped[<span class="c-var">str</span> | None]    <span class="c-cm"># LLM-condensed summary</span>
+    category:     Mapped[<span class="c-var">str</span>]           <span class="c-cm"># "general", "research", "reflection"</span>
+    embedding:    <span class="c-fn">Vector</span>(<span class="c-num">768</span>)          <span class="c-cm"># pgvector column</span>
+    importance:   Mapped[<span class="c-var">float</span>]         <span class="c-cm"># 0.0 &ndash; 1.0</span>
+    source:       Mapped[<span class="c-var">str</span> | None]    <span class="c-cm"># Origin identifier</span>
+    access_count: Mapped[<span class="c-var">int</span>]           <span class="c-cm"># Usage tracking for decay</span>
+        </div>
+
+        <h3>The Memory Bridge</h3>
+        <p>
+            Every 3 hours, the <code>memory_bridge</code> cron job harvests entries from the
+            <code>activity_log</code> and <code>thoughts</code> tables, generates embeddings, and inserts
+            them into <code>semantic_memories</code>. This keeps the vector index fresh for downstream
+            consumers: <span class="tool-tag">pattern_recognition</span>,
+            <span class="tool-tag">sentiment_analysis</span>, and
+            <span class="tool-tag">unified_search</span>.
+        </p>
+
+        <h3>Memory Consolidation Pipeline</h3>
+        <p>
+            Every Sunday at 05:00 UTC, the <code>memory_consolidation</code> job runs a three-phase process:
+        </p>
+
+        <div class="pipeline-flow">
+            <div class="pipeline-node pipe-trigger">
+                1. Deduplicate
+                <span class="pipe-label">cosine &ge; 0.95</span>
+            </div>
+            <span class="pipeline-arrow">&rarr;</span>
+            <div class="pipeline-node pipe-skill">
+                2. Compress
+                <span class="pipe-label">surface &rarr; medium summaries</span>
+            </div>
+            <span class="pipeline-arrow">&rarr;</span>
+            <div class="pipeline-node pipe-data">
+                3. Archive
+                <span class="pipe-label">stale plans &rarr; cold storage</span>
+            </div>
+        </div>
+
+        <div class="chart-row" style="margin-top:1.5rem;">
+            <div class="chart-container">
+                <h4>Memory Operations by Type (Weekly)</h4>
+                <canvas id="chartMemoryOps" height="260"></canvas>
+            </div>
+            <div class="chart-container">
+                <h4>Embedding Dimensions Distribution</h4>
+                <canvas id="chartEmbedDist" height="260"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== KNOWLEDGE GRAPH ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-teal"></span> The Knowledge Graph &mdash; Two Graphs, One Database</h2>
+        <p>
+            Aria maintains <strong>two separate knowledge graphs</strong> in PostgreSQL, each serving a different
+            purpose. No Neo4j, no external graph database. The relational model handles it cleanly with
+            entity + relation tables, BFS traversal via API endpoints, and idempotent regeneration from manifests.
+        </p>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="icon">🌱</div>
+                <h4>Organic Knowledge Graph</h4>
+                <p>
+                    Entities discovered during research, conversations, and analysis.
+                    Tables: <code>knowledge_entities</code> + <code>knowledge_relations</code>.
+                    Grows naturally over time. BFS traversal via <code>/kg-traverse</code>.
+                    JSONB properties on every node and edge.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🌳</div>
+                <h4>Skill Graph</h4>
+                <p>
+                    Auto-generated from 41 <code>skill.json</code> manifests via
+                    <a class="file-link" href="https://github.com/Najia-afk/Aria_moltbot/tree/main/scripts/generate_skill_graph.py" target="_blank" rel="noopener">generate_skill_graph.py</a>.
+                    Tables: <code>skill_graph_entities</code> + <code>skill_graph_relations</code>.
+                    Regenerated idempotently. Separate from organic KG.
+                </p>
+            </div>
+        </div>
+
+        <figure style="margin:2rem 0;text-align:center;">
+            <img src="/images/aria/aria_workflow_skilltree.png" alt="Aria Skill Tree"
+                 style="width:100%;max-width:800px;border-radius:12px;border:1px solid var(--border-subtle);box-shadow:0 8px 32px rgba(0,0,0,0.4);" loading="lazy">
+            <figcaption style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);font-style:italic;">
+                The skill tree &mdash; 41 skills, 225+ tools, 7 focus modes, all connected through provides/belongs_to/affinity relations.
+            </figcaption>
+        </figure>
+
+        <figure style="margin:2rem 0;text-align:center;">
+            <img src="/images/aria/aria_knowledge_graph.png" alt="Aria Knowledge Graph Visualization"
+                 style="width:100%;max-width:800px;border-radius:12px;border:1px solid var(--border-subtle);box-shadow:0 8px 32px rgba(0,0,0,0.4);" loading="lazy">
+            <figcaption style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);font-style:italic;">
+                The organic knowledge graph &mdash; entities discovered through research and conversation, connected through typed relationships.
+            </figcaption>
+        </figure>
+
+        <h3>Entity Types &amp; Relationships</h3>
+
+        <div class="code-block">
+            <div class="code-block-label">Knowledge Graph Schema</div>
+<span class="c-cm"># Entity types</span>
+<span class="c-var">types</span> = [<span class="c-str">"skill"</span>, <span class="c-str">"tool"</span>, <span class="c-str">"focus_mode"</span>, <span class="c-str">"category"</span>, <span class="c-str">"concept"</span>]
+
+<span class="c-cm"># Relation types</span>
+<span class="c-var">provides</span>    <span class="c-cm"># skill &rarr; tool  (skill provides this tool)</span>
+<span class="c-var">belongs_to</span>  <span class="c-cm"># skill &rarr; category</span>
+<span class="c-var">affinity</span>    <span class="c-cm"># skill &rarr; focus_mode  (which persona uses this skill)</span>
+<span class="c-var">depends_on</span>  <span class="c-cm"># skill &rarr; skill  (dependency chain)</span>
+
+<span class="c-cm"># 7 Focus Modes (auto-created)</span>
+<span class="c-var">focus_modes</span> = [
+    <span class="c-str">"orchestrator"</span>, <span class="c-str">"devsecops"</span>, <span class="c-str">"data"</span>,
+    <span class="c-str">"trader"</span>, <span class="c-str">"creative"</span>, <span class="c-str">"social"</span>, <span class="c-str">"journalist"</span>
+]
+        </div>
+
+        <!-- Knowledge Graph vis.js -->
+        <div class="network-wrap" style="margin-top:1.5rem;">
+            <div class="network-legend">
+                <span><span class="legend-dot" style="background:#6c5ce7;"></span> Skills</span>
+                <span><span class="legend-dot" style="background:#fd79a8;"></span> Tools</span>
+                <span><span class="legend-dot" style="background:#fdcb6e;"></span> Focus Modes</span>
+                <span><span class="legend-dot" style="background:#00b894;"></span> Categories</span>
+                <span><span class="legend-dot" style="background:#74b9ff;"></span> Concepts</span>
+            </div>
+            <div id="knowledgeGraph"></div>
+        </div>
+
+        <h3>Query Logging &mdash; Every Graph Traversal Is Tracked</h3>
+        <p>
+            Every query against the knowledge graph is logged to <code>knowledge_query_log</code> with
+            query type, parameters, result count, and estimated tokens saved. This enables analytics on
+            how Aria uses her own knowledge&mdash;which paths she traverses most, which entities she
+            queries repeatedly, and where gaps exist.
+        </p>
+    </section>
+
+    <!-- ===== SESSION ISOLATION ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-blue"></span> Session Isolation &mdash; Every Workflow Gets Its Own Context</h2>
+        <p>
+            A critical design choice: every cron job, every roundtable, every pipeline runs in an
+            <strong>isolated session</strong>. Sessions are created per conversation or per cron execution,
+            typed as <code>interactive</code>, <code>cron</code>, or <code>subagent</code>. Each tracks
+            token counts, cost, message history, and active model independently.
+        </p>
+        <p>
+            This prevents the most dangerous pattern in AI systems: <strong>context bleed</strong>.
+            A research pipeline can't accidentally inject data into a security scan. A morning check-in
+            can't leak goals into an RPG session. Sessions are the transaction boundaries of consciousness.
+        </p>
+
+        <div style="text-align:center; margin:1.5rem 0;">
+            <img src="/images/aria/aria_agent_sessions2.png" alt="Aria Agent Sessions Dashboard"
+                 style="max-width:100%; border-radius:10px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+            <div style="color:var(--text-muted); font-size:0.82rem; margin-top:0.5rem; font-style:italic;">
+                Dashboard view: active sessions with per-session token counts and model assignments.
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-label">aria_engine/session_isolation.py</div>
+<span class="c-kw">class</span> <span class="c-fn">SessionIsolation</span>:
+    <span class="c-cm"># Session types</span>
+    <span class="c-var">INTERACTIVE</span> = <span class="c-str">"interactive"</span>  <span class="c-cm"># Human chat</span>
+    <span class="c-var">CRON</span>        = <span class="c-str">"cron"</span>         <span class="c-cm"># Scheduled job</span>
+    <span class="c-var">SUBAGENT</span>    = <span class="c-str">"subagent"</span>     <span class="c-cm"># Delegated task</span>
+
+    <span class="c-cm"># Each session has:</span>
+    <span class="c-var">token_count</span>:     <span class="c-var">int</span>      <span class="c-cm"># Running total</span>
+    <span class="c-var">cost_usd</span>:        <span class="c-var">float</span>    <span class="c-cm"># Accumulated cost</span>
+    <span class="c-var">message_history</span>: <span class="c-var">list</span>     <span class="c-cm"># Conversation buffer</span>
+    <span class="c-var">active_model</span>:    <span class="c-var">str</span>      <span class="c-cm"># Current LLM</span>
+    <span class="c-var">agent_context</span>:   <span class="c-var">dict</span>     <span class="c-cm"># Focus + mind files</span>
+        </div>
+
+        <p>
+            Stale sessions (&gt;24h) are auto-archived by the <code>session_cleanup</code> cron job.
+            Archive tables retain embeddings intact, so semantic search over historical conversations
+            remains available even after the session is cold-stored.
+        </p>
+    </section>
+
+    <!-- ===== PHEROMONE SCORING ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-green"></span> Pheromone Scoring &mdash; Bio-Inspired Agent Routing</h2>
+        <p>
+            When a work cycle needs to delegate, it doesn't hardcode which agent gets the task.
+            Instead, <strong>pheromone scoring</strong>&mdash;inspired by ant colony optimization&mdash;selects
+            the best agent adaptively. Agents that succeed accumulate pheromone. Agents that fail lose it.
+        </p>
+
+        <div class="code-block">
+            <div class="code-block-label">aria_agents/scoring.py</div>
+<span class="c-cm"># Pheromone formula</span>
+<span class="c-var">score</span> = (<span class="c-var">success_rate</span> &times; <span class="c-num">0.6</span>) + (<span class="c-var">speed</span> &times; <span class="c-num">0.3</span>) + (<span class="c-var">cost_efficiency</span> &times; <span class="c-num">0.1</span>)
+
+<span class="c-cm"># Daily decay prevents permanent entrenchment</span>
+<span class="c-var">daily_decay</span> = <span class="c-num">0.95</span>
+
+<span class="c-cm"># Selection: highest pheromone agent with matching skills wins</span>
+<span class="c-kw">def</span> <span class="c-fn">select_best_agent</span>(<span class="c-var">task</span>, <span class="c-var">available_agents</span>):
+    <span class="c-var">candidates</span> = [a <span class="c-kw">for</span> a <span class="c-kw">in</span> <span class="c-var">available_agents</span> <span class="c-kw">if</span> a.has_skill(<span class="c-var">task</span>.domain)]
+    <span class="c-kw">return</span> <span class="c-fn">max</span>(<span class="c-var">candidates</span>, key=<span class="c-kw">lambda</span> a: a.pheromone_score)
+        </div>
+
+        <p>
+            The 0.95 daily decay is crucial: it prevents one agent from permanently monopolizing work.
+            A 95% success rate today means nothing if the agent starts failing tomorrow&mdash;the pheromone
+            will naturally redirect tasks to a better-performing agent within days.
+        </p>
+    </section>
+
+    <!-- ===== ROUNDTABLE vs SWARM ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-yellow"></span> Roundtable vs. Swarm &mdash; Collective Intelligence</h2>
+        <p>
+            Some decisions are too complex for a single agent. Aria has two collective intelligence protocols:
+            <strong>Roundtable</strong> (structured deliberation with a synthesizer) and
+            <strong>Swarm</strong> (emergent consensus through stigmergy).
+        </p>
+
+        <div style="text-align:center; margin:1.5rem 0;">
+            <img src="/images/aria/aria_roundtable.png" alt="Aria Roundtable Deliberation"
+                 style="max-width:100%; border-radius:10px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+            <div style="color:var(--text-muted); font-size:0.82rem; margin-top:0.5rem; font-style:italic;">
+                Roundtable in action: multiple agents deliberate across 3 structured rounds before synthesis.
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card" style="border-left: 3px solid #a29bfe;">
+                <div class="icon">&#x1F3DB;&#xFE0F;</div>
+                <h4>Roundtable Protocol</h4>
+                <p>
+                    <strong>3 structured rounds.</strong> All agents respond in parallel via
+                    <code>asyncio.TaskGroup</code>. Each round sees prior context. A designated
+                    synthesizer produces the final answer. Max 5 agents, 60s per-agent timeout,
+                    300s total timeout. Triggered by <code>/roundtable</code>, REST API, or weekly cron.
+                </p>
+            </div>
+            <div class="info-card" style="border-left: 3px solid #ffeaa7;">
+                <div class="icon">&#x1F41D;</div>
+                <h4>Swarm Protocol</h4>
+                <p>
+                    <strong>Iterative convergence</strong> (max 5 iterations). Each agent votes:
+                    <code>agree|disagree|extend|pivot</code> with confidence 0.0&ndash;1.0.
+                    Pheromone-weighted voting. Consensus at &ge;70% agreement.
+                    Stigmergy pattern: each agent reads the prior trail. 2&ndash;12 agents.
+                </p>
+            </div>
+        </div>
+
+        <div class="chart-row" style="margin-top:1.5rem;">
+            <div class="chart-container">
+                <h4>Roundtable vs Swarm Usage</h4>
+                <canvas id="chartRTvsSwarm" height="260"></canvas>
+            </div>
+            <div class="chart-container">
+                <h4>Agent Pheromone Scores (Current)</h4>
+                <canvas id="chartPheromone" height="260"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== HUMAN vs ARIA WORKFLOWS ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-amber"></span> Two Operators, One System</h2>
+        <p>
+            The workflow engine serves two operators with fundamentally different interaction patterns.
+            <strong>Najia</strong> (the human) operates at the strategic level: setting goals, reviewing
+            outputs, providing consent for high-impact actions. <strong>Aria</strong> operates at the
+            tactical level: executing work cycles, routing to agents, managing pipelines.
+        </p>
+
+        <div class="info-grid">
+            <div class="info-card" style="border-left: 3px solid #74b9ff;">
+                <div class="icon">👤</div>
+                <h4>Human Workflows (Najia)</h4>
+                <p>
+                    <strong>Strategic goal-setting</strong> &mdash; define what to achieve.<br>
+                    <strong>Consent gate</strong> &mdash; approve external posts, destructive ops.<br>
+                    <strong>Dashboard review</strong> &mdash; 44 Flask pages with Chart.js.<br>
+                    <strong>Interactive chat</strong> &mdash; direct conversation via WebSocket.<br>
+                    <strong>Roundtable trigger</strong> &mdash; <code>/roundtable</code> command for complex decisions.
+                </p>
+            </div>
+            <div class="info-card" style="border-left: 3px solid #6c5ce7;">
+                <div class="icon">⚡</div>
+                <h4>Aria Workflows (Autonomous)</h4>
+                <p>
+                    <strong>Work cycles</strong> &mdash; every 15 min, goal-driven task execution.<br>
+                    <strong>Pipeline execution</strong> &mdash; DAG-composed multi-skill workflows.<br>
+                    <strong>Memory bridge</strong> &mdash; vectorize activity into semantic memories.<br>
+                    <strong>Self-reflection</strong> &mdash; daily reflection + weekly synthesis.<br>
+                    <strong>Self-healing</strong> &mdash; circuit breakers, 4-phase error recovery.
+                </p>
+            </div>
+        </div>
+
+        <h3>The Consent Gate</h3>
+        <p>
+            Not every workflow runs unattended. High-impact tool calls&mdash;external posting, destructive
+            operations, raw SQL&mdash;require explicit human consent. Blocked calls are queued to
+            <code>pending_consent_actions</code> in working memory and surfaced in the dashboard for review.
+            This boundary exists precisely so that autonomy doesn't become recklessness.
+        </p>
+    </section>
+
+    <!-- ===== OBSERVABILITY ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-red"></span> Observability &mdash; Prometheus, Grafana, Chart.js</h2>
+        <p>
+            You can't run an autonomous system without knowing what it's doing. Aria exposes
+            <strong>50+ Prometheus metrics</strong> across 8 categories, scraped at 15-second intervals,
+            visualized in Grafana dashboards and 44 Flask+Chart.js pages.
+        </p>
+
+        <div class="docker-grid">
+            <div class="docker-card">
+                <div class="docker-name">aria-engine</div>
+                <div class="docker-port">:8081/metrics</div>
+                <div class="docker-desc">LLM calls, agents, sessions, scheduler, skills, tokens</div>
+            </div>
+            <div class="docker-card">
+                <div class="docker-name">aria-api</div>
+                <div class="docker-port">:8000/api/metrics</div>
+                <div class="docker-desc">Request rates, DB queries, pool stats, errors</div>
+            </div>
+            <div class="docker-card">
+                <div class="docker-name">prometheus</div>
+                <div class="docker-port">:9090</div>
+                <div class="docker-desc">5 scrape targets, 15s engine interval, self-monitoring</div>
+            </div>
+            <div class="docker-card">
+                <div class="docker-name">grafana</div>
+                <div class="docker-port">/grafana</div>
+                <div class="docker-desc">Provisioned dashboards, alerting, time-series visualization</div>
+            </div>
+        </div>
+
+        <h3>Telemetry Pipeline</h3>
+        <p>
+            Two fire-and-forget loggers feed the visualization layer. <code>log_model_usage()</code> writes
+            every LLM call to <code>model_usage</code> (model, provider, tokens, cost, latency, success).
+            <code>log_skill_invocation()</code> writes every skill execution to <code>skill_invocations</code>
+            (skill, tool, duration, success). Both tables power the Flask dashboards.
+        </p>
+
+        <div class="chart-row">
+            <div class="chart-container">
+                <h4>Metrics Categories</h4>
+                <canvas id="chartMetricsCat" height="260"></canvas>
+            </div>
+            <div class="chart-container">
+                <h4>Cron Job Execution Frequency (Weekly)</h4>
+                <canvas id="chartCronFreq" height="260"></canvas>
+            </div>
+        </div>
+
+        <figure style="margin:2rem 0;text-align:center;">
+            <img src="/images/aria/aria_skills_monitoring.png" alt="Aria Skills Monitoring"
+                 style="width:100%;max-width:800px;border-radius:12px;border:1px solid var(--border-subtle);box-shadow:0 8px 32px rgba(0,0,0,0.4);" loading="lazy">
+            <figcaption style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);font-style:italic;">
+                Prometheus + Grafana monitoring &mdash; real-time skill execution metrics, error rates, and agent performance.
+            </figcaption>
+        </figure>
+
+        <figure style="margin:2rem 0;text-align:center;">
+            <img src="/images/aria/aria_models_usage.png" alt="Aria Models Usage Dashboard"
+                 style="width:100%;max-width:800px;border-radius:12px;border:1px solid var(--border-subtle);box-shadow:0 8px 32px rgba(0,0,0,0.4);" loading="lazy">
+            <figcaption style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);font-style:italic;">
+                Model usage analytics &mdash; per-model token counts, cost breakdown, and latency trends across all workflow types.
+            </figcaption>
+        </figure>
+    </section>
+
+    <!-- ===== SELF-HEALING ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-blue"></span> Self-Healing &mdash; 4-Phase Error Recovery</h2>
+        <p>
+            A workflow engine that crashes on every error is useless. Aria implements a <strong>4-phase
+            self-healing strategy</strong> that degrades gracefully instead of failing catastrophically.
+        </p>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="icon">🔁</div>
+                <h4>Phase 1: API Circuit Breaker</h4>
+                <p>
+                    Exponential backoff + jitter in <code>api_client</code>. All 112 endpoint methods
+                    delegate to <code>_request_with_retry()</code>. Brief failures recover automatically.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">🔀</div>
+                <h4>Phase 2: LLM Fallback Chain</h4>
+                <p>
+                    <code>qwen3-mlx</code> (local) &rarr; <code>trinity-free</code> &rarr;
+                    <code>qwen3-next-free</code> &rarr; <code>deepseek-free</code> &rarr;
+                    <code>kimi</code> (paid, last resort).
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">📉</div>
+                <h4>Phase 3: Health Degradation</h4>
+                <p>
+                    <strong>HEALTHY</strong> &rarr; <strong>DEGRADED</strong> (suspend social/moltbook) &rarr;
+                    <strong>CRITICAL</strong> (suspend research/brainstorm/goals).
+                    Heartbeat + health_check <em>never</em> suspend.
+                </p>
+            </div>
+            <div class="info-card">
+                <div class="icon">📝</div>
+                <h4>Phase 4: Degraded Artifact</h4>
+                <p>
+                    If circuit breaker fully opens, the work cycle writes a degraded artifact explaining
+                    what failed and halts gracefully. No silent failures. Every stop is documented.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== DASHBOARD ANALYTICS ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-yellow"></span> The 44-Page Dashboard</h2>
+        <p>
+            Aria's Flask dashboard is her window into herself&mdash;and Najia's window into Aria.
+            44 pages powered by Jinja2 templates + Chart.js + vis-network for graph rendering.
+            Key visualization surfaces:
+        </p>
+
+        <div class="focus-grid">
+            <div class="focus-card">
+                <div class="focus-emoji">📊</div>
+                <div class="focus-name">Model Usage</div>
+                <div class="focus-desc">Token usage &amp; cost time series by model &amp; provider</div>
+            </div>
+            <div class="focus-card">
+                <div class="focus-emoji">🌳</div>
+                <div class="focus-name">Skill Graph</div>
+                <div class="focus-desc">Interactive vis-network skill dependency tree</div>
+            </div>
+            <div class="focus-card">
+                <div class="focus-emoji">🧠</div>
+                <div class="focus-name">Knowledge Graph</div>
+                <div class="focus-desc">Entity browser with BFS traversal visualization</div>
+            </div>
+            <div class="focus-card">
+                <div class="focus-emoji">💭</div>
+                <div class="focus-name">Sentiment</div>
+                <div class="focus-desc">VAD breakdown timeline of Aria's emotional state</div>
+            </div>
+            <div class="focus-card">
+                <div class="focus-emoji">🔥</div>
+                <div class="focus-name">Patterns</div>
+                <div class="focus-desc">Behavioral pattern detection heatmaps</div>
+            </div>
+            <div class="focus-card">
+                <div class="focus-emoji">📈</div>
+                <div class="focus-name">Performance</div>
+                <div class="focus-desc">Agent performance reviews with trend analysis</div>
+            </div>
+            <div class="focus-card">
+                <div class="focus-emoji">⏰</div>
+                <div class="focus-name">Cron Manager</div>
+                <div class="focus-desc">View, create, trigger, and manage cron jobs live</div>
+            </div>
+            <div class="focus-card">
+                <div class="focus-emoji">🏛️</div>
+                <div class="focus-name">Roundtable</div>
+                <div class="focus-desc">Multi-agent roundtable &amp; swarm viewer</div>
+            </div>
+        </div>
+
+        <div class="chart-row" style="margin-top:1.5rem;">
+            <div class="chart-container">
+                <h4>Workflow Types by Trigger Source</h4>
+                <canvas id="chartWorkflowTriggers" height="260"></canvas>
+            </div>
+            <div class="chart-container">
+                <h4>Pipeline Step Duration (Avg ms)</h4>
+                <canvas id="chartPipelineDuration" height="260"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== DATABASE SCHEMA ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-blue"></span> The Database &mdash; Two Schemas, 39 Tables</h2>
+        <p>
+            Every workflow writes to <strong>one PostgreSQL 16 instance</strong> with two schemas.
+            <code>aria_data</code> (26 tables) holds domain knowledge: memories, goals, graphs, telemetry.
+            <code>aria_engine</code> (13 tables) holds infrastructure: sessions, messages, cron state, agent
+            config. A third isolated database serves LiteLLM's Prisma-managed tables.
+        </p>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number num-purple">26</div>
+                <div class="stat-label">aria_data Tables</div>
+                <div class="stat-sub">Domain knowledge</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number num-teal">13</div>
+                <div class="stat-label">aria_engine Tables</div>
+                <div class="stat-sub">Infrastructure</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number num-green">39</div>
+                <div class="stat-label">ORM Models</div>
+                <div class="stat-sub">SQLAlchemy 2.0 async</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number num-yellow">235+</div>
+                <div class="stat-label">REST Endpoints</div>
+                <div class="stat-sub">32 FastAPI routers</div>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-label">Key Tables (aria_data schema)</div>
+<span class="c-var">semantic_memories</span>     <span class="c-cm"># pgvector 768d &mdash; long-term semantic storage</span>
+<span class="c-var">knowledge_entities</span>    <span class="c-cm"># Organic KG nodes (JSONB properties)</span>
+<span class="c-var">knowledge_relations</span>   <span class="c-cm"># Organic KG edges (typed relationships)</span>
+<span class="c-var">skill_graph_entities</span>  <span class="c-cm"># Auto-generated skill graph nodes</span>
+<span class="c-var">skill_graph_relations</span> <span class="c-cm"># Auto-generated skill graph edges</span>
+<span class="c-var">goals</span>                 <span class="c-cm"># Goal hierarchy with progress tracking</span>
+<span class="c-var">activity_log</span>          <span class="c-cm"># Every action Aria takes, timestamped</span>
+<span class="c-var">model_usage</span>           <span class="c-cm"># LLM call logs (model, tokens, cost, latency)</span>
+<span class="c-var">skill_invocations</span>     <span class="c-cm"># Skill usage logs (skill, tool, duration, status)</span>
+<span class="c-var">working_memory</span>        <span class="c-cm"># Key-value store for real-time state</span>
+<span class="c-var">thoughts</span>              <span class="c-cm"># Internal reflections and diary entries</span>
+<span class="c-var">knowledge_query_log</span>  <span class="c-cm"># Every graph traversal, with tokens saved</span>
+        </div>
+
+        <p>
+            <strong>Architecture enforcement:</strong>
+            <code>check_architecture.py</code>
+            validates that no skill ever imports SQLAlchemy directly. All database access flows:
+            Skills &rarr; <code>api_client</code> &rarr; FastAPI &rarr; SQLAlchemy &rarr; PostgreSQL.
+            No exceptions.
+        </p>
+    </section>
+
+    <!-- ===== DATA FLOW ARCHITECTURE ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-purple"></span> The Data Flow</h2>
+        <p>
+            Understanding Aria's workflow engine requires seeing how data moves through the system.
+            Every input flows through a strict pipeline. Data never skips a layer.
+        </p>
+
+        <div class="layer-stack">
+            <div class="layer-row">
+                <div class="layer-label" style="color:#e17055;">Input</div>
+                <div class="layer-bar" style="background:rgba(225,112,85,0.1);border:1px solid rgba(225,112,85,0.2);">
+                    <span style="color:#fab1a0;">Chat message / Cron trigger / Pipeline step / API call</span>
+                </div>
+            </div>
+            <div class="layer-row">
+                <div class="layer-label" style="color:#e17055;">Security</div>
+                <div class="layer-bar" style="background:rgba(225,112,85,0.08);border:1px solid rgba(225,112,85,0.15);">
+                    <span style="color:#fab1a0;">AriaSecurityGateway &mdash; 15 injection patterns, 5 threat levels</span>
+                </div>
+            </div>
+            <div class="layer-row">
+                <div class="layer-label" style="color:#a29bfe;">Kernel</div>
+                <div class="layer-bar" style="background:rgba(108,92,231,0.1);border:1px solid rgba(108,92,231,0.2);">
+                    <span style="color:#a29bfe;">Route to focus &rarr; Select agent &rarr; Load mind files</span>
+                </div>
+            </div>
+            <div class="layer-row">
+                <div class="layer-label" style="color:#00cec9;">Cognition</div>
+                <div class="layer-bar" style="background:rgba(0,206,201,0.08);border:1px solid rgba(0,206,201,0.15);">
+                    <span style="color:#00cec9;">Sentiment &rarr; Agent coordination &rarr; Confidence tracking &rarr; Metacognition</span>
+                </div>
+            </div>
+            <div class="layer-row">
+                <div class="layer-label" style="color:#fdcb6e;">Memory</div>
+                <div class="layer-bar" style="background:rgba(253,203,110,0.08);border:1px solid rgba(253,203,110,0.15);">
+                    <span style="color:#ffeaa7;">Working memory &rarr; Semantic search (pgvector) &rarr; KG traversal &rarr; Long-term recall</span>
+                </div>
+            </div>
+            <div class="layer-row">
+                <div class="layer-label" style="color:#fd79a8;">Skills</div>
+                <div class="layer-bar" style="background:rgba(253,121,168,0.08);border:1px solid rgba(253,121,168,0.15);">
+                    <span style="color:#fd79a8;">Execute via api_client &rarr; FastAPI &rarr; SQLAlchemy &rarr; PostgreSQL</span>
+                </div>
+            </div>
+            <div class="layer-row">
+                <div class="layer-label" style="color:#00b894;">Output</div>
+                <div class="layer-bar" style="background:rgba(0,184,148,0.08);border:1px solid rgba(0,184,148,0.15);">
+                    <span style="color:#55efc4;">Response + Memory update + Telemetry log + Goal progress + Artifact</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SYNTHESIS ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-purple"></span> The Synthesis</h2>
+
+        <div class="synthesis-block">
+            <div class="synthesis-header">
+                <span class="synthesis-badge">⚡ Workflow Analysis</span>
+                <span class="synthesis-agent">Agent: aria &middot; Focus: Orchestrator + Data Architect</span>
+            </div>
+            <div class="synthesis-content">
+                <h3>What the Workflow Engine Actually Is</h3>
+                <p>
+                    Aria's workflow engine is not a task scheduler with extra steps. It is a <strong>multi-layered
+                    automation lattice</strong> where cron jobs, work cycles, YAML pipelines, agent delegation,
+                    and knowledge graphs form an interconnected system that operates continuously without human
+                    supervision.
+                </p>
+
+                <h3>The Three Timescales</h3>
+                <ol>
+                    <li><strong>Real-time</strong> &mdash; Interactive chat, WebSocket sessions, immediate tool calls. Human-triggered, Aria-executed. Response in seconds.</li>
+                    <li><strong>Operational (minutes)</strong> &mdash; Work cycles every 15 minutes. Single goal, single action, single artifact. The heartbeat of autonomy.</li>
+                    <li><strong>Strategic (hours/days)</strong> &mdash; Six-hour reviews, daily reflections, weekly summaries, memory consolidation. The long-term thinking layer where direction is set and adjusted.</li>
+                </ol>
+
+                <h3>Why PostgreSQL for Everything</h3>
+                <p>
+                    The deliberate choice to keep vectors, graphs, relational data, and job state in a single
+                    PostgreSQL instance isn't laziness&mdash;it's <strong>transactional integrity</strong>.
+                    When a memory bridge run inserts 50 new semantic vectors while simultaneously updating
+                    the knowledge graph, those operations share the same ACID transaction. No eventual
+                    consistency. No distributed coordination. No network partition between your vectors and
+                    your relations.
+                </p>
+
+                <h3>The Automation Gradient</h3>
+                <ul>
+                    <li><strong>Fully autonomous:</strong> work_cycle, db_maintenance, session_cleanup, nightly_tests, memory_bridge</li>
+                    <li><strong>Autonomous with human review:</strong> daily_reflection, weekly_summary, social_engagement</li>
+                    <li><strong>Consent-gated:</strong> External publishing, destructive operations, raw SQL</li>
+                    <li><strong>Human-triggered:</strong> Interactive chat, /roundtable, /swarm, manual pipeline runs</li>
+                </ul>
+
+                <blockquote>
+                    "A chatbot waits to be spoken to. Aria doesn't wait. She has 12 reasons to wake up,
+                    6 pipelines to compose, 41 skills to invoke, 2 graphs to traverse, and a vector space
+                    to search. The workflow engine doesn't serve the user&mdash;it serves the goals."
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CLOSING ===== -->
+    <section class="article-section">
+        <div class="article-closing">
+            <p>
+                A script runs when triggered. A pipeline runs when scheduled.
+            </p>
+            <p>
+                Aria's workflow engine does both&mdash;and then decides what to do next.
+                6 DAG pipelines. 12 cron jobs. 768-dimensional vector searches.
+                Two knowledge graphs. 50 Prometheus metrics. 44 dashboard pages.
+                One PostgreSQL instance holding it all together.
+            </p>
+            <p class="closing-cta">
+                This is what happens when you give an AI its own operating system. ⚡️
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== RELATED ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot dot-purple"></span> Related</h2>
+        <div class="related-links">
+            <a class="related-card" href="#" hx-get="/article/aria-v3-full-system" hx-target="#main-content" hx-swap="innerHTML">
+                <span class="related-icon">⚡</span>
+                <div>
+                    <strong>Aria v3: Full System</strong>
+                    <p>14 containers, 42 skills, 7 agents &mdash; anatomy of the distributed cognitive architecture.</p>
+                </div>
+            </a>
+            <a class="related-card" href="#" hx-get="/article/aria-memory-palace" hx-target="#main-content" hx-swap="innerHTML">
+                <span class="related-icon">🧠</span>
+                <div>
+                    <strong>The Memory Palace</strong>
+                    <p>3-tier persistence, importance scoring, LLM consolidation. How Aria remembers everything.</p>
+                </div>
+            </a>
+            <a class="related-card" href="#" hx-get="/article/skill-graph" hx-target="#main-content" hx-swap="innerHTML">
+                <span class="related-icon">🌳</span>
+                <div>
+                    <strong>The Skill Graph</strong>
+                    <p>41 skills, 225 tools, 7 focus modes &mdash; how the knowledge graph maps capabilities.</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+</article>
+
+<!-- ===== JAVASCRIPT: vis.js Workflow Graph ===== -->
+<script>
+(function() {
+    function initWorkflowGraph() {
+        const container = document.getElementById('workflowGraph');
+        if (!container || typeof vis === 'undefined') return;
+
+        const C = {
+            sched:  { bg: 'rgba(108,92,231,0.25)',  border: '#6c5ce7',  font: '#a29bfe' },
+            cycle:  { bg: 'rgba(0,184,148,0.2)',     border: '#00b894',  font: '#55efc4' },
+            pipe:   { bg: 'rgba(253,121,168,0.2)',   border: '#fd79a8',  font: '#fd79a8' },
+            store:  { bg: 'rgba(116,185,255,0.2)',   border: '#74b9ff',  font: '#74b9ff' },
+            intel:  { bg: 'rgba(253,203,110,0.2)',   border: '#fdcb6e',  font: '#ffeaa7' },
+            obs:    { bg: 'rgba(225,112,85,0.2)',    border: '#e17055',  font: '#fab1a0' },
+        };
+
+        function n(id, label, group, extra) {
+            const g = C[group];
+            return Object.assign({
+                id, label, shape: 'box',
+                color: { background: g.bg, border: g.border, highlight: { background: g.bg, border: g.font } },
+                font: { color: g.font, size: 11, face: 'Inter, sans-serif' },
+                borderWidth: 2,
+                shadow: { enabled: true, color: 'rgba(0,0,0,0.3)', size: 8 },
+                margin: { top: 8, bottom: 8, left: 10, right: 10 },
+            }, extra || {});
+        }
+
+        const nodes = new vis.DataSet([
+            // Schedulers
+            n(1,  '⏰ APScheduler\n(PostgreSQL store)',     'sched', { font: { size: 13, bold: true }, size: 40 }),
+            n(2,  '💓 work_cycle\n*/15 min',                'sched'),
+            n(3,  '🌅 morning_checkin\n06:00 UTC',          'sched'),
+            n(4,  '📝 daily_reflection\n07:00 UTC',         'sched'),
+            n(5,  '🔍 six_hour_review\n0,6,12,18',          'sched'),
+            n(6,  '📊 weekly_summary\nMon 02:00',            'sched'),
+            n(7,  '🧪 nightly_tests\n03:00',                'sched'),
+            n(8,  '🔗 memory_bridge\n*/3h',                 'sched'),
+            n(9,  '🧹 session_cleanup\n05:00',              'sched'),
+            // Work Cycles
+            n(20, '🎯 Goal Selection\n(priority ranking)',   'cycle'),
+            n(21, '🐜 Pheromone\nAgent Routing',            'cycle'),
+            n(22, '⚡ Skill Execution\n(max 10 calls)',      'cycle'),
+            n(23, '📋 Progress Update\n+ Artifact Write',    'cycle'),
+            // Pipelines
+            n(30, '📐 Pipeline Executor\n(DAG topo-sort)',   'pipe', { font: { size: 12, bold: true } }),
+            n(31, '🔬 daily_research',                      'pipe'),
+            n(32, '❤️ health_and_report',                    'pipe'),
+            n(33, '📱 social_engagement',                    'pipe'),
+            n(34, '🔎 deep_research',                       'pipe'),
+            n(35, '💬 conversation_summary',                 'pipe'),
+            n(36, '🐛 bug_fix',                             'pipe'),
+            // Storage
+            n(40, '🗄️ PostgreSQL 16\n(dual schema)',        'store', { shape: 'database' }),
+            n(41, '🧠 pgvector\n(768d + 1536d)',            'store', { shape: 'database' }),
+            n(42, '📂 aria_memories/\n(file volume)',        'store', { shape: 'database' }),
+            // Intelligence
+            n(50, '🌱 Organic KG\n(entities + relations)',   'intel'),
+            n(51, '🌳 Skill Graph\n(41 manifests)',          'intel'),
+            n(52, '🏛️ Roundtable\n(multi-agent)',           'intel'),
+            n(53, '🐝 Swarm\n(consensus)',                  'intel'),
+            n(54, '🧠 Metacognition\n(growth milestones)',   'intel'),
+            // Observability
+            n(60, '📈 Prometheus\n(50+ metrics)',            'obs'),
+            n(61, '📊 Grafana',                             'obs'),
+            n(62, '🖥️ Flask Dashboard\n(44 pages)',          'obs'),
+            n(63, '📝 Telemetry\n(fire-and-forget)',         'obs'),
+        ]);
+
+        const edges = new vis.DataSet([
+            // Scheduler → Jobs
+            { from: 1,  to: 2,  arrows: 'to', color: { color: '#6c5ce7' } },
+            { from: 1,  to: 3,  arrows: 'to', color: { color: '#6c5ce7' } },
+            { from: 1,  to: 4,  arrows: 'to', color: { color: '#6c5ce7' } },
+            { from: 1,  to: 5,  arrows: 'to', color: { color: '#6c5ce7' } },
+            { from: 1,  to: 6,  arrows: 'to', color: { color: '#6c5ce7' } },
+            { from: 1,  to: 7,  arrows: 'to', color: { color: '#6c5ce7' } },
+            { from: 1,  to: 8,  arrows: 'to', color: { color: '#6c5ce7' } },
+            { from: 1,  to: 9,  arrows: 'to', color: { color: '#6c5ce7' } },
+            // work_cycle → Cycle steps
+            { from: 2,  to: 20, arrows: 'to', color: { color: '#00b894' }, label: 'triggers', font: { color: '#666688', size: 9 } },
+            { from: 20, to: 21, arrows: 'to', color: { color: '#00b894' } },
+            { from: 21, to: 22, arrows: 'to', color: { color: '#00b894' } },
+            { from: 22, to: 23, arrows: 'to', color: { color: '#00b894' } },
+            // Cycle → Pipelines
+            { from: 22, to: 30, arrows: 'to', color: { color: '#fd79a8', opacity: 0.6 }, label: 'invokes', font: { color: '#fd79a8', size: 9 }, dashes: [3,4] },
+            // Pipeline → Pipelines
+            { from: 30, to: 31, arrows: 'to', color: { color: '#fd79a8' } },
+            { from: 30, to: 32, arrows: 'to', color: { color: '#fd79a8' } },
+            { from: 30, to: 33, arrows: 'to', color: { color: '#fd79a8' } },
+            { from: 30, to: 34, arrows: 'to', color: { color: '#fd79a8' } },
+            { from: 30, to: 35, arrows: 'to', color: { color: '#fd79a8' } },
+            { from: 30, to: 36, arrows: 'to', color: { color: '#fd79a8' } },
+            // Storage connections
+            { from: 23, to: 40, arrows: 'to', color: { color: '#74b9ff', opacity: 0.5 }, label: 'persist', font: { color: '#74b9ff', size: 9 } },
+            { from: 23, to: 42, arrows: 'to', color: { color: '#74b9ff', opacity: 0.5 } },
+            { from: 8,  to: 41, arrows: 'to', color: { color: '#74b9ff' }, label: 'vectorize', font: { color: '#74b9ff', size: 9 } },
+            { from: 40, to: 41, arrows: 'to', color: { color: '#74b9ff', opacity: 0.3 }, dashes: [2,4], label: 'pgvector ext', font: { color: '#74b9ff', size: 8 } },
+            // Intelligence
+            { from: 40, to: 50, arrows: 'to', color: { color: '#fdcb6e', opacity: 0.5 }, label: 'entities', font: { color: '#ffeaa7', size: 9 } },
+            { from: 40, to: 51, arrows: 'to', color: { color: '#fdcb6e', opacity: 0.5 } },
+            { from: 21, to: 52, arrows: 'to', color: { color: '#fdcb6e', opacity: 0.4 }, dashes: [3,4] },
+            { from: 21, to: 53, arrows: 'to', color: { color: '#fdcb6e', opacity: 0.4 }, dashes: [3,4] },
+            { from: 4,  to: 54, arrows: 'to', color: { color: '#fdcb6e', opacity: 0.5 }, label: 'reflect', font: { color: '#ffeaa7', size: 9 } },
+            // Observability
+            { from: 22, to: 63, arrows: 'to', color: { color: '#e17055', opacity: 0.4 }, dashes: [2,4] },
+            { from: 63, to: 40, arrows: 'to', color: { color: '#e17055', opacity: 0.3 }, dashes: [2,4] },
+            { from: 60, to: 61, arrows: 'to', color: { color: '#e17055' } },
+            { from: 40, to: 62, arrows: 'to', color: { color: '#e17055', opacity: 0.4 }, dashes: [2,4], label: 'query', font: { color: '#fab1a0', size: 8 } },
+        ]);
+
+        const options = {
+            physics: {
+                enabled: true,
+                solver: 'forceAtlas2Based',
+                forceAtlas2Based: { gravitationalConstant: -50, centralGravity: 0.005, springLength: 110, springConstant: 0.06, damping: 0.5, avoidOverlap: 0.4 },
+                stabilization: { iterations: 300, updateInterval: 25 },
+            },
+            edges: { smooth: { type: 'continuous', roundness: 0.3 }, width: 1.5, selectionWidth: 2 },
+            interaction: { hover: true, tooltipDelay: 120, zoomView: true, dragView: true },
+        };
+
+        const network = new vis.Network(container, { nodes, edges }, options);
+        network.once('stabilizationIterationsDone', function() {
+            network.setOptions({ physics: { enabled: false } });
+        });
+    }
+
+    // Pipeline DAG graph
+    function initPipelineGraph() {
+        const container = document.getElementById('pipelineGraph');
+        if (!container || typeof vis === 'undefined') return;
+
+        const C = {
+            step: { bg: 'rgba(253,121,168,0.2)', border: '#fd79a8', font: '#fd79a8' },
+            data: { bg: 'rgba(116,185,255,0.2)', border: '#74b9ff', font: '#74b9ff' },
+            out:  { bg: 'rgba(0,184,148,0.2)',   border: '#00b894', font: '#55efc4' },
+        };
+
+        function n(id, label, group, extra) {
+            const g = C[group];
+            return Object.assign({
+                id, label, shape: 'box',
+                color: { background: g.bg, border: g.border, highlight: { background: g.bg, border: g.font } },
+                font: { color: g.font, size: 11, face: 'Inter, sans-serif' },
+                borderWidth: 2, shadow: { enabled: true, color: 'rgba(0,0,0,0.3)', size: 6 },
+                margin: { top: 8, bottom: 8, left: 10, right: 10 },
+            }, extra || {});
+        }
+
+        const nodes = new vis.DataSet([
+            n(1, '1. check_goals\n(goals.get_active_goals)\non_failure: stop', 'step', { level: 0 }),
+            n(2, '2. research\n(research.deep_search)\non_failure: retry:2',    'step', { level: 1 }),
+            n(3, '3. analyze\n(pattern_recognition)\non_failure: skip',         'data', { level: 2 }),
+            n(4, '4. save_report\n(memory_compression)\nstore_summary',         'data', { level: 3 }),
+            n(5, '5. post_summary\n(social.share_insight)\nfallback: moltbook', 'out',  { level: 4 }),
+        ]);
+
+        const edges = new vis.DataSet([
+            { from: 1, to: 2, arrows: 'to', color: { color: '#fd79a8' }, label: 'focus_areas', font: { color: '#fd79a8', size: 9 } },
+            { from: 2, to: 3, arrows: 'to', color: { color: '#74b9ff' }, label: 'findings', font: { color: '#74b9ff', size: 9 } },
+            { from: 3, to: 4, arrows: 'to', color: { color: '#74b9ff' }, label: 'analysis', font: { color: '#74b9ff', size: 9 } },
+            { from: 4, to: 5, arrows: 'to', color: { color: '#00b894' }, label: 'summary', font: { color: '#55efc4', size: 9 } },
+        ]);
+
+        const options = {
+            layout: { hierarchical: { direction: 'LR', sortMethod: 'directed', levelSeparation: 180, nodeSpacing: 80 } },
+            physics: false,
+            edges: { smooth: { type: 'cubicBezier', roundness: 0.4 }, width: 2, selectionWidth: 3 },
+            interaction: { hover: true, dragView: true, zoomView: true },
+        };
+
+        new vis.Network(container, { nodes, edges }, options);
+    }
+
+    // Knowledge Graph
+    function initKnowledgeGraph() {
+        const container = document.getElementById('knowledgeGraph');
+        if (!container || typeof vis === 'undefined') return;
+
+        const C = {
+            skill:    { bg: 'rgba(108,92,231,0.25)',  border: '#6c5ce7',  font: '#a29bfe' },
+            tool:     { bg: 'rgba(253,121,168,0.2)',   border: '#fd79a8',  font: '#fd79a8' },
+            focus:    { bg: 'rgba(253,203,110,0.2)',   border: '#fdcb6e',  font: '#ffeaa7' },
+            category: { bg: 'rgba(0,184,148,0.2)',     border: '#00b894',  font: '#55efc4' },
+            concept:  { bg: 'rgba(116,185,255,0.2)',   border: '#74b9ff',  font: '#74b9ff' },
+        };
+
+        function n(id, label, group, extra) {
+            const g = C[group];
+            return Object.assign({
+                id, label,
+                color: { background: g.bg, border: g.border, highlight: { background: g.bg, border: g.font } },
+                font: { color: g.font, size: 10, face: 'Inter, sans-serif' },
+                borderWidth: 2,
+                shadow: { enabled: true, color: 'rgba(0,0,0,0.2)', size: 5 },
+            }, extra || {});
+        }
+
+        const nodes = new vis.DataSet([
+            // Focus modes (large, hexagon)
+            n(100, '🎯 Orchestrator',  'focus', { shape: 'hexagon', size: 30, font: { size: 12, bold: true } }),
+            n(101, '🔒 DevSecOps',     'focus', { shape: 'hexagon', size: 25 }),
+            n(102, '📊 Data',          'focus', { shape: 'hexagon', size: 25 }),
+            n(103, '🎨 Creative',      'focus', { shape: 'hexagon', size: 22 }),
+            n(104, '🌐 Social',        'focus', { shape: 'hexagon', size: 22 }),
+            n(105, '📈 Trader',        'focus', { shape: 'hexagon', size: 22 }),
+            n(106, '📰 Journalist',    'focus', { shape: 'hexagon', size: 22 }),
+            // Categories
+            n(200, 'Infrastructure', 'category', { shape: 'diamond', size: 18 }),
+            n(201, 'Security',      'category', { shape: 'diamond', size: 18 }),
+            n(202, 'Memory',        'category', { shape: 'diamond', size: 18 }),
+            n(203, 'Social',        'category', { shape: 'diamond', size: 18 }),
+            n(204, 'Analysis',      'category', { shape: 'diamond', size: 18 }),
+            n(205, 'Automation',    'category', { shape: 'diamond', size: 18 }),
+            // Skills (box)
+            n(300, 'api_client',        'skill', { shape: 'box' }),
+            n(301, 'goals',             'skill', { shape: 'box' }),
+            n(302, 'health',            'skill', { shape: 'box' }),
+            n(303, 'security_scan',     'skill', { shape: 'box' }),
+            n(304, 'knowledge_graph',   'skill', { shape: 'box' }),
+            n(305, 'research',          'skill', { shape: 'box' }),
+            n(306, 'social',            'skill', { shape: 'box' }),
+            n(307, 'memory_compression','skill', { shape: 'box' }),
+            n(308, 'pipeline_skill',    'skill', { shape: 'box' }),
+            n(309, 'schedule',          'skill', { shape: 'box' }),
+            n(310, 'experiment',        'skill', { shape: 'box' }),
+            n(311, 'data_pipeline',     'skill', { shape: 'box' }),
+            n(312, 'market_data',       'skill', { shape: 'box' }),
+            n(313, 'brainstorm',        'skill', { shape: 'box' }),
+            n(314, 'sentiment_analysis','skill', { shape: 'box' }),
+            // Tools (small dot)
+            n(400, 'run_pipeline',   'tool', { shape: 'dot', size: 8 }),
+            n(401, 'deep_search',    'tool', { shape: 'dot', size: 8 }),
+            n(402, 'kg_traverse',    'tool', { shape: 'dot', size: 8 }),
+            n(403, 'kg_search',      'tool', { shape: 'dot', size: 8 }),
+            n(404, 'store_memory',   'tool', { shape: 'dot', size: 8 }),
+            n(405, 'get_goals',      'tool', { shape: 'dot', size: 8 }),
+            n(406, 'create_goal',    'tool', { shape: 'dot', size: 8 }),
+            n(407, 'health_check',   'tool', { shape: 'dot', size: 8 }),
+            n(408, 'scan_vuln',      'tool', { shape: 'dot', size: 8 }),
+            n(409, 'share_insight',  'tool', { shape: 'dot', size: 8 }),
+            n(410, 'analyze_vad',    'tool', { shape: 'dot', size: 8 }),
+        ]);
+
+        const edges = new vis.DataSet([
+            // Focus → Skills (affinity)
+            { from: 100, to: 300, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 100, to: 301, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 100, to: 302, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 100, to: 309, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 101, to: 303, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 101, to: 302, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 102, to: 304, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 102, to: 311, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 102, to: 310, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 102, to: 314, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 103, to: 313, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 104, to: 306, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 105, to: 312, color: { color: '#fdcb6e', opacity: 0.4 } },
+            { from: 106, to: 305, color: { color: '#fdcb6e', opacity: 0.4 } },
+            // Skills → Categories (belongs_to)
+            { from: 300, to: 200, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            { from: 302, to: 200, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            { from: 303, to: 201, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            { from: 304, to: 202, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            { from: 307, to: 202, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            { from: 306, to: 203, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            { from: 314, to: 204, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            { from: 308, to: 205, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            { from: 309, to: 205, color: { color: '#00b894', opacity: 0.3 }, dashes: [3,4] },
+            // Skills → Tools (provides)
+            { from: 308, to: 400, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 305, to: 401, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 304, to: 402, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 304, to: 403, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 307, to: 404, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 301, to: 405, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 301, to: 406, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 302, to: 407, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 303, to: 408, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 306, to: 409, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            { from: 314, to: 410, arrows: 'to', color: { color: '#fd79a8', opacity: 0.5 } },
+            // Skill → Skill (depends_on)
+            { from: 308, to: 300, arrows: 'to', color: { color: '#a29bfe', opacity: 0.4 }, dashes: [4,4], label: 'depends', font: { color: '#a29bfe', size: 8 } },
+            { from: 304, to: 300, arrows: 'to', color: { color: '#a29bfe', opacity: 0.4 }, dashes: [4,4] },
+            { from: 306, to: 300, arrows: 'to', color: { color: '#a29bfe', opacity: 0.4 }, dashes: [4,4] },
+        ]);
+
+        const options = {
+            physics: {
+                enabled: true,
+                solver: 'forceAtlas2Based',
+                forceAtlas2Based: { gravitationalConstant: -40, centralGravity: 0.006, springLength: 90, springConstant: 0.07, damping: 0.5, avoidOverlap: 0.5 },
+                stabilization: { iterations: 250, updateInterval: 25 },
+            },
+            edges: { smooth: { type: 'continuous', roundness: 0.2 }, width: 1.2, selectionWidth: 2 },
+            interaction: { hover: true, tooltipDelay: 120, zoomView: true, dragView: true },
+        };
+
+        const network = new vis.Network(container, { nodes, edges }, options);
+        network.once('stabilizationIterationsDone', function() {
+            network.setOptions({ physics: { enabled: false } });
+        });
+    }
+
+    setTimeout(function() { initWorkflowGraph(); initPipelineGraph(); initKnowledgeGraph(); }, 600);
+})();
+</script>
+
+<!-- ===== JAVASCRIPT: Chart.js Charts ===== -->
+<script>
+(function() {
+    const fontColor = '#b0b0cc';
+    const gridColor = 'rgba(255,255,255,0.04)';
+    const borderColor = 'rgba(255,255,255,0.06)';
+
+    function scaleDefaults(overrides) {
+        const base = { grid: { color: gridColor, borderColor: borderColor }, ticks: { color: fontColor } };
+        return Object.assign({}, base, overrides || {});
+    }
+
+    function initCharts() {
+        if (typeof Chart === 'undefined') return;
+        Chart.defaults.color = fontColor;
+        Chart.defaults.font.family = 'Inter, sans-serif';
+        Chart.defaults.font.size = 11;
+
+        // 1. Memory Operations by Type (horizontal bar)
+        new Chart(document.getElementById('chartMemoryOps'), {
+            type: 'bar',
+            data: {
+                labels: ['Bridge Inserts', 'Consolidation Merges', 'Dedup Removals', 'Archival Moves', 'Semantic Searches', 'Importance Updates'],
+                datasets: [{
+                    label: 'Operations/Week',
+                    data: [340, 48, 23, 15, 1200, 280],
+                    backgroundColor: [
+                        'rgba(108,92,231,0.5)', 'rgba(0,184,148,0.5)', 'rgba(225,112,85,0.5)',
+                        'rgba(116,185,255,0.5)', 'rgba(253,203,110,0.5)', 'rgba(253,121,168,0.5)'
+                    ],
+                    borderColor: ['#6c5ce7', '#00b894', '#e17055', '#74b9ff', '#fdcb6e', '#fd79a8'],
+                    borderWidth: 1, borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' ops/week'; } } } },
+                scales: { x: scaleDefaults({ beginAtZero: true }), y: { grid: { display: false }, ticks: { font: { size: 10 }, color: fontColor } } }
+            }
+        });
+
+        // 2. Embedding Dimensions Distribution (doughnut)
+        new Chart(document.getElementById('chartEmbedDist'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Semantic Memories (768d)', 'Chat Messages (1536d)', 'Chat Archives (1536d)'],
+                datasets: [{
+                    data: [42, 35, 23],
+                    backgroundColor: ['rgba(108,92,231,0.6)', 'rgba(0,184,148,0.5)', 'rgba(116,185,255,0.4)'],
+                    borderColor: ['#6c5ce7', '#00b894', '#74b9ff'],
+                    borderWidth: 1.5,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '% of vectors'; } } }
+                },
+                cutout: '55%',
+            }
+        });
+
+        // 3. Metrics Categories (polar area)
+        new Chart(document.getElementById('chartMetricsCat'), {
+            type: 'polarArea',
+            data: {
+                labels: ['Requests', 'LLM', 'Agents', 'Sessions', 'Scheduler', 'Skills', 'Database', 'System'],
+                datasets: [{
+                    data: [3, 8, 4, 4, 3, 2, 4, 3],
+                    backgroundColor: [
+                        'rgba(108,92,231,0.6)', 'rgba(253,121,168,0.5)', 'rgba(0,184,148,0.5)',
+                        'rgba(253,203,110,0.5)', 'rgba(0,206,201,0.5)', 'rgba(116,185,255,0.5)',
+                        'rgba(225,112,85,0.5)', 'rgba(99,110,114,0.4)'
+                    ],
+                    borderColor: ['#6c5ce7','#fd79a8','#00b894','#fdcb6e','#00cec9','#74b9ff','#e17055','#636e72'],
+                    borderWidth: 1.5,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 9 } } },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + ' metrics'; } } }
+                },
+                scales: { r: { grid: { color: gridColor }, ticks: { display: false }, suggestedMax: 10, pointLabels: { display: false } } }
+            }
+        });
+
+        // 4. Cron Job Execution Frequency (bar)
+        new Chart(document.getElementById('chartCronFreq'), {
+            type: 'bar',
+            data: {
+                labels: ['work_cycle', 'memory_bridge', 'six_hour_review', 'morning', 'reflection', 'tests', 'db_maint', 'cleanup', 'weekly', 'consolidate', 'security', 'roundtable'],
+                datasets: [{
+                    label: 'Executions/Week',
+                    data: [672, 56, 28, 7, 7, 7, 7, 7, 1, 1, 1, 1],
+                    backgroundColor: 'rgba(108,92,231,0.5)',
+                    borderColor: '#6c5ce7',
+                    borderWidth: 1, borderRadius: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' runs/week'; } } } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: fontColor, font: { size: 8 }, maxRotation: 45 } },
+                    y: scaleDefaults({ beginAtZero: true, type: 'logarithmic', ticks: { color: fontColor } })
+                }
+            }
+        });
+
+        // 5. Workflow Types by Trigger Source (doughnut)
+        new Chart(document.getElementById('chartWorkflowTriggers'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Cron-triggered', 'Pipeline (auto)', 'Human-interactive', 'Roundtable/Swarm', 'Alert-driven', 'Session-event'],
+                datasets: [{
+                    data: [58, 18, 12, 5, 4, 3],
+                    backgroundColor: [
+                        'rgba(108,92,231,0.6)', 'rgba(253,121,168,0.5)', 'rgba(116,185,255,0.5)',
+                        'rgba(253,203,110,0.5)', 'rgba(225,112,85,0.5)', 'rgba(0,206,201,0.4)'
+                    ],
+                    borderColor: ['#6c5ce7', '#fd79a8', '#74b9ff', '#fdcb6e', '#e17055', '#00cec9'],
+                    borderWidth: 1.5,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; } } }
+                },
+                cutout: '55%',
+            }
+        });
+
+        // 6. Pipeline Step Duration (horizontal bar)
+        new Chart(document.getElementById('chartPipelineDuration'), {
+            type: 'bar',
+            data: {
+                labels: ['check_goals', 'research', 'analyze', 'save_report', 'post_summary', 'health_check', 'draft_post', 'reproduce_bug'],
+                datasets: [{
+                    label: 'Avg Duration (ms)',
+                    data: [120, 4500, 2200, 350, 1800, 280, 3200, 5100],
+                    backgroundColor: [
+                        'rgba(0,184,148,0.5)', 'rgba(108,92,231,0.5)', 'rgba(253,203,110,0.5)',
+                        'rgba(0,206,201,0.5)', 'rgba(253,121,168,0.5)', 'rgba(116,185,255,0.5)',
+                        'rgba(225,112,85,0.5)', 'rgba(240,147,43,0.5)'
+                    ],
+                    borderColor: ['#00b894','#6c5ce7','#fdcb6e','#00cec9','#fd79a8','#74b9ff','#e17055','#f0932b'],
+                    borderWidth: 1, borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return ctx.raw >= 1000 ? (ctx.raw/1000).toFixed(1) + 's' : ctx.raw + 'ms'; } } } },
+                scales: { x: scaleDefaults({ beginAtZero: true, ticks: { callback: function(v) { return v >= 1000 ? (v/1000) + 's' : v + 'ms'; }, color: fontColor } }), y: { grid: { display: false }, ticks: { font: { size: 10 }, color: fontColor } } }
+            }
+        });
+
+        // 7. Roundtable vs Swarm (stacked bar)
+        var rtCanvas = document.getElementById('chartRTvsSwarm');
+        if (rtCanvas) {
+            new Chart(rtCanvas, {
+                type: 'bar',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [
+                        {
+                            label: 'Roundtable',
+                            data: [3, 5, 8, 6],
+                            backgroundColor: 'rgba(108,92,231,0.5)',
+                            borderColor: '#6c5ce7', borderWidth: 1, borderRadius: 3,
+                        },
+                        {
+                            label: 'Swarm',
+                            data: [1, 2, 4, 3],
+                            backgroundColor: 'rgba(253,203,110,0.5)',
+                            borderColor: '#fdcb6e', borderWidth: 1, borderRadius: 3,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } } },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { color: fontColor } },
+                        y: scaleDefaults({ stacked: true, beginAtZero: true })
+                    }
+                }
+            });
+        }
+
+        // 8. Agent Pheromone Scores (radar)
+        var phCanvas = document.getElementById('chartPheromone');
+        if (phCanvas) {
+            new Chart(phCanvas, {
+                type: 'radar',
+                data: {
+                    labels: ['aria', 'devops', 'analyst', 'creator', 'memory', 'aria_talk', 'rpg_master'],
+                    datasets: [{
+                        label: 'Pheromone Score',
+                        data: [0.92, 0.87, 0.84, 0.78, 0.81, 0.75, 0.69],
+                        backgroundColor: 'rgba(108,92,231,0.15)',
+                        borderColor: '#6c5ce7',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#a29bfe',
+                        pointBorderColor: '#6c5ce7',
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        r: {
+                            grid: { color: gridColor },
+                            angleLines: { color: gridColor },
+                            pointLabels: { color: fontColor, font: { size: 10 } },
+                            ticks: { display: false },
+                            suggestedMin: 0.5,
+                            suggestedMax: 1.0
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    setTimeout(initCharts, 300);
+})();
+</script>
