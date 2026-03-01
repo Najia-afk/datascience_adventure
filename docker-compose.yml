@@ -28,15 +28,17 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - letsencrypt_data:/etc/letsencrypt:ro
+      - letsencrypt_data:/etc/letsencrypt
       - certbot_webroot:/var/www/certbot:ro
       - ./nginx/nginx-docker.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/docker-entrypoint.sh:/docker-entrypoint-bootstrap.sh:ro
       - static_data:/var/www/htmx_website
     depends_on:
       - app
     networks:
       - web_network
-    # Reload nginx config every 6 hours to pick up renewed certificates
+    # Bootstrap: generate self-signed cert if missing, then start nginx with reload loop
+    entrypoint: ["/bin/sh", "/docker-entrypoint-bootstrap.sh"]
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   certbot:
