@@ -1,4 +1,5 @@
 from flask import Flask, render_template, send_from_directory, abort, request, jsonify, session
+from jinja2 import FileSystemLoader, ChoiceLoader
 import os
 import re
 import json
@@ -73,8 +74,13 @@ def create_app():
     else:
         content_dir = base_dir
 
-    # Use the root as template_folder
+    # Use the root as template_folder, with fallback to /srv/htmx_website/static
+    # (deploy.sh copies to /var/www, but templates also exist at /srv/htmx_website/static)
     app = Flask(__name__, static_folder=content_dir, template_folder=content_dir)
+    template_dirs = [content_dir]
+    if os.path.exists('/srv/htmx_website/static'):
+        template_dirs.append('/srv/htmx_website/static')
+    app.jinja_loader = ChoiceLoader([FileSystemLoader(d) for d in template_dirs])
     app.config['CONTENT_DIR'] = content_dir
     
     # Session configuration for Google OAuth
