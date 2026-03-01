@@ -81,7 +81,7 @@ body {
     background: linear-gradient(135deg, rgba(15,15,35,0.95), rgba(25,25,55,0.95));
     border: 1px solid rgba(108,92,231,0.25); border-radius: 10px; padding: 1.25rem;
     margin: 1rem 0; font-family: 'Courier New', monospace; font-size: 0.85rem; line-height: 1.6;
-    overflow-x: auto; color: var(--text-secondary);
+    overflow-x: auto; color: var(--text-secondary); white-space: pre-wrap;
 }
 .code-block .c-kw { color: #a29bfe; }
 .code-block .c-str { color: #55efc4; }
@@ -89,7 +89,7 @@ body {
 .code-block .c-cm { color: var(--text-muted); font-style: italic; }
 .code-block .c-fn { color: #fd79a8; }
 .code-block .c-var { color: #74b9ff; }
-.code-block-label { display: inline-block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-purple); font-weight: 600; margin-bottom: 0.5rem; }
+.code-block-label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-purple); font-weight: 600; margin-bottom: 0.5rem; white-space: normal; }
 
 /* ===== Stats Grid ===== */
 .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
@@ -129,7 +129,7 @@ body {
 .legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: middle; margin-right: 4px; }
 
 /* ===== Cron Table ===== */
-.cron-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.82rem; }
+.cron-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.82rem; display: block; overflow-x: auto; }
 .cron-table th { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 2px solid rgba(108,92,231,0.3); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
 .cron-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
 .cron-table tr:hover td { background: rgba(255,255,255,0.02); }
@@ -564,8 +564,7 @@ body {
             just crash&mdash;it follows a declared strategy: stop, skip, retry, or fall back to an alternative skill.
         </p>
 
-        <div class="code-block">
-            <div class="code-block-label">aria_skills/pipelines/daily_research.yaml</div>
+        <div class="code-block"><div class="code-block-label">aria_skills/pipelines/daily_research.yaml</div>
 <span class="c-kw">name:</span> daily_research
 <span class="c-kw">steps:</span>
   - <span class="c-kw">name:</span> <span class="c-str">check_goals</span>
@@ -597,8 +596,7 @@ body {
     <span class="c-kw">skill:</span> social
     <span class="c-kw">method:</span> <span class="c-fn">share_insight</span>
     <span class="c-kw">depends_on:</span> [<span class="c-str">save_report</span>]
-    <span class="c-kw">on_failure:</span> <span class="c-str">fallback:moltbook.draft_post</span>
-        </div>
+    <span class="c-kw">on_failure:</span> <span class="c-str">fallback:moltbook.draft_post</span></div>
 
         <h3>Pipeline Execution Engine</h3>
         <p>
@@ -738,8 +736,7 @@ body {
             </div>
         </div>
 
-        <div class="code-block">
-            <div class="code-block-label">src/api/db/models.py &mdash; SemanticMemory</div>
+        <div class="code-block"><div class="code-block-label">src/api/db/models.py &mdash; SemanticMemory</div>
 <span class="c-kw">from</span> sqlalchemy <span class="c-kw">import</span> Column, String, Float, Integer, DateTime, Text
 <span class="c-kw">from</span> sqlalchemy.orm <span class="c-kw">import</span> Mapped, mapped_column
 <span class="c-kw">from</span> pgvector.sqlalchemy <span class="c-kw">import</span> Vector
@@ -762,8 +759,7 @@ body {
 
     <span class="c-kw">def</span> <span class="c-fn">bump_access</span>(self):
         self.access_count += <span class="c-num">1</span>
-        self.last_accessed = datetime.utcnow()
-        </div>
+        self.last_accessed = datetime.utcnow()</div>
 
         <h3>The Memory Bridge</h3>
         <p>
@@ -866,8 +862,7 @@ body {
             The vocabulary is small. The expressiveness comes from combination:
         </p>
 
-        <div class="code-block">
-            <div class="code-block-label">src/api/db/models.py &mdash; KnowledgeEntity / KnowledgeRelation</div>
+        <div class="code-block"><div class="code-block-label">src/api/db/models.py &mdash; KnowledgeEntity / KnowledgeRelation</div>
 <span class="c-kw">class</span> <span class="c-fn">KnowledgeEntity</span>(Base):
     __tablename__ = <span class="c-str">"knowledge_entities"</span>
     __table_args__ = {<span class="c-str">"schema"</span>: <span class="c-str">"aria_data"</span>}
@@ -898,8 +893,7 @@ body {
 <span class="c-var">FOCUS_MODES</span> = [
     <span class="c-str">"orchestrator"</span>, <span class="c-str">"devsecops"</span>, <span class="c-str">"data"</span>,
     <span class="c-str">"trader"</span>, <span class="c-str">"creative"</span>, <span class="c-str">"social"</span>, <span class="c-str">"journalist"</span>
-]
-        </div>
+]</div>
 
         <!-- Knowledge Graph vis.js -->
         <div class="network-wrap" style="margin-top:1.5rem;">
@@ -948,8 +942,7 @@ body {
             </div>
         </div>
 
-        <div class="code-block">
-            <div class="code-block-label">aria_engine/session_manager.py</div>
+        <div class="code-block"><div class="code-block-label">aria_engine/session_manager.py</div>
 <span class="c-kw">from</span> enum <span class="c-kw">import</span> Enum
 <span class="c-kw">from</span> dataclasses <span class="c-kw">import</span> dataclass, field
 <span class="c-kw">from</span> datetime <span class="c-kw">import</span> datetime, timedelta
@@ -975,8 +968,7 @@ body {
 
     <span class="c-kw">def</span> <span class="c-fn">log_tokens</span>(self, prompt_tokens: <span class="c-var">int</span>, completion_tokens: <span class="c-var">int</span>, cost: <span class="c-var">float</span>):
         self.token_count += prompt_tokens + completion_tokens
-        self.cost_usd += cost
-        </div>
+        self.cost_usd += cost</div>
 
         <p>
             Sessions older than 24 hours don't linger&mdash;they get archived with embeddings intact,
@@ -995,8 +987,7 @@ body {
             future decisions. Agents that deliver earn stronger pheromone. Agents that fail see theirs fade.
         </p>
 
-        <div class="code-block">
-            <div class="code-block-label">aria_agents/scoring.py</div>
+        <div class="code-block"><div class="code-block-label">aria_agents/scoring.py</div>
 <span class="c-kw">from</span> datetime <span class="c-kw">import</span> datetime, timedelta
 <span class="c-kw">from</span> typing <span class="c-kw">import</span> Optional
 
@@ -1024,8 +1015,7 @@ body {
     ]
     <span class="c-kw">if not</span> candidates:
         <span class="c-kw">raise</span> <span class="c-fn">NoEligibleAgentError</span>(task.domain)
-    <span class="c-kw">return</span> <span class="c-fn">max</span>(candidates, key=<span class="c-kw">lambda</span> a: pheromone_score(a, as_of))
-        </div>
+    <span class="c-kw">return</span> <span class="c-fn">max</span>(candidates, key=<span class="c-kw">lambda</span> a: pheromone_score(a, as_of))</div>
 
         <p>
             The 0.95 daily decay is the quiet genius of the system. Without it, a single agent could
@@ -1355,8 +1345,7 @@ body {
             </div>
         </div>
 
-        <div class="code-block">
-            <div class="code-block-label">alembic/versions/003_aria_data_schema.py &mdash; key tables</div>
+        <div class="code-block"><div class="code-block-label">alembic/versions/003_aria_data_schema.py &mdash; key tables</div>
 <span class="c-kw">def</span> <span class="c-fn">upgrade</span>() -&gt; <span class="c-kw">None</span>:
     op.execute(<span class="c-str">"CREATE SCHEMA IF NOT EXISTS aria_data"</span>)
     op.execute(<span class="c-str">"CREATE EXTENSION IF NOT EXISTS vector"</span>)
@@ -1399,8 +1388,7 @@ body {
     op.create_table(<span class="c-str">"thoughts"</span>,            <span class="c-cm"># reflections, diary entries</span>
         ...)
     op.create_table(<span class="c-str">"knowledge_query_log"</span>, <span class="c-cm"># every graph traversal, tokens saved</span>
-        ...)
-        </div>
+        ...)</div>
 
         <p>
             <strong>Architecture enforcement:</strong>
@@ -1739,13 +1727,14 @@ body {
         ]);
 
         const options = {
-            layout: { hierarchical: { direction: 'LR', sortMethod: 'directed', levelSeparation: 180, nodeSpacing: 80 } },
+            layout: { hierarchical: { direction: 'LR', sortMethod: 'directed', levelSeparation: 150, nodeSpacing: 60 } },
             physics: false,
             edges: { smooth: { type: 'cubicBezier', roundness: 0.4 }, width: 2, selectionWidth: 3 },
             interaction: { hover: true, dragView: true, zoomView: true },
         };
 
-        new vis.Network(container, { nodes, edges }, options);
+        const network = new vis.Network(container, { nodes, edges }, options);
+        network.fit({ animation: false });
     }
 
     // Knowledge Graph
