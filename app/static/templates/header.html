@@ -26,12 +26,9 @@
     <div class="dropdown">
         <button class="nav-link dropdown-btn">Articles ▾</button>
         <div class="dropdown-content">
-            <a href="/article/aria-entity" hx-get="/article/aria-entity" hx-target="#main-content" hx-swap="innerHTML">Aria: Agentic Entity</a>
-            <a href="/article/skill-graph" hx-get="/article/skill-graph" hx-target="#main-content" hx-swap="innerHTML">Skill Graph & Path Finding</a>
-            <a href="/article/llm-self-awareness" hx-get="/article/llm-self-awareness" hx-target="#main-content" hx-swap="innerHTML">LLM Self-Awareness</a>
-            <a href="/article/aria-architecture" hx-get="/article/aria-architecture" hx-target="#main-content" hx-swap="innerHTML">Aria Architecture</a>
-            <a href="/article/roundtable-v3" hx-get="/article/roundtable-v3" hx-target="#main-content" hx-swap="innerHTML">AI Roundtable: Jokes</a>
-            <a href="/article/shadows-of-absalom" hx-get="/article/shadows-of-absalom" hx-target="#main-content" hx-swap="innerHTML">Shadows of Absalom (RPG)</a>
+            {% for art in articles %}
+            <a href="{{ art.route }}" hx-get="{{ art.route }}" hx-target="#main-content" hx-swap="innerHTML">{{ art.short_title }}</a>
+            {% endfor %}
         </div>
     </div>
 

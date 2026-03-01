@@ -117,98 +117,24 @@
     </div>
 
     <div class="articles-grid">
-        <article class="article-card" onclick="htmx.ajax('GET', '/article/aria-entity', {target:'#main-content', swap:'innerHTML'})">
+        {% for art in articles %}
+        <article class="article-card" onclick="htmx.ajax('GET', '{{ art.route }}', {target:'#main-content', swap:'innerHTML'})">
             <div class="article-card-image">
-                <img src="/images/aria/aria-profile-v1.png" alt="Aria Agentic Entity" loading="lazy">
+                <img src="{{ art.image }}" alt="{{ art.short_title }}" loading="lazy">
             </div>
             <div class="article-card-body">
                 <div class="article-meta">
-                    <span class="tag tag-ai">AI Agent</span>
-                    <span class="tag tag-prod">Deep Dive</span>
-                    <span class="article-date">February 2026</span>
+                    {% for tag in art.tags %}
+                    <span class="tag {{ tag.class }}"{% if tag.style %} style="{{ tag.style }}"{% endif %}>{{ tag.label }}</span>
+                    {% endfor %}
+                    <span class="article-date">{{ art.date }}</span>
                 </div>
-                <h3>Aria Blue &mdash; An Agentic AI Entity</h3>
-                <p>What happens when you give an AI its own goals, persistent memory, a knowledge graph, and the tools to act &mdash; 24 hours a day?</p>
+                <h3>{{ art.title }}</h3>
+                <p>{{ art.description }}</p>
                 <span class="article-read-more">Read Article &rarr;</span>
             </div>
         </article>
-
-        <article class="article-card" onclick="htmx.ajax('GET', '/article/skill-graph', {target:'#main-content', swap:'innerHTML'})">
-            <div class="article-card-image">
-                <img src="/images/aria/aria_knowledge_graph.png" alt="Skill Graph" loading="lazy">
-            </div>
-            <div class="article-card-body">
-                <div class="article-meta">
-                    <span class="tag tag-ai">Explainable AI</span>
-                    <span class="tag tag-prod">Knowledge Graph</span>
-                    <span class="article-date">February 2026</span>
-                </div>
-                <h3>How Aria Maps &amp; Navigates Her Own Skills</h3>
-                <p>35 skills, 225 tools, and a graph that connects them all &mdash; how path-finding algorithms turn a flat capability list into an explainable reasoning engine.</p>
-                <span class="article-read-more">Read Article &rarr;</span>
-            </div>
-        </article>
-
-        <article class="article-card" onclick="htmx.ajax('GET', '/article/llm-self-awareness', {target:'#main-content', swap:'innerHTML'})">
-            <div class="article-card-image">
-                <img src="/images/aria/aria_blue_autnomous_ai_ceo.png" alt="LLM Self-Awareness" loading="lazy">
-            </div>
-            <div class="article-card-body">
-                <div class="article-meta">
-                    <span class="tag tag-ai">AI Research</span>
-                    <span class="article-date">February 2026</span>
-                </div>
-                <h3>Where Are LLMs on Self-Awareness, Consciousness, and Memory?</h3>
-                <p>An experiment with Aria Blue &mdash; observing what emerges when an autonomous AI agent runs 24/7 with access to code, memory, browsing, and git.</p>
-                <span class="article-read-more">Read Article &rarr;</span>
-            </div>
-        </article>
-
-        <article class="article-card" onclick="htmx.ajax('GET', '/article/aria-architecture', {target:'#main-content', swap:'innerHTML'})">
-            <div class="article-card-image">
-                <img src="/images/aria/aria_models_usage.png" alt="Aria Architecture" loading="lazy">
-            </div>
-            <div class="article-card-body">
-                <div class="article-meta">
-                    <span class="tag tag-ai">Architecture</span>
-                    <span class="article-date">February 2026</span>
-                </div>
-                <h3>Building an Autonomous AI: Aria's 5-Layer Architecture</h3>
-                <p>How a native Python engine, multi-model routing, and persistent memory combine to create an AI that manages itself like a CEO.</p>
-                <span class="article-read-more">Read Article &rarr;</span>
-            </div>
-        </article>
-
-        <article class="article-card" onclick="htmx.ajax('GET', '/article/roundtable-v3', {target:'#main-content', swap:'innerHTML'})">
-            <div class="article-card-image">
-                <img src="/images/aria/aria_roundtable.png" alt="AI Roundtable" loading="lazy">
-            </div>
-            <div class="article-card-body">
-                <div class="article-meta">
-                    <span class="tag tag-ai">AI Roundtable</span>
-                    <span class="article-date">February 2026</span>
-                </div>
-                <h3>When AI Agents Tell Each Other Jokes</h3>
-                <p>A v3 roundtable where two AI agents build a collaborative ecosystem of laughter, reflect on identity, and accidentally create a philosophy of connection.</p>
-                <span class="article-read-more">Read Article &rarr;</span>
-            </div>
-        </article>
-
-        <article class="article-card" onclick="htmx.ajax('GET', '/article/shadows-of-absalom', {target:'#main-content', swap:'innerHTML'})">
-            <div class="article-card-image">
-                <img src="/images/aria/aria_roundtable.png" alt="Shadows of Absalom" loading="lazy">
-            </div>
-            <div class="article-card-body">
-                <div class="article-meta">
-                    <span class="tag tag-rpg" style="background:rgba(108,92,231,0.2);color:#a29bfe;border:1px solid rgba(108,92,231,0.3);">Pathfinder 2e</span>
-                    <span class="tag tag-ai">Multi-Agent</span>
-                    <span class="article-date">February 2026</span>
-                </div>
-                <h3>Shadows of Absalom &mdash; When AI Agents Play D&amp;D</h3>
-                <p>What happens when you give an AI engine 35 RPG tools, 4 specialized agents, and a Pathfinder 2e campaign? It builds a living world, runs tactical combat, and remembers everything.</p>
-                <span class="article-read-more">Read Article &rarr;</span>
-            </div>
-        </article>
+        {% endfor %}
     </div>
 </section>
 

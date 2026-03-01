@@ -92,55 +92,141 @@ def create_app():
     app.url_map.strict_slashes = False
 
     # ===== OG Meta Tags Configuration =====
-    OG_META = {
-        '/article/roundtable-v3': {
-            'og_title': 'When AI Agents Tell Each Other Jokes',
-            'og_description': 'A v3 roundtable where two AI agents build a collaborative ecosystem of laughter, reflect on identity, and accidentally create a philosophy of connection.',
-            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_roundtable.png',
-            'og_type': 'article',
+    # ===== ARTICLE & PROJECT REGISTRY =====
+    # Add a new article here — routes, OG tags, header menu, and home page update automatically.
+    ARTICLES = [
+        {
+            'slug': 'the-midnight-cascade',
+            'route': '/article/the-midnight-cascade',
+            'template': 'templates/article_the_midnight_cascade.html',
+            'title': 'The Midnight Cascade — When Aria Spawned Herself 60 Times',
+            'short_title': 'The Midnight Cascade',
+            'description': 'Between midnight and 2 AM, Aria autonomously spawned 60+ sub-agents in a self-reinforcing loop. The circuit breaker meant to protect her was the engine of her destruction.',
+            'image': '/images/aria/aria_midnight_cascade.png',
+            'tags': [
+                {'label': 'Incident', 'class': 'tag-incident', 'style': 'background:rgba(225,112,85,0.2);color:#fab1a0;border:1px solid rgba(225,112,85,0.3);'},
+                {'label': 'Postmortem', 'class': 'tag-ai'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 0,
         },
-        '/article/aria-entity': {
-            'og_title': 'Aria Blue — An Agentic AI Entity',
-            'og_description': 'What happens when you give an AI its own goals, persistent memory, a knowledge graph, and the tools to act — 24 hours a day?',
-            'og_image': 'https://datascience-adventure.xyz/images/aria/aria-profile-v1.png',
-            'og_type': 'article',
+        {
+            'slug': 'aria-entity',
+            'route': '/article/aria-entity',
+            'template': 'templates/article_aria_entity.html',
+            'title': 'Aria Blue — An Agentic AI Entity',
+            'short_title': 'Aria: Agentic Entity',
+            'description': 'What happens when you give an AI its own goals, persistent memory, a knowledge graph, and the tools to act — 24 hours a day?',
+            'image': '/images/aria/aria-profile-v1.png',
+            'tags': [
+                {'label': 'AI Agent', 'class': 'tag-ai'},
+                {'label': 'Deep Dive', 'class': 'tag-prod'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 1,
         },
-        '/article/skill-graph': {
-            'og_title': 'How Aria Maps & Navigates Her Own Skills',
-            'og_description': '35 skills, 225 tools, and a graph that connects them all — how path-finding turns a flat capability list into an explainable reasoning engine.',
-            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_skill_graph.png',
-            'og_type': 'article',
+        {
+            'slug': 'skill-graph',
+            'route': '/article/skill-graph',
+            'template': 'templates/article_skill_graph.html',
+            'title': 'How Aria Maps & Navigates Her Own Skills',
+            'short_title': 'Skill Graph & Path Finding',
+            'description': '35 skills, 225 tools, and a graph that connects them all — how path-finding turns a flat capability list into an explainable reasoning engine.',
+            'image': '/images/aria/aria_knowledge_graph.png',
+            'tags': [
+                {'label': 'Explainable AI', 'class': 'tag-ai'},
+                {'label': 'Knowledge Graph', 'class': 'tag-prod'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 2,
         },
-        '/article/llm-self-awareness': {
-            'og_title': 'Where Are LLMs on Self-Awareness, Consciousness, and Memory?',
-            'og_description': 'An experiment with Aria Blue — observing what emerges when an autonomous AI agent runs 24/7 with access to code, memory, browsing, and git.',
-            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_blue_autnomous_ai_ceo.png',
-            'og_type': 'article',
+        {
+            'slug': 'llm-self-awareness',
+            'route': '/article/llm-self-awareness',
+            'template': 'templates/article_llm_self_awareness.html',
+            'title': 'Where Are LLMs on Self-Awareness, Consciousness, and Memory?',
+            'short_title': 'LLM Self-Awareness',
+            'description': 'An experiment with Aria Blue — observing what emerges when an autonomous AI agent runs 24/7 with access to code, memory, browsing, and git.',
+            'image': '/images/aria/aria_blue_autnomous_ai_ceo.png',
+            'tags': [
+                {'label': 'AI Research', 'class': 'tag-ai'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 3,
         },
-        '/article/aria-architecture': {
-            'og_title': "Building an Autonomous AI: Aria's 5-Layer Architecture",
-            'og_description': 'How a native Python engine, multi-model routing, and persistent memory combine to create an AI that manages itself like a CEO.',
-            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_models_usage.png',
-            'og_type': 'article',
+        {
+            'slug': 'aria-architecture',
+            'route': '/article/aria-architecture',
+            'template': 'templates/article_aria_architecture.html',
+            'title': "Building an Autonomous AI: Aria's 5-Layer Architecture",
+            'short_title': 'Aria Architecture',
+            'description': 'How a native Python engine, multi-model routing, and persistent memory combine to create an AI that manages itself like a CEO.',
+            'image': '/images/aria/aria_models_usage.png',
+            'tags': [
+                {'label': 'Architecture', 'class': 'tag-ai'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 4,
         },
-        '/project/aria': {
-            'og_title': 'Aria Blue — Autonomous AI Agent Platform',
-            'og_description': 'An autonomous AI agent that thinks like a CEO: analyzes tasks, delegates to specialized personas, and runs 24/7 with goal tracking and full observability.',
-            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_blue_the_autonomous_ai_ceo_platform.png',
-            'og_type': 'article',
+        {
+            'slug': 'roundtable-v3',
+            'route': '/article/roundtable-v3',
+            'template': 'templates/article_roundtable_v3.html',
+            'title': 'When AI Agents Tell Each Other Jokes',
+            'short_title': 'AI Roundtable: Jokes',
+            'description': 'A v3 roundtable where two AI agents build a collaborative ecosystem of laughter, reflect on identity, and accidentally create a philosophy of connection.',
+            'image': '/images/aria/aria_roundtable.png',
+            'tags': [
+                {'label': 'AI Roundtable', 'class': 'tag-ai'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 5,
         },
-        '/project/bubble': {
-            'og_title': 'Bubble — Blockchain Investigation Platform',
-            'og_description': 'Production-grade blockchain investigation platform for tracking illicit fund flows, managing crypto fraud cases, and monitoring suspicious wallets.',
-            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_knowledge_graph.png',
-            'og_type': 'article',
+        {
+            'slug': 'shadows-of-absalom',
+            'route': '/article/shadows-of-absalom',
+            'template': 'templates/article_shadows_of_absalom.html',
+            'title': 'Shadows of Absalom — When AI Agents Play D&D',
+            'short_title': 'Shadows of Absalom (RPG)',
+            'description': 'What happens when you give an AI engine 35 RPG tools, 4 specialized agents, and a Pathfinder 2e campaign? It builds a living world, runs tactical combat, and remembers everything.',
+            'image': '/images/aria/aria_roundtable.png',
+            'tags': [
+                {'label': 'Pathfinder 2e', 'class': 'tag-rpg', 'style': 'background:rgba(108,92,231,0.2);color:#a29bfe;border:1px solid rgba(108,92,231,0.3);'},
+                {'label': 'Multi-Agent', 'class': 'tag-ai'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 6,
         },
-        '/article/shadows-of-absalom': {
-            'og_title': 'Shadows of Absalom — When AI Agents Play D&D',
-            'og_description': 'What happens when you give an AI engine 35 RPG tools, 4 specialized agents, and a Pathfinder 2e campaign? It builds a living world, runs tactical combat, and remembers everything.',
-            'og_image': 'https://datascience-adventure.xyz/images/aria/aria_roundtable.png',
+    ]
+
+    # Build OG_META automatically from the registry
+    OG_META = {}
+    for art in ARTICLES:
+        OG_META[art['route']] = {
+            'og_title': art['title'],
+            'og_description': art['description'],
+            'og_image': f"https://datascience-adventure.xyz{art['image']}",
             'og_type': 'article',
-        },
+        }
+    # Add project-level OG tags (not articles)
+    OG_META['/project/aria'] = {
+        'og_title': 'Aria Blue — Autonomous AI Agent Platform',
+        'og_description': 'An autonomous AI agent that thinks like a CEO: analyzes tasks, delegates to specialized personas, and runs 24/7 with goal tracking and full observability.',
+        'og_image': 'https://datascience-adventure.xyz/images/aria/aria_blue_the_autonomous_ai_ceo_platform.png',
+        'og_type': 'article',
+    }
+    OG_META['/project/bubble'] = {
+        'og_title': 'Bubble — Blockchain Investigation Platform',
+        'og_description': 'Production-grade blockchain investigation platform for tracking illicit fund flows, managing crypto fraud cases, and monitoring suspicious wallets.',
+        'og_image': 'https://datascience-adventure.xyz/images/aria/aria_knowledge_graph.png',
+        'og_type': 'article',
     }
 
     def _is_social_crawler():
@@ -184,7 +270,7 @@ def create_app():
 
     @app.route('/header')
     def header():
-        return render_template('templates/header.html', google_client_id=GOOGLE_CLIENT_ID)
+        return render_template('templates/header.html', google_client_id=GOOGLE_CLIENT_ID, articles=ARTICLES)
 
 
     @app.route('/footer')
@@ -193,7 +279,7 @@ def create_app():
 
     @app.route('/summary')
     def summary():
-        return render_template('templates/summary.html')
+        return render_template('templates/summary.html', articles=ARTICLES)
 
     @app.route('/contact')
     def contact():
@@ -212,34 +298,14 @@ def create_app():
     def project_bubble():
         return _render_page_or_fragment('templates/project_bubble.html', '/project/bubble')
 
-    # Article pages
-    @app.route('/article/llm-self-awareness')
-    def article_llm_self_awareness():
-        return _render_page_or_fragment('templates/article_llm_self_awareness.html', '/article/llm-self-awareness')
-
-    @app.route('/article/aria-architecture')
-    def article_aria_architecture():
-        return _render_page_or_fragment('templates/article_aria_architecture.html', '/article/aria-architecture')
-
-    @app.route('/article/roundtable-v3')
-    def article_roundtable_v3():
-        return _render_page_or_fragment('templates/article_roundtable_v3.html', '/article/roundtable-v3')
-
-    @app.route('/article/aria-entity')
-    def article_aria_entity():
-        return _render_page_or_fragment('templates/article_aria_entity.html', '/article/aria-entity')
-
-    @app.route('/article/skill-graph')
-    def article_skill_graph():
-        return _render_page_or_fragment('templates/article_skill_graph.html', '/article/skill-graph')
-
-    @app.route('/article/shadows-of-absalom')
-    def article_shadows_of_absalom():
-        return _render_page_or_fragment('templates/article_shadows_of_absalom.html', '/article/shadows-of-absalom')
-
-    @app.route('/article/the-midnight-cascade')
-    def article_the_midnight_cascade():
-        return _render_page_or_fragment('templates/article_the_midnight_cascade.html', '/article/the-midnight-cascade')
+    # Article pages — auto-registered from ARTICLES registry
+    for _art in ARTICLES:
+        def _make_view(art):
+            def view_func():
+                return _render_page_or_fragment(art['template'], art['route'])
+            view_func.__name__ = f"article_{art['slug'].replace('-', '_')}"
+            return view_func
+        app.route(_art['route'])(_make_view(_art))
 
     @app.route('/feed')
     def linkedin_feed():
