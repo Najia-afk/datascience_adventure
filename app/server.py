@@ -224,10 +224,12 @@ def create_app():
     # Define the base directory relative to this file
     base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 
-    # Determine where the content (processed missions, converted python files) is located
-    # In Docker, this is /var/www/htmx_website
-    # Locally, we default to the static folder (though content might not be there if not generated)
-    if os.path.exists('/var/www/htmx_website'):
+    # Determine where the content (processed missions, converted python files) is located.
+    # Prefer /srv/htmx_website in Docker because it comes from the image build and avoids stale mounted volumes.
+    # Fallback to /var/www/htmx_website, then local static folder.
+    if os.path.exists('/srv/htmx_website'):
+        content_dir = '/srv/htmx_website'
+    elif os.path.exists('/var/www/htmx_website'):
         content_dir = '/var/www/htmx_website'
     else:
         content_dir = base_dir
