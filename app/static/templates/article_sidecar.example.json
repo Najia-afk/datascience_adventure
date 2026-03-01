@@ -1,0 +1,20 @@
+{
+  "title": "My New Post",
+  "short_title": "New Post",
+  "description": "A short summary that appears on cards and OG tags.",
+  "image": "/images/aria/my_new_post.png",
+  "tags": [
+    {
+      "label": "AI Research",
+      "class": "tag-ai"
+    },
+    {
+      "label": "Postmortem",
+      "class": "tag-incident",
+      "style": "background:rgba(225,112,85,0.2);color:#fab1a0;border:1px solid rgba(225,112,85,0.3);"
+    }
+  ],
+  "date": "March 2026",
+  "project": "aria",
+  "order": 1
+}

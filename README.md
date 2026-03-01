@@ -130,6 +130,36 @@ docker compose up -d --build
 1. Edit `utils/deploy.sh`: Add repository URL to the `REPOS` list
 2. Rebuild: `docker compose up -d --build`
 
+### Adding a New Article
+
+1. Create a template file in `app/static/templates/` named `article_<slug>.html`
+2. (Optional) Create a matching metadata file `app/static/templates/article_<slug>.json`
+3. Rebuild/redeploy: `docker compose up -d --build --force-recreate`
+
+Notes:
+- New `article_*.html` templates are auto-discovered at app startup
+- Sidecar metadata overrides defaults for auto-discovered articles (title, short_title, description, image, tags, date, project, order)
+- Copy `app/static/templates/article_sidecar.example.json` and rename it to match your article template
+- Validate sidecars locally: `python utils/scripts/validate_article_sidecars.py app/static/templates`
+
+Example `article_my_new_post.json`:
+
+```json
+{
+        "title": "My New Post",
+        "short_title": "New Post",
+        "description": "A short summary that appears on cards and OG tags.",
+        "image": "/images/aria/my_new_post.png",
+        "tags": [
+                {"label": "AI Research", "class": "tag-ai"},
+                {"label": "Postmortem", "class": "tag-incident", "style": "background:rgba(225,112,85,0.2);color:#fab1a0;border:1px solid rgba(225,112,85,0.3);"}
+        ],
+        "date": "March 2026",
+        "project": "aria",
+        "order": 1
+}
+```
+
 ### Connecting a New Backend Service
 
 1. Start the service in its own Docker Compose
@@ -143,6 +173,27 @@ docker compose up -d --build
 cd ~/projects/datascience_adventure
 git pull
 docker compose up -d --build
+```
+
+### One-Command Release
+
+```bash
+cd ~/projects/datascience_adventure
+chmod +x utils/release.sh
+bash utils/release.sh
+```
+
+Useful options:
+
+```bash
+# Reset static volume if content looks stale
+bash utils/release.sh --reset-static-volume
+
+# Skip git pull (use current working tree)
+bash utils/release.sh --skip-pull
+
+# Override smoke-check base URL
+bash utils/release.sh --base-url=https://datascience-adventure.xyz
 ```
 
 ## 📂 Project Structure

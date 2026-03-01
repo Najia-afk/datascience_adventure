@@ -8,6 +8,160 @@ import requests
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
+
+def _strip_html(value):
+    value = re.sub(r'<[^>]+>', '', value or '')
+    return re.sub(r'\s+', ' ', value).strip()
+
+
+def _derive_article_preview(template_path):
+    title = None
+    description = None
+    try:
+        with open(template_path, 'r', encoding='utf-8') as f:
+            html = f.read()
+        h1_match = re.search(r'<h1[^>]*>(.*?)</h1>', html, flags=re.IGNORECASE | re.DOTALL)
+        if h1_match:
+            title = _strip_html(h1_match.group(1))
+
+        paragraph_matches = re.finditer(r'<p[^>]*>(.*?)</p>', html, flags=re.IGNORECASE | re.DOTALL)
+        for match in paragraph_matches:
+            candidate = _strip_html(match.group(1))
+            if len(candidate) >= 40:
+                description = candidate
+                break
+    except Exception as e:
+        print(f"Warning: failed to parse article template preview for {template_path}: {e}")
+
+    return title, description
+
+
+def _normalize_article_tags(raw_tags):
+    normalized = []
+    if not isinstance(raw_tags, list):
+        return normalized
+
+    for tag in raw_tags:
+        if isinstance(tag, str) and tag.strip():
+            normalized.append({'label': tag.strip(), 'class': 'tag-ai'})
+            continue
+
+        if isinstance(tag, dict):
+            label = str(tag.get('label', '')).strip()
+            if not label:
+                continue
+            normalized.append({
+                'label': label,
+                'class': tag.get('class', 'tag-ai') or 'tag-ai',
+                **({'style': tag['style']} if tag.get('style') else {}),
+            })
+
+    return normalized
+
+
+def _load_article_sidecar(template_path):
+    sidecar_path = os.path.splitext(template_path)[0] + '.json'
+    if not os.path.exists(sidecar_path):
+        return {}
+
+    try:
+        with open(sidecar_path, 'r', encoding='utf-8') as f:
+            raw = json.load(f)
+    except Exception as e:
+        print(f"Warning: failed to load article metadata sidecar {sidecar_path}: {e}")
+        return {}
+
+    if not isinstance(raw, dict):
+        print(f"Warning: article metadata sidecar must be a JSON object: {sidecar_path}")
+        return {}
+
+    allowed_keys = {
+        'title',
+        'short_title',
+        'description',
+        'image',
+        'tags',
+        'date',
+        'project',
+        'order',
+    }
+    metadata = {k: v for k, v in raw.items() if k in allowed_keys}
+
+    if 'tags' in metadata:
+        metadata['tags'] = _normalize_article_tags(metadata['tags'])
+
+    if 'order' in metadata:
+        try:
+            metadata['order'] = int(metadata['order'])
+        except (TypeError, ValueError):
+            print(f"Warning: invalid order in article metadata sidecar {sidecar_path}; ignoring.")
+            metadata.pop('order', None)
+
+    return metadata
+
+
+def _discover_article_templates(template_dirs, existing_articles):
+    existing_templates = {a.get('template') for a in existing_articles}
+    discovered = []
+
+    for template_dir in template_dirs:
+        if not template_dir or not os.path.isdir(template_dir):
+            continue
+
+        for filename in sorted(os.listdir(template_dir)):
+            if not (filename.startswith('article_') and filename.endswith('.html')):
+                continue
+
+            relative_template = f"templates/{filename}"
+            if relative_template in existing_templates:
+                continue
+
+            slug = filename[len('article_'):-len('.html')].replace('_', '-')
+            if slug in {'linkedin-feed', 'linkedin_feed'}:
+                continue
+
+            template_path = os.path.join(template_dir, filename)
+            title, description = _derive_article_preview(template_path)
+
+            if not title:
+                title = slug.replace('-', ' ').title()
+
+            sidecar = _load_article_sidecar(template_path)
+            article = {
+                'slug': slug,
+                'route': f'/article/{slug}',
+                'template': relative_template,
+                'title': title,
+                'short_title': title if len(title) <= 48 else f"{title[:45].rstrip()}...",
+                'description': description,
+                'image': '/images/aria/aria_roundtable.png',
+                'tags': [
+                    {'label': 'Article', 'class': 'tag-ai'},
+                ],
+                'date': 'Latest',
+                'project': 'aria',
+                'order': 10000 + len(discovered),
+            }
+
+            article.update(sidecar)
+
+            if not article.get('short_title'):
+                article['short_title'] = article['title'] if len(article['title']) <= 48 else f"{article['title'][:45].rstrip()}..."
+            if not article.get('description'):
+                article['description'] = f"Read {article['title']} on DataScience Adventure."
+            if not article.get('image'):
+                article['image'] = '/images/aria/aria_roundtable.png'
+            if not article.get('tags'):
+                article['tags'] = [{'label': 'Article', 'class': 'tag-ai'}]
+            if not article.get('project'):
+                article['project'] = 'aria'
+            if not article.get('date'):
+                article['date'] = 'Latest'
+
+            discovered.append(article)
+
+    return discovered
+
 # ===== Google OAuth Configuration =====
 def load_google_credentials():
     """Load Google OAuth credentials from client_secret.json file."""
@@ -99,7 +253,7 @@ def create_app():
 
     # ===== OG Meta Tags Configuration =====
     # ===== ARTICLE & PROJECT REGISTRY =====
-    # Add a new article here — routes, OG tags, header menu, and home page update automatically.
+    # Custom metadata registry (auto-discovery below adds any missing article_*.html templates).
     ARTICLES = [
         {
             'slug': 'aria-v3-full-system',
@@ -259,6 +413,17 @@ def create_app():
             'order': 9,
         },
     ]
+
+    article_template_dirs = [
+        os.path.join(content_dir, 'templates'),
+        '/srv/htmx_website/static/templates',
+        os.path.join(base_dir, 'templates'),
+    ]
+    auto_articles = _discover_article_templates(article_template_dirs, ARTICLES)
+    if auto_articles:
+        print(f"Auto-discovered {len(auto_articles)} article template(s): {[a['slug'] for a in auto_articles]}")
+        ARTICLES.extend(auto_articles)
+    ARTICLES.sort(key=lambda article: article.get('order', 10000))
 
     # Build OG_META automatically from the registry
     OG_META = {}

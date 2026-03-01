@@ -33,6 +33,9 @@ ln -sf /app /root/datascience_adventure
 # Copy all app files to the deployment directory
 cp -r /app/app/* /srv/htmx_website/
 
+# Validate article sidecar metadata before deployment
+python3 /app/utils/scripts/validate_article_sidecars.py /app/app/static/templates
+
 # Run the original deploy script
 # We use 'yes' to bypass any potential prompts, though deploy.sh seems non-interactive
 ./utils/deploy.sh
