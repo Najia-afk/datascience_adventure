@@ -13,26 +13,6 @@
       "label": "Pipelines",
       "class": "tag-pipeline",
       "style": "background:rgba(0,184,148,0.15);color:#55efc4;border:1px solid rgba(0,184,148,0.3);"
-    },
-    {
-      "label": "pgvector",
-      "class": "tag-vector",
-      "style": "background:rgba(253,203,110,0.15);color:#ffeaa7;border:1px solid rgba(253,203,110,0.3);"
-    },
-    {
-      "label": "Knowledge Graph",
-      "class": "tag-graph",
-      "style": "background:rgba(0,206,201,0.15);color:#00cec9;border:1px solid rgba(0,206,201,0.3);"
-    },
-    {
-      "label": "Automation",
-      "class": "tag-automation",
-      "style": "background:rgba(253,121,168,0.15);color:#fd79a8;border:1px solid rgba(253,121,168,0.3);"
-    },
-    {
-      "label": "Live System",
-      "class": "tag-live",
-      "style": "background:rgba(116,185,255,0.15);color:#74b9ff;border:1px solid rgba(116,185,255,0.3);"
     }
   ],
   "date": "March 2026",
