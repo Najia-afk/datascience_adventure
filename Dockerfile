@@ -26,5 +26,5 @@ WORKDIR /srv/htmx_website
 # Expose the port Gunicorn will run on
 EXPOSE 8000
 
-# Command to run the application
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "wsgi:application"]
+# Command to run the application (sync generated content into mounted volume first)
+CMD ["./utils/start_app.sh"]
