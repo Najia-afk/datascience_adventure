@@ -441,6 +441,17 @@ body {
                 One cycle, one goal, one action. This is what 3 AM looks like when nobody's watching.
             </figcaption>
         </figure>
+
+        <div class="chart-row" style="margin-top:1.5rem;">
+            <div class="chart-container">
+                <h4>Work Cycle Activity by Hour</h4>
+                <canvas id="chartHourlyActivity" height="260"></canvas>
+            </div>
+            <div class="chart-container">
+                <h4>Work Cycle Outcomes (Monthly)</h4>
+                <canvas id="chartCycleOutcomes" height="260"></canvas>
+            </div>
+        </div>
     </section>
 
     <!-- ===== THE CRON SCHEDULE ===== -->
@@ -780,8 +791,8 @@ body {
                 <canvas id="chartMemoryOps" height="260"></canvas>
             </div>
             <div class="chart-container">
-                <h4>Embedding Dimensions Distribution</h4>
-                <canvas id="chartEmbedDist" height="260"></canvas>
+                <h4>Semantic Memory Growth (8 Weeks)</h4>
+                <canvas id="chartMemoryGrowth" height="260"></canvas>
             </div>
         </div>
     </section>
@@ -1006,8 +1017,8 @@ body {
 
         <div class="chart-row" style="margin-top:1.5rem;">
             <div class="chart-container">
-                <h4>Roundtable vs Swarm Usage</h4>
-                <canvas id="chartRTvsSwarm" height="260"></canvas>
+                <h4>Tasks Delegated by Agent (Monthly)</h4>
+                <canvas id="chartAgentTasks" height="260"></canvas>
             </div>
             <div class="chart-container">
                 <h4>Agent Pheromone Scores (Current)</h4>
@@ -1106,8 +1117,8 @@ body {
 
         <div class="chart-row">
             <div class="chart-container">
-                <h4>Metrics Categories</h4>
-                <canvas id="chartMetricsCat" height="260"></canvas>
+                <h4>System Health States (4 Weeks)</h4>
+                <canvas id="chartHealthStates" height="260"></canvas>
             </div>
             <div class="chart-container">
                 <h4>Cron Job Execution Frequency (Weekly)</h4>
@@ -1798,7 +1809,71 @@ body {
         Chart.defaults.font.family = 'Inter, sans-serif';
         Chart.defaults.font.size = 11;
 
-        // 1. Memory Operations by Type (horizontal bar)
+        // ── Work Cycle: Hourly Activity (bar, 24 hours) ──
+        new Chart(document.getElementById('chartHourlyActivity'), {
+            type: 'bar',
+            data: {
+                labels: ['00','01','02','03','04','05','06','07','08','09','10','11',
+                         '12','13','14','15','16','17','18','19','20','21','22','23'],
+                datasets: [{
+                    label: 'Cycles',
+                    data: [4,4,4,8,6,5,6,4,4,4,4,4,8,4,4,4,4,4,8,4,4,4,4,4],
+                    backgroundColor: function(ctx) {
+                        var v = ctx.raw;
+                        if (v >= 8) return 'rgba(108,92,231,0.7)';
+                        if (v >= 6) return 'rgba(108,92,231,0.45)';
+                        return 'rgba(108,92,231,0.25)';
+                    },
+                    borderColor: '#6c5ce7',
+                    borderWidth: 1, borderRadius: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function(ctx) {
+                        var h = parseInt(ctx.label);
+                        var note = '';
+                        if (h === 3) note = ' (nightly jobs + work cycle)';
+                        else if (h === 6) note = ' (morning checkin)';
+                        else if (h === 12 || h === 18) note = ' (6-hour review)';
+                        return ctx.raw + ' cycles' + note;
+                    }}}
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: fontColor, font: { size: 9 } } },
+                    y: scaleDefaults({ beginAtZero: true, ticks: { stepSize: 2, color: fontColor } })
+                }
+            }
+        });
+
+        // ── Work Cycle: Outcomes (doughnut) ──
+        new Chart(document.getElementById('chartCycleOutcomes'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'Skipped (no goal)', 'Degraded Artifact', 'Circuit-Breaker Halt', 'Timeout'],
+                datasets: [{
+                    data: [82, 8, 5, 3, 2],
+                    backgroundColor: [
+                        'rgba(0,184,148,0.6)', 'rgba(116,185,255,0.45)', 'rgba(253,203,110,0.55)',
+                        'rgba(225,112,85,0.55)', 'rgba(253,121,168,0.45)'
+                    ],
+                    borderColor: ['#00b894', '#74b9ff', '#fdcb6e', '#e17055', '#fd79a8'],
+                    borderWidth: 1.5,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 9 } } },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; } } }
+                },
+                cutout: '55%',
+            }
+        });
+
+        // ── Memory: Operations by Type (horizontal bar) ──
         new Chart(document.getElementById('chartMemoryOps'), {
             type: 'bar',
             data: {
@@ -1822,161 +1897,66 @@ body {
             }
         });
 
-        // 2. Embedding Dimensions Distribution (doughnut)
-        new Chart(document.getElementById('chartEmbedDist'), {
-            type: 'doughnut',
+        // ── Memory: Growth over 8 weeks (line) ──
+        new Chart(document.getElementById('chartMemoryGrowth'), {
+            type: 'line',
             data: {
-                labels: ['Semantic Memories (768d)', 'Chat Messages (1536d)', 'Chat Archives (1536d)'],
+                labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'],
                 datasets: [{
-                    data: [42, 35, 23],
-                    backgroundColor: ['rgba(108,92,231,0.6)', 'rgba(0,184,148,0.5)', 'rgba(116,185,255,0.4)'],
-                    borderColor: ['#6c5ce7', '#00b894', '#74b9ff'],
-                    borderWidth: 1.5,
+                    label: 'Semantic Memories',
+                    data: [120, 185, 260, 340, 410, 475, 530, 590],
+                    borderColor: '#a29bfe',
+                    backgroundColor: 'rgba(108,92,231,0.08)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#a29bfe',
+                    pointBorderColor: '#6c5ce7',
+                    pointRadius: 4,
+                    tension: 0.3,
+                    fill: true,
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
-                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '% of vectors'; } } }
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' memories'; } } }
                 },
-                cutout: '55%',
-            }
-        });
-
-        // 3. Metrics Categories (polar area)
-        new Chart(document.getElementById('chartMetricsCat'), {
-            type: 'polarArea',
-            data: {
-                labels: ['Requests', 'LLM', 'Agents', 'Sessions', 'Scheduler', 'Skills', 'Database', 'System'],
-                datasets: [{
-                    data: [3, 8, 4, 4, 3, 2, 4, 3],
-                    backgroundColor: [
-                        'rgba(108,92,231,0.6)', 'rgba(253,121,168,0.5)', 'rgba(0,184,148,0.5)',
-                        'rgba(253,203,110,0.5)', 'rgba(0,206,201,0.5)', 'rgba(116,185,255,0.5)',
-                        'rgba(225,112,85,0.5)', 'rgba(99,110,114,0.4)'
-                    ],
-                    borderColor: ['#6c5ce7','#fd79a8','#00b894','#fdcb6e','#00cec9','#74b9ff','#e17055','#636e72'],
-                    borderWidth: 1.5,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom', labels: { padding: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 9 } } },
-                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + ' metrics'; } } }
-                },
-                scales: { r: { grid: { color: gridColor }, ticks: { display: false }, suggestedMax: 10, pointLabels: { display: false } } }
-            }
-        });
-
-        // 4. Cron Job Execution Frequency (bar)
-        new Chart(document.getElementById('chartCronFreq'), {
-            type: 'bar',
-            data: {
-                labels: ['work_cycle', 'memory_bridge', 'six_hour_review', 'morning', 'reflection', 'tests', 'db_maint', 'cleanup', 'weekly', 'consolidate', 'security', 'roundtable'],
-                datasets: [{
-                    label: 'Executions/Week',
-                    data: [672, 56, 28, 7, 7, 7, 7, 7, 1, 1, 1, 1],
-                    backgroundColor: 'rgba(108,92,231,0.5)',
-                    borderColor: '#6c5ce7',
-                    borderWidth: 1, borderRadius: 3,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' runs/week'; } } } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: fontColor, font: { size: 8 }, maxRotation: 45 } },
-                    y: scaleDefaults({ beginAtZero: true, type: 'logarithmic', ticks: { color: fontColor } })
+                    x: { grid: { display: false }, ticks: { color: fontColor } },
+                    y: scaleDefaults({ beginAtZero: true, ticks: { color: fontColor } })
                 }
             }
         });
 
-        // 5. Workflow Types by Trigger Source (doughnut)
-        new Chart(document.getElementById('chartWorkflowTriggers'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Cron-triggered', 'Pipeline (auto)', 'Human-interactive', 'Roundtable/Swarm', 'Alert-driven', 'Session-event'],
-                datasets: [{
-                    data: [58, 18, 12, 5, 4, 3],
-                    backgroundColor: [
-                        'rgba(108,92,231,0.6)', 'rgba(253,121,168,0.5)', 'rgba(116,185,255,0.5)',
-                        'rgba(253,203,110,0.5)', 'rgba(225,112,85,0.5)', 'rgba(0,206,201,0.4)'
-                    ],
-                    borderColor: ['#6c5ce7', '#fd79a8', '#74b9ff', '#fdcb6e', '#e17055', '#00cec9'],
-                    borderWidth: 1.5,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
-                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; } } }
-                },
-                cutout: '55%',
-            }
-        });
-
-        // 6. Pipeline Step Duration (horizontal bar)
-        new Chart(document.getElementById('chartPipelineDuration'), {
-            type: 'bar',
-            data: {
-                labels: ['check_goals', 'research', 'analyze', 'save_report', 'post_summary', 'health_check', 'draft_post', 'reproduce_bug'],
-                datasets: [{
-                    label: 'Avg Duration (ms)',
-                    data: [120, 4500, 2200, 350, 1800, 280, 3200, 5100],
-                    backgroundColor: [
-                        'rgba(0,184,148,0.5)', 'rgba(108,92,231,0.5)', 'rgba(253,203,110,0.5)',
-                        'rgba(0,206,201,0.5)', 'rgba(253,121,168,0.5)', 'rgba(116,185,255,0.5)',
-                        'rgba(225,112,85,0.5)', 'rgba(240,147,43,0.5)'
-                    ],
-                    borderColor: ['#00b894','#6c5ce7','#fdcb6e','#00cec9','#fd79a8','#74b9ff','#e17055','#f0932b'],
-                    borderWidth: 1, borderRadius: 4,
-                }]
-            },
-            options: {
-                responsive: true,
-                indexAxis: 'y',
-                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return ctx.raw >= 1000 ? (ctx.raw/1000).toFixed(1) + 's' : ctx.raw + 'ms'; } } } },
-                scales: { x: scaleDefaults({ beginAtZero: true, ticks: { callback: function(v) { return v >= 1000 ? (v/1000) + 's' : v + 'ms'; }, color: fontColor } }), y: { grid: { display: false }, ticks: { font: { size: 10 }, color: fontColor } } }
-            }
-        });
-
-        // 7. Roundtable vs Swarm (stacked bar)
-        var rtCanvas = document.getElementById('chartRTvsSwarm');
-        if (rtCanvas) {
-            new Chart(rtCanvas, {
+        // ── Roundtable: Tasks per Agent (horizontal bar) ──
+        var atCanvas = document.getElementById('chartAgentTasks');
+        if (atCanvas) {
+            new Chart(atCanvas, {
                 type: 'bar',
                 data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    datasets: [
-                        {
-                            label: 'Roundtable',
-                            data: [3, 5, 8, 6],
-                            backgroundColor: 'rgba(108,92,231,0.5)',
-                            borderColor: '#6c5ce7', borderWidth: 1, borderRadius: 3,
-                        },
-                        {
-                            label: 'Swarm',
-                            data: [1, 2, 4, 3],
-                            backgroundColor: 'rgba(253,203,110,0.5)',
-                            borderColor: '#fdcb6e', borderWidth: 1, borderRadius: 3,
-                        }
-                    ]
+                    labels: ['aria (orch)', 'devops', 'analyst', 'creator', 'memory', 'aria_talk', 'rpg_master'],
+                    datasets: [{
+                        label: 'Tasks/Month',
+                        data: [245, 128, 96, 72, 68, 52, 31],
+                        backgroundColor: [
+                            'rgba(108,92,231,0.6)', 'rgba(0,184,148,0.5)', 'rgba(116,185,255,0.5)',
+                            'rgba(253,121,168,0.5)', 'rgba(253,203,110,0.5)', 'rgba(0,206,201,0.45)',
+                            'rgba(225,112,85,0.45)'
+                        ],
+                        borderColor: ['#6c5ce7','#00b894','#74b9ff','#fd79a8','#fdcb6e','#00cec9','#e17055'],
+                        borderWidth: 1, borderRadius: 4,
+                    }]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } } },
-                    scales: {
-                        x: { stacked: true, grid: { display: false }, ticks: { color: fontColor } },
-                        y: scaleDefaults({ stacked: true, beginAtZero: true })
-                    }
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' tasks'; } } } },
+                    scales: { x: scaleDefaults({ beginAtZero: true }), y: { grid: { display: false }, ticks: { font: { size: 10 }, color: fontColor } } }
                 }
             });
         }
 
-        // 8. Agent Pheromone Scores (radar)
+        // ── Roundtable: Agent Pheromone Scores (radar) ──
         var phCanvas = document.getElementById('chartPheromone');
         if (phCanvas) {
             new Chart(phCanvas, {
@@ -2010,6 +1990,118 @@ body {
                 }
             });
         }
+
+        // ── Observability: System Health States (stacked bar, 4 weeks) ──
+        new Chart(document.getElementById('chartHealthStates'), {
+            type: 'bar',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [
+                    {
+                        label: 'Healthy',
+                        data: [6.2, 5.8, 6.5, 6.8],
+                        backgroundColor: 'rgba(0,184,148,0.55)',
+                        borderColor: '#00b894', borderWidth: 1, borderRadius: 3,
+                    },
+                    {
+                        label: 'Degraded',
+                        data: [0.7, 1.1, 0.5, 0.2],
+                        backgroundColor: 'rgba(253,203,110,0.55)',
+                        borderColor: '#fdcb6e', borderWidth: 1, borderRadius: 3,
+                    },
+                    {
+                        label: 'Critical',
+                        data: [0.1, 0.1, 0, 0],
+                        backgroundColor: 'rgba(225,112,85,0.55)',
+                        borderColor: '#e17055', borderWidth: 1, borderRadius: 3,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + ctx.raw + ' days'; } } }
+                },
+                scales: {
+                    x: { stacked: true, grid: { display: false }, ticks: { color: fontColor } },
+                    y: scaleDefaults({ stacked: true, beginAtZero: true, max: 7, ticks: { stepSize: 1, callback: function(v) { return v + 'd'; }, color: fontColor } })
+                }
+            }
+        });
+
+        // ── Observability: Cron Job Execution Frequency (bar, log scale) ──
+        new Chart(document.getElementById('chartCronFreq'), {
+            type: 'bar',
+            data: {
+                labels: ['work_cycle', 'memory_bridge', 'six_hour_review', 'morning', 'reflection', 'tests', 'db_maint', 'cleanup', 'weekly', 'consolidate', 'security', 'roundtable'],
+                datasets: [{
+                    label: 'Executions/Week',
+                    data: [672, 56, 28, 7, 7, 7, 7, 7, 1, 1, 1, 1],
+                    backgroundColor: 'rgba(108,92,231,0.5)',
+                    borderColor: '#6c5ce7',
+                    borderWidth: 1, borderRadius: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return ctx.raw + ' runs/week'; } } } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: fontColor, font: { size: 8 }, maxRotation: 45 } },
+                    y: scaleDefaults({ beginAtZero: true, type: 'logarithmic', ticks: { color: fontColor } })
+                }
+            }
+        });
+
+        // ── Dashboard: Workflow Types by Trigger Source (doughnut) ──
+        new Chart(document.getElementById('chartWorkflowTriggers'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Cron-triggered', 'Pipeline (auto)', 'Human-interactive', 'Roundtable/Swarm', 'Alert-driven', 'Session-event'],
+                datasets: [{
+                    data: [58, 18, 12, 5, 4, 3],
+                    backgroundColor: [
+                        'rgba(108,92,231,0.6)', 'rgba(253,121,168,0.5)', 'rgba(116,185,255,0.5)',
+                        'rgba(253,203,110,0.5)', 'rgba(225,112,85,0.5)', 'rgba(0,206,201,0.4)'
+                    ],
+                    borderColor: ['#6c5ce7', '#fd79a8', '#74b9ff', '#fdcb6e', '#e17055', '#00cec9'],
+                    borderWidth: 1.5,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; } } }
+                },
+                cutout: '55%',
+            }
+        });
+
+        // ── Dashboard: Pipeline Step Duration (horizontal bar) ──
+        new Chart(document.getElementById('chartPipelineDuration'), {
+            type: 'bar',
+            data: {
+                labels: ['check_goals', 'research', 'analyze', 'save_report', 'post_summary', 'health_check', 'draft_post', 'reproduce_bug'],
+                datasets: [{
+                    label: 'Avg Duration (ms)',
+                    data: [120, 4500, 2200, 350, 1800, 280, 3200, 5100],
+                    backgroundColor: [
+                        'rgba(0,184,148,0.5)', 'rgba(108,92,231,0.5)', 'rgba(253,203,110,0.5)',
+                        'rgba(0,206,201,0.5)', 'rgba(253,121,168,0.5)', 'rgba(116,185,255,0.5)',
+                        'rgba(225,112,85,0.5)', 'rgba(240,147,43,0.5)'
+                    ],
+                    borderColor: ['#00b894','#6c5ce7','#fdcb6e','#00cec9','#fd79a8','#74b9ff','#e17055','#f0932b'],
+                    borderWidth: 1, borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx) { return ctx.raw >= 1000 ? (ctx.raw/1000).toFixed(1) + 's' : ctx.raw + 'ms'; } } } },
+                scales: { x: scaleDefaults({ beginAtZero: true, ticks: { callback: function(v) { return v >= 1000 ? (v/1000) + 's' : v + 'ms'; }, color: fontColor } }), y: { grid: { display: false }, ticks: { font: { size: 10 }, color: fontColor } } }
+            }
+        });
     }
 
     setTimeout(initCharts, 300);
