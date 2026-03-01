@@ -600,6 +600,15 @@ body {
         </div>
     </header>
 
+    <!-- Hero Image -->
+    <figure class="article-hero-image" style="margin:2rem 0;text-align:center;">
+        <img src="/images/aria/aria_midnight_cascade.png" alt="The Midnight Cascade — Aria's autonomous sub-agent spawn event"
+             style="width:100%;max-width:900px;border-radius:12px;border:1px solid var(--border-subtle);box-shadow:0 8px 32px rgba(0,0,0,0.4);" loading="lazy">
+        <figcaption style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);font-style:italic;">
+            Between midnight and 2 AM, 60+ copies of Aria lined up at the same door — each one certain it was the first.
+        </figcaption>
+    </figure>
+
     <!-- ===== ACT I: THE QUIET BEFORE ===== -->
     <section class="article-section">
         <h2><span class="accent-dot accent-dot-green"></span> Act I — The Quiet Before</h2>
@@ -763,6 +772,28 @@ body {
                 </p>
             </div>
         </div>
+    </section>
+
+    <!-- ===== DASHBOARD SCREENSHOT ===== -->
+    <section class="article-section">
+        <h2><span class="accent-dot accent-dot-pink"></span> The Dashboard — What It Looked Like in Real Time</h2>
+        <p>
+            This is the actual agent sessions dashboard during the cascade.
+            135 sessions stacked, most of them sub-devsecops clones walking the same corridor.
+            Click the image to see it full-size.
+        </p>
+        <figure style="margin:1.5rem 0;text-align:center;">
+            <a href="/images/aria/aria_agent_sessions2.png" target="_blank" rel="noopener" title="Click to view full-size dashboard screenshot">
+                <img src="/images/aria/aria_agent_sessions2.png"
+                     alt="Aria Agent Sessions Dashboard — 135 sessions at peak during the Midnight Cascade"
+                     style="width:100%;max-width:960px;border-radius:10px;border:1px solid var(--border-subtle);box-shadow:0 6px 24px rgba(0,0,0,0.4);cursor:zoom-in;transition:transform 0.2s ease;"
+                     onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"
+                     loading="lazy">
+            </a>
+            <figcaption style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);font-style:italic;">
+                Agent Sessions dashboard — 135 active sessions at peak. Each row is a real sub-agent that spawned, ran the same 5-step sequence, and got stuck.
+            </figcaption>
+        </figure>
     </section>
 
     <!-- ===== PROPAGATION CHART ===== -->
