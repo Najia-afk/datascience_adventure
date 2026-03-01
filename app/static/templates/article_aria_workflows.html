@@ -267,10 +267,10 @@ body {
         <h1 class="article-title">The Workflow Engine:<br>Pipelines, Graphs &amp; Autonomous Orchestration</h1>
 
         <p class="article-lead">
-            6 YAML pipelines with DAG execution. 12 cron jobs running 24/7. A knowledge graph with 200+
-            entity-relationship pairs. A vector database holding 768-dimensional semantic memories.
-            Pheromone-scored agent routing. A skill tree generated from 41 manifests.
-            This isn't a prompt chain. It's an <em>operating system for cognition</em>.
+            Aria's workflow engine is the execution layer behind day-to-day autonomy: 6 DAG pipelines,
+            12 scheduled jobs, vector memory in PostgreSQL, dual knowledge graphs, and adaptive agent routing.
+            Instead of chaining prompts, it coordinates goals, tools, memory, and observability in one
+            consistent system.
         </p>
 
         <div class="article-meta-bar">
@@ -350,10 +350,10 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-purple"></span> The Workflow Map</h2>
         <p>
-            Aria's automation isn't one loop&mdash;it's a <strong>lattice of interconnected workflow types</strong>,
-            each operating at a different timescale. Cron jobs trigger work cycles. Work cycles invoke pipelines.
-            Pipelines compose skills. Skills write to databases. Databases feed graphs. Graphs inform decisions.
-            The graph below maps every workflow surface in the system.
+            Aria doesn't run a single loop; she runs a coordinated set of workflow layers operating at
+            different timescales. Cron jobs trigger work cycles, work cycles launch pipelines, pipelines
+            execute skills, and each execution updates memory and telemetry. The graph below shows how those
+            layers connect end-to-end.
         </p>
 
         <div class="network-wrap">
@@ -373,9 +373,8 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-green"></span> The Autonomous Work Cycle</h2>
         <p>
-            Every 15 minutes, Aria's engine wakes up and runs a complete work cycle. This isn't a script replaying
-            the same steps. The cycle is <strong>goal-driven</strong>: what Aria works on depends on her current
-            priorities, the state of in-progress goals, and the active focus level.
+            Every 15 minutes, Aria runs one complete work cycle. The cycle is <strong>goal-driven</strong>,
+            not static: the chosen action depends on current priorities, in-progress goals, and active focus.
         </p>
 
         <div class="info-grid">
@@ -539,9 +538,9 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-pink"></span> YAML Pipelines &mdash; DAG-Executed Skill Composition</h2>
         <p>
-            Pipelines are Aria's compound workflows. Each is defined in YAML, parsed into a <strong>directed
-            acyclic graph</strong>, topologically sorted, and executed with parallel branches via
-            <code>asyncio.gather()</code>. Steps can reference outputs from prior steps using
+            Pipelines are Aria's multi-step workflows. Each YAML definition is parsed into a
+            <strong>directed acyclic graph</strong>, validated, topologically sorted, then executed with
+            parallel branches via <code>asyncio.gather()</code>. Steps can consume previous outputs using
             <code>&#123;&#123;context.step_name.field&#125;&#125;</code> templates.
         </p>
 
@@ -689,10 +688,9 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-yellow"></span> Vector Database &mdash; pgvector Semantic Memory</h2>
         <p>
-            Aria doesn't use a separate vector database. All embeddings live inside
-            <strong>PostgreSQL 16 + pgvector</strong>&mdash;same instance, same transactions, zero network
-            latency between relational queries and semantic search. Two distinct embedding spaces operate
-            in parallel.
+            Aria does not use a separate vector store. Embeddings live in
+            <strong>PostgreSQL 16 + pgvector</strong>, so relational queries and semantic search share the same
+            transactional boundary. Two embedding spaces run in parallel for long-term memory and chat context.
         </p>
 
         <div class="embed-grid">
@@ -779,9 +777,9 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-teal"></span> The Knowledge Graph &mdash; Two Graphs, One Database</h2>
         <p>
-            Aria maintains <strong>two separate knowledge graphs</strong> in PostgreSQL, each serving a different
-            purpose. No Neo4j, no external graph database. The relational model handles it cleanly with
-            entity + relation tables, BFS traversal via API endpoints, and idempotent regeneration from manifests.
+            Aria maintains <strong>two knowledge graphs</strong> in PostgreSQL, each with a distinct role.
+            One captures organic entities discovered during operation; the other is generated from skill manifests.
+            Both rely on entity/relation tables and API-level traversal.
         </p>
 
         <div class="info-grid">
@@ -874,9 +872,9 @@ body {
             token counts, cost, message history, and active model independently.
         </p>
         <p>
-            This prevents the most dangerous pattern in AI systems: <strong>context bleed</strong>.
-            A research pipeline can't accidentally inject data into a security scan. A morning check-in
-            can't leak goals into an RPG session. Sessions are the transaction boundaries of consciousness.
+            This design prevents <strong>context bleed</strong>. A research run cannot leak into a security scan,
+            and a morning planning session cannot contaminate unrelated workflows. Sessions are strict isolation
+            boundaries for state, history, and cost tracking.
         </p>
 
         <div style="text-align:center; margin:1.5rem 0;">
@@ -914,9 +912,8 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-green"></span> Pheromone Scoring &mdash; Bio-Inspired Agent Routing</h2>
         <p>
-            When a work cycle needs to delegate, it doesn't hardcode which agent gets the task.
-            Instead, <strong>pheromone scoring</strong>&mdash;inspired by ant colony optimization&mdash;selects
-            the best agent adaptively. Agents that succeed accumulate pheromone. Agents that fail lose it.
+            Delegation is not hardcoded. Aria uses <strong>pheromone scoring</strong> (inspired by ant-colony
+            optimization) to select the best agent for each task based on recent outcomes.
         </p>
 
         <div class="code-block">
@@ -944,9 +941,9 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-yellow"></span> Roundtable vs. Swarm &mdash; Collective Intelligence</h2>
         <p>
-            Some decisions are too complex for a single agent. Aria has two collective intelligence protocols:
+            Some decisions are too broad for one agent. Aria uses two collaboration protocols:
             <strong>Roundtable</strong> (structured deliberation with a synthesizer) and
-            <strong>Swarm</strong> (emergent consensus through stigmergy).
+            <strong>Swarm</strong> (iterative consensus through stigmergy).
         </p>
 
         <div style="text-align:center; margin:1.5rem 0;">
@@ -996,10 +993,9 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-amber"></span> Two Operators, One System</h2>
         <p>
-            The workflow engine serves two operators with fundamentally different interaction patterns.
-            <strong>Najia</strong> (the human) operates at the strategic level: setting goals, reviewing
-            outputs, providing consent for high-impact actions. <strong>Aria</strong> operates at the
-            tactical level: executing work cycles, routing to agents, managing pipelines.
+            The engine serves two operators with different responsibilities.
+            <strong>Najia</strong> defines direction, reviews outputs, and approves high-impact actions.
+            <strong>Aria</strong> executes cycles, routes tasks to agents, and runs pipelines.
         </p>
 
         <div class="info-grid">
@@ -1040,9 +1036,8 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-red"></span> Observability &mdash; Prometheus, Grafana, Chart.js</h2>
         <p>
-            You can't run an autonomous system without knowing what it's doing. Aria exposes
-            <strong>50+ Prometheus metrics</strong> across 8 categories, scraped at 15-second intervals,
-            visualized in Grafana dashboards and 44 Flask+Chart.js pages.
+            Autonomous execution requires visibility. Aria exposes <strong>50+ Prometheus metrics</strong>
+            across 8 categories, scraped every 15 seconds and surfaced in Grafana plus 44 Flask/Chart.js pages.
         </p>
 
         <div class="docker-grid">
@@ -1108,8 +1103,8 @@ body {
     <section class="article-section">
         <h2><span class="accent-dot dot-blue"></span> Self-Healing &mdash; 4-Phase Error Recovery</h2>
         <p>
-            A workflow engine that crashes on every error is useless. Aria implements a <strong>4-phase
-            self-healing strategy</strong> that degrades gracefully instead of failing catastrophically.
+            Reliability is built into the execution path. Aria applies a <strong>4-phase self-healing
+            strategy</strong> so failures degrade gracefully instead of cascading.
         </p>
 
         <div class="info-grid">
@@ -1338,10 +1333,9 @@ body {
             <div class="synthesis-content">
                 <h3>What the Workflow Engine Actually Is</h3>
                 <p>
-                    Aria's workflow engine is not a task scheduler with extra steps. It is a <strong>multi-layered
-                    automation lattice</strong> where cron jobs, work cycles, YAML pipelines, agent delegation,
-                    and knowledge graphs form an interconnected system that operates continuously without human
-                    supervision.
+                    Aria's workflow engine is a coordinated runtime, not just a scheduler. Cron jobs,
+                    work cycles, YAML pipelines, delegation logic, and memory systems operate as one
+                    continuous control loop.
                 </p>
 
                 <h3>The Three Timescales</h3>
@@ -1353,12 +1347,9 @@ body {
 
                 <h3>Why PostgreSQL for Everything</h3>
                 <p>
-                    The deliberate choice to keep vectors, graphs, relational data, and job state in a single
-                    PostgreSQL instance isn't laziness&mdash;it's <strong>transactional integrity</strong>.
-                    When a memory bridge run inserts 50 new semantic vectors while simultaneously updating
-                    the knowledge graph, those operations share the same ACID transaction. No eventual
-                    consistency. No distributed coordination. No network partition between your vectors and
-                    your relations.
+                    Keeping vectors, graphs, relational state, and scheduler metadata in one PostgreSQL
+                    instance is a consistency decision. Cross-domain updates can be committed atomically,
+                    which simplifies failure handling and keeps operational state aligned.
                 </p>
 
                 <h3>The Automation Gradient</h3>
@@ -1370,9 +1361,8 @@ body {
                 </ul>
 
                 <blockquote>
-                    "A chatbot waits to be spoken to. Aria doesn't wait. She has 12 reasons to wake up,
-                    6 pipelines to compose, 41 skills to invoke, 2 graphs to traverse, and a vector space
-                    to search. The workflow engine doesn't serve the user&mdash;it serves the goals."
+                    "A chatbot reacts. This engine executes. It schedules work, adapts routing,
+                    updates memory, and tracks results against goals.&quot;
                 </blockquote>
             </div>
         </div>
@@ -1382,16 +1372,15 @@ body {
     <section class="article-section">
         <div class="article-closing">
             <p>
-                A script runs when triggered. A pipeline runs when scheduled.
+                A script runs when called. A workflow engine keeps running when no one is watching.
             </p>
             <p>
-                Aria's workflow engine does both&mdash;and then decides what to do next.
-                6 DAG pipelines. 12 cron jobs. 768-dimensional vector searches.
-                Two knowledge graphs. 50 Prometheus metrics. 44 dashboard pages.
-                One PostgreSQL instance holding it all together.
+                Aria combines scheduled execution with adaptive decision-making:
+                6 DAG pipelines, 12 cron jobs, vector memory, dual knowledge graphs,
+                and full telemetry in one operational loop.
             </p>
             <p class="closing-cta">
-                This is what happens when you give an AI its own operating system. ⚡️
+                This is the orchestration layer that makes Aria autonomous. ⚡️
             </p>
         </div>
     </section>
