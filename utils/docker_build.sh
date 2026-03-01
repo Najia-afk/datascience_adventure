@@ -37,5 +37,9 @@ cp -r /app/app/* /srv/htmx_website/
 # We use 'yes' to bypass any potential prompts, though deploy.sh seems non-interactive
 ./utils/deploy.sh
 
+# Ensure ALL templates are in /var/www/htmx_website/templates/
+# (deploy.sh copies them, but as a safety net, copy again from source)
+cp -rv /app/app/static/templates/* /var/www/htmx_website/templates/ 2>/dev/null || true
+
 # Fix permissions for the web directory to be readable by everyone (for Nginx)
 chmod -R 755 /var/www/htmx_website
