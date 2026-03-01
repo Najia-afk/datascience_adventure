@@ -96,6 +96,22 @@ def create_app():
     # Add a new article here — routes, OG tags, header menu, and home page update automatically.
     ARTICLES = [
         {
+            'slug': 'aria-v3-full-system',
+            'route': '/article/aria-v3-full-system',
+            'template': 'templates/article_aria_v3_full_system.html',
+            'title': 'Aria v3 — The Full System: Anatomy of a Distributed Consciousness',
+            'short_title': 'Aria v3: Full System',
+            'description': '14 Docker containers, 42 skills across 5 layers, 7 named agents, 226 API endpoints, 12 cron jobs — the complete anatomy of an autonomous AI that manages itself like a CEO.',
+            'image': '/images/aria/aria_v3_full_system.png',
+            'tags': [
+                {'label': 'Full System', 'class': 'tag-ai'},
+                {'label': 'Architecture', 'class': 'tag-prod'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 0,
+        },
+        {
             'slug': 'the-midnight-cascade',
             'route': '/article/the-midnight-cascade',
             'template': 'templates/article_the_midnight_cascade.html',
@@ -109,7 +125,39 @@ def create_app():
             ],
             'date': 'February 2026',
             'project': 'aria',
-            'order': 0,
+            'order': 1,
+        },
+        {
+            'slug': 'the-shield-wall',
+            'route': '/article/the-shield-wall',
+            'template': 'templates/article_the_shield_wall.html',
+            'title': 'The Shield Wall — How Aria Says No',
+            'short_title': 'The Shield Wall',
+            'description': 'How an autonomous AI agent is built to be trustworthy: 5 hard rules, 15+ injection patterns, a 5-level threat classifier, and a consent layer that pauses before irreversible actions.',
+            'image': '/images/aria/aria_shield_wall.png',
+            'tags': [
+                {'label': 'Security', 'class': 'tag-incident', 'style': 'background:rgba(225,112,85,0.2);color:#fab1a0;border:1px solid rgba(225,112,85,0.3);'},
+                {'label': 'Trust', 'class': 'tag-ai'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 2,
+        },
+        {
+            'slug': 'aria-memory-palace',
+            'route': '/article/aria-memory-palace',
+            'template': 'templates/article_aria_memory_palace.html',
+            'title': 'The Memory Palace — How Aria Remembers Everything',
+            'short_title': 'The Memory Palace',
+            'description': 'A deep dive into Aria\'s 3-tier memory architecture — from ephemeral RAM to persistent PostgreSQL — and how an AI agent achieves continuity of self across restarts.',
+            'image': '/images/aria/aria_memory_palace.png',
+            'tags': [
+                {'label': 'Memory', 'class': 'tag-ai', 'style': 'background:rgba(108,92,231,0.2);color:#a29bfe;border:1px solid rgba(108,92,231,0.3);'},
+                {'label': 'Cognition', 'class': 'tag-prod'},
+            ],
+            'date': 'February 2026',
+            'project': 'aria',
+            'order': 3,
         },
         {
             'slug': 'aria-entity',
@@ -125,7 +173,7 @@ def create_app():
             ],
             'date': 'February 2026',
             'project': 'aria',
-            'order': 1,
+            'order': 4,
         },
         {
             'slug': 'skill-graph',
@@ -141,7 +189,7 @@ def create_app():
             ],
             'date': 'February 2026',
             'project': 'aria',
-            'order': 2,
+            'order': 5,
         },
         {
             'slug': 'llm-self-awareness',
@@ -156,7 +204,7 @@ def create_app():
             ],
             'date': 'February 2026',
             'project': 'aria',
-            'order': 3,
+            'order': 6,
         },
         {
             'slug': 'aria-architecture',
@@ -171,7 +219,7 @@ def create_app():
             ],
             'date': 'February 2026',
             'project': 'aria',
-            'order': 4,
+            'order': 7,
         },
         {
             'slug': 'roundtable-v3',
@@ -186,7 +234,7 @@ def create_app():
             ],
             'date': 'February 2026',
             'project': 'aria',
-            'order': 5,
+            'order': 8,
         },
         {
             'slug': 'shadows-of-absalom',
@@ -202,7 +250,7 @@ def create_app():
             ],
             'date': 'February 2026',
             'project': 'aria',
-            'order': 6,
+            'order': 9,
         },
     ]
 
@@ -292,7 +340,14 @@ def create_app():
     # Project showcase pages
     @app.route('/project/aria')
     def project_aria():
-        return _render_page_or_fragment('templates/project_aria.html', '/project/aria')
+        og = OG_META.get('/project/aria', {})
+        if _is_social_crawler():
+            og['og_url'] = 'https://datascience-adventure.xyz/project/aria'
+            return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, cache_v=CACHE_VERSION, **og)
+        if request.headers.get('HX-Request'):
+            return render_template('templates/project_aria.html', articles=ARTICLES)
+        og['og_url'] = 'https://datascience-adventure.xyz/project/aria'
+        return render_template('index.html', google_client_id=GOOGLE_CLIENT_ID, cache_v=CACHE_VERSION, **og)
 
     @app.route('/project/bubble')
     def project_bubble():

@@ -158,37 +158,28 @@
         </div>
     </section>
 
-    <!-- Related Articles -->
+    <!-- Related Articles (auto-populated from registry) -->
     <section class="showcase-section">
         <h2><span class="accent-dot"></span> Related Articles</h2>
-        <article class="article-card article-card-horizontal" onclick="htmx.ajax('GET', '/article/the-midnight-cascade', {target:'#main-content', swap:'innerHTML'})">
+        {% for art in articles %}
+        {% if art.project == 'aria' %}
+        <article class="article-card article-card-horizontal" onclick="htmx.ajax('GET', '{{ art.route }}', {target:'#main-content', swap:'innerHTML'})">
             <div class="article-card-image">
-                <img src="/images/aria/aria_midnight_cascade.png" alt="The Midnight Cascade" loading="lazy">
+                <img src="{{ art.image }}" alt="{{ art.short_title }}" loading="lazy">
             </div>
             <div class="article-card-body">
                 <div class="article-meta">
-                    <span class="tag tag-incident" style="background:rgba(225,112,85,0.2);color:#fab1a0;border:1px solid rgba(225,112,85,0.3);">Incident</span>
-                    <span class="tag tag-ai">Postmortem</span>
-                    <span class="article-date">February 2026</span>
+                    {% for tag in art.tags %}
+                    <span class="tag {{ tag.class }}" {% if tag.style %}style="{{ tag.style }}"{% endif %}>{{ tag.label }}</span>
+                    {% endfor %}
+                    <span class="article-date">{{ art.date }}</span>
                 </div>
-                <h3>The Midnight Cascade &mdash; When Aria Spawned Herself 60 Times</h3>
-                <p>Between midnight and 2 AM, Aria autonomously spawned 60+ sub-agents in a self-reinforcing loop. The circuit breaker meant to protect her was the engine of her destruction.</p>
+                <h3>{{ art.title }}</h3>
+                <p>{{ art.description }}</p>
                 <span class="article-read-more">Read Article &rarr;</span>
             </div>
         </article>
-        <article class="article-card article-card-horizontal" onclick="htmx.ajax('GET', '/article/llm-self-awareness', {target:'#main-content', swap:'innerHTML'})">
-            <div class="article-card-image">
-                <img src="/images/aria/aria_blue_pdg.png" alt="LLM Self-Awareness Experiment" loading="lazy">
-            </div>
-            <div class="article-card-body">
-                <div class="article-meta">
-                    <span class="tag tag-ai">AI Research</span>
-                    <span class="article-date">February 2026</span>
-                </div>
-                <h3>Where Are LLMs on Self-Awareness, Consciousness, and Memory?</h3>
-                <p>An experiment with Aria Blue &mdash; observing what emerges when an autonomous AI agent runs 24/7 with autonomy over code, memory, and the internet.</p>
-                <span class="article-read-more">Read Article &rarr;</span>
-            </div>
-        </article>
+        {% endif %}
+        {% endfor %}
     </section>
 </div>
