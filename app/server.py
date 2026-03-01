@@ -237,6 +237,10 @@ def create_app():
     def article_shadows_of_absalom():
         return _render_page_or_fragment('templates/article_shadows_of_absalom.html', '/article/shadows-of-absalom')
 
+    @app.route('/article/the-midnight-cascade')
+    def article_the_midnight_cascade():
+        return _render_page_or_fragment('templates/article_the_midnight_cascade.html', '/article/the-midnight-cascade')
+
     @app.route('/feed')
     def linkedin_feed():
         return _render_page_or_fragment('templates/article_linkedin_feed.html', '/feed')
