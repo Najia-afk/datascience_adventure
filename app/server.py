@@ -103,6 +103,7 @@ def _load_article_sidecar(template_path):
 def _discover_article_templates(template_dirs, existing_articles):
     existing_templates = {a.get('template') for a in existing_articles}
     discovered = []
+    seen_filenames = set()
 
     for template_dir in template_dirs:
         if not template_dir or not os.path.isdir(template_dir):
@@ -115,6 +116,9 @@ def _discover_article_templates(template_dirs, existing_articles):
             relative_template = f"templates/{filename}"
             if relative_template in existing_templates:
                 continue
+            if filename in seen_filenames:
+                continue
+            seen_filenames.add(filename)
 
             slug = filename[len('article_'):-len('.html')].replace('_', '-')
             if slug in {'linkedin-feed', 'linkedin_feed'}:
