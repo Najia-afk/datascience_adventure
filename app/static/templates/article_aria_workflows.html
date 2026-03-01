@@ -740,17 +740,29 @@ body {
 
         <div class="code-block">
             <div class="code-block-label">src/api/db/models.py &mdash; SemanticMemory</div>
+<span class="c-kw">from</span> sqlalchemy <span class="c-kw">import</span> Column, String, Float, Integer, DateTime, Text
+<span class="c-kw">from</span> sqlalchemy.orm <span class="c-kw">import</span> Mapped, mapped_column
+<span class="c-kw">from</span> pgvector.sqlalchemy <span class="c-kw">import</span> Vector
+<span class="c-kw">from</span> datetime <span class="c-kw">import</span> datetime
+
 <span class="c-kw">class</span> <span class="c-fn">SemanticMemory</span>(Base):
     __tablename__ = <span class="c-str">"semantic_memories"</span>
     __table_args__ = {<span class="c-str">"schema"</span>: <span class="c-str">"aria_data"</span>}
 
-    content:      Mapped[<span class="c-var">str</span>]           <span class="c-cm"># Full text content</span>
-    summary:      Mapped[<span class="c-var">str</span> | None]    <span class="c-cm"># LLM-condensed summary</span>
-    category:     Mapped[<span class="c-var">str</span>]           <span class="c-cm"># "general", "research", "reflection"</span>
-    embedding:    <span class="c-fn">Vector</span>(<span class="c-num">768</span>)          <span class="c-cm"># pgvector column</span>
-    importance:   Mapped[<span class="c-var">float</span>]         <span class="c-cm"># 0.0 &ndash; 1.0</span>
-    source:       Mapped[<span class="c-var">str</span> | None]    <span class="c-cm"># Origin identifier</span>
-    access_count: Mapped[<span class="c-var">int</span>]           <span class="c-cm"># Usage tracking for decay</span>
+    id:           Mapped[<span class="c-var">int</span>]            = mapped_column(primary_key=<span class="c-kw">True</span>)
+    content:      Mapped[<span class="c-var">str</span>]            = mapped_column(Text, nullable=<span class="c-kw">False</span>)
+    summary:      Mapped[<span class="c-var">str</span> | <span class="c-kw">None</span>]    = mapped_column(Text)
+    category:     Mapped[<span class="c-var">str</span>]            = mapped_column(String(<span class="c-num">50</span>), default=<span class="c-str">"general"</span>)
+    embedding:    Mapped[<span class="c-var">list</span>]           = mapped_column(Vector(<span class="c-num">768</span>))  <span class="c-cm"># pgvector cosine</span>
+    importance:   Mapped[<span class="c-var">float</span>]          = mapped_column(Float, default=<span class="c-num">0.5</span>)
+    source:       Mapped[<span class="c-var">str</span> | <span class="c-kw">None</span>]    = mapped_column(String(<span class="c-num">100</span>))
+    access_count: Mapped[<span class="c-var">int</span>]            = mapped_column(Integer, default=<span class="c-num">0</span>)
+    created_at:   Mapped[<span class="c-var">datetime</span>]       = mapped_column(DateTime, default=datetime.utcnow)
+    last_accessed: Mapped[<span class="c-var">datetime</span> | <span class="c-kw">None</span>] = mapped_column(DateTime)
+
+    <span class="c-kw">def</span> <span class="c-fn">bump_access</span>(self):
+        self.access_count += <span class="c-num">1</span>
+        self.last_accessed = datetime.utcnow()
         </div>
 
         <h3>The Memory Bridge</h3>
@@ -855,18 +867,35 @@ body {
         </p>
 
         <div class="code-block">
-            <div class="code-block-label">Knowledge Graph Schema</div>
-<span class="c-cm"># Entity types</span>
-<span class="c-var">types</span> = [<span class="c-str">"skill"</span>, <span class="c-str">"tool"</span>, <span class="c-str">"focus_mode"</span>, <span class="c-str">"category"</span>, <span class="c-str">"concept"</span>]
+            <div class="code-block-label">src/api/db/models.py &mdash; KnowledgeEntity / KnowledgeRelation</div>
+<span class="c-kw">class</span> <span class="c-fn">KnowledgeEntity</span>(Base):
+    __tablename__ = <span class="c-str">"knowledge_entities"</span>
+    __table_args__ = {<span class="c-str">"schema"</span>: <span class="c-str">"aria_data"</span>}
 
-<span class="c-cm"># Relation types</span>
-<span class="c-var">provides</span>    <span class="c-cm"># skill &rarr; tool  (skill provides this tool)</span>
-<span class="c-var">belongs_to</span>  <span class="c-cm"># skill &rarr; category</span>
-<span class="c-var">affinity</span>    <span class="c-cm"># skill &rarr; focus_mode  (which persona uses this skill)</span>
-<span class="c-var">depends_on</span>  <span class="c-cm"># skill &rarr; skill  (dependency chain)</span>
+    id:          Mapped[<span class="c-var">int</span>]   = mapped_column(primary_key=<span class="c-kw">True</span>)
+    name:        Mapped[<span class="c-var">str</span>]   = mapped_column(String(<span class="c-num">200</span>), unique=<span class="c-kw">True</span>)
+    entity_type: Mapped[<span class="c-var">str</span>]   = mapped_column(
+        String(<span class="c-num">50</span>),
+        comment=<span class="c-str">"skill | tool | focus_mode | category | concept"</span>
+    )
+    properties:  Mapped[<span class="c-var">dict</span>]  = mapped_column(JSONB, default=<span class="c-kw">dict</span>)
 
-<span class="c-cm"># 7 Focus Modes (auto-created)</span>
-<span class="c-var">focus_modes</span> = [
+<span class="c-kw">class</span> <span class="c-fn">KnowledgeRelation</span>(Base):
+    __tablename__ = <span class="c-str">"knowledge_relations"</span>
+    __table_args__ = {<span class="c-str">"schema"</span>: <span class="c-str">"aria_data"</span>}
+
+    id:            Mapped[<span class="c-var">int</span>]  = mapped_column(primary_key=<span class="c-kw">True</span>)
+    source_id:     Mapped[<span class="c-var">int</span>]  = mapped_column(ForeignKey(<span class="c-str">"aria_data.knowledge_entities.id"</span>))
+    target_id:     Mapped[<span class="c-var">int</span>]  = mapped_column(ForeignKey(<span class="c-str">"aria_data.knowledge_entities.id"</span>))
+    relation_type: Mapped[<span class="c-var">str</span>]  = mapped_column(
+        String(<span class="c-num">50</span>),
+        comment=<span class="c-str">"provides | belongs_to | affinity | depends_on"</span>
+    )
+    weight:        Mapped[<span class="c-var">float</span>] = mapped_column(Float, default=<span class="c-num">1.0</span>)
+    properties:    Mapped[<span class="c-var">dict</span>]  = mapped_column(JSONB, default=<span class="c-kw">dict</span>)
+
+<span class="c-cm"># 7 focus modes, auto-seeded by generate_skill_graph.py</span>
+<span class="c-var">FOCUS_MODES</span> = [
     <span class="c-str">"orchestrator"</span>, <span class="c-str">"devsecops"</span>, <span class="c-str">"data"</span>,
     <span class="c-str">"trader"</span>, <span class="c-str">"creative"</span>, <span class="c-str">"social"</span>, <span class="c-str">"journalist"</span>
 ]
@@ -920,19 +949,33 @@ body {
         </div>
 
         <div class="code-block">
-            <div class="code-block-label">aria_engine/session_isolation.py</div>
-<span class="c-kw">class</span> <span class="c-fn">SessionIsolation</span>:
-    <span class="c-cm"># Session types</span>
-    <span class="c-var">INTERACTIVE</span> = <span class="c-str">"interactive"</span>  <span class="c-cm"># Human chat</span>
-    <span class="c-var">CRON</span>        = <span class="c-str">"cron"</span>         <span class="c-cm"># Scheduled job</span>
-    <span class="c-var">SUBAGENT</span>    = <span class="c-str">"subagent"</span>     <span class="c-cm"># Delegated task</span>
+            <div class="code-block-label">aria_engine/session_manager.py</div>
+<span class="c-kw">from</span> enum <span class="c-kw">import</span> Enum
+<span class="c-kw">from</span> dataclasses <span class="c-kw">import</span> dataclass, field
+<span class="c-kw">from</span> datetime <span class="c-kw">import</span> datetime, timedelta
 
-    <span class="c-cm"># Each session has:</span>
-    <span class="c-var">token_count</span>:     <span class="c-var">int</span>      <span class="c-cm"># Running total</span>
-    <span class="c-var">cost_usd</span>:        <span class="c-var">float</span>    <span class="c-cm"># Accumulated cost</span>
-    <span class="c-var">message_history</span>: <span class="c-var">list</span>     <span class="c-cm"># Conversation buffer</span>
-    <span class="c-var">active_model</span>:    <span class="c-var">str</span>      <span class="c-cm"># Current LLM</span>
-    <span class="c-var">agent_context</span>:   <span class="c-var">dict</span>     <span class="c-cm"># Focus + mind files</span>
+<span class="c-kw">class</span> <span class="c-fn">SessionType</span>(Enum):
+    INTERACTIVE = <span class="c-str">"interactive"</span>   <span class="c-cm"># Human chat via WebSocket</span>
+    CRON        = <span class="c-str">"cron"</span>          <span class="c-cm"># Scheduled job (isolated)</span>
+    SUBAGENT    = <span class="c-str">"subagent"</span>      <span class="c-cm"># Delegated by another agent</span>
+
+@dataclass
+<span class="c-kw">class</span> <span class="c-fn">AgentSession</span>:
+    session_id:      <span class="c-var">str</span>
+    session_type:    SessionType
+    active_model:    <span class="c-var">str</span>             = <span class="c-str">"qwen3-mlx"</span>
+    token_count:     <span class="c-var">int</span>             = <span class="c-num">0</span>
+    cost_usd:        <span class="c-var">float</span>           = <span class="c-num">0.0</span>
+    message_history: <span class="c-var">list</span>[<span class="c-var">dict</span>]     = field(default_factory=<span class="c-var">list</span>)
+    agent_context:   <span class="c-var">dict</span>            = field(default_factory=<span class="c-var">dict</span>)
+    created_at:      <span class="c-var">datetime</span>        = field(default_factory=datetime.utcnow)
+
+    <span class="c-kw">def</span> <span class="c-fn">is_stale</span>(self, max_age: timedelta = timedelta(hours=<span class="c-num">24</span>)) -&gt; <span class="c-var">bool</span>:
+        <span class="c-kw">return</span> datetime.utcnow() - self.created_at &gt; max_age
+
+    <span class="c-kw">def</span> <span class="c-fn">log_tokens</span>(self, prompt_tokens: <span class="c-var">int</span>, completion_tokens: <span class="c-var">int</span>, cost: <span class="c-var">float</span>):
+        self.token_count += prompt_tokens + completion_tokens
+        self.cost_usd += cost
         </div>
 
         <p>
@@ -954,16 +997,34 @@ body {
 
         <div class="code-block">
             <div class="code-block-label">aria_agents/scoring.py</div>
-<span class="c-cm"># Pheromone formula</span>
-<span class="c-var">score</span> = (<span class="c-var">success_rate</span> &times; <span class="c-num">0.6</span>) + (<span class="c-var">speed</span> &times; <span class="c-num">0.3</span>) + (<span class="c-var">cost_efficiency</span> &times; <span class="c-num">0.1</span>)
+<span class="c-kw">from</span> datetime <span class="c-kw">import</span> datetime, timedelta
+<span class="c-kw">from</span> typing <span class="c-kw">import</span> Optional
 
-<span class="c-cm"># Daily decay prevents permanent entrenchment</span>
-<span class="c-var">daily_decay</span> = <span class="c-num">0.95</span>
+<span class="c-var">DECAY_RATE</span>  = <span class="c-num">0.95</span>   <span class="c-cm"># Applied daily; 0.95^7 ≈ 0.70 after one silent week</span>
+<span class="c-var">W_SUCCESS</span>   = <span class="c-num">0.6</span>
+<span class="c-var">W_SPEED</span>     = <span class="c-num">0.3</span>
+<span class="c-var">W_COST</span>      = <span class="c-num">0.1</span>
 
-<span class="c-cm"># Selection: highest pheromone agent with matching skills wins</span>
-<span class="c-kw">def</span> <span class="c-fn">select_best_agent</span>(<span class="c-var">task</span>, <span class="c-var">available_agents</span>):
-    <span class="c-var">candidates</span> = [a <span class="c-kw">for</span> a <span class="c-kw">in</span> <span class="c-var">available_agents</span> <span class="c-kw">if</span> a.has_skill(<span class="c-var">task</span>.domain)]
-    <span class="c-kw">return</span> <span class="c-fn">max</span>(<span class="c-var">candidates</span>, key=<span class="c-kw">lambda</span> a: a.pheromone_score)
+<span class="c-kw">def</span> <span class="c-fn">pheromone_score</span>(agent, as_of: Optional[datetime] = <span class="c-kw">None</span>) -&gt; <span class="c-var">float</span>:
+    <span class="c-str">"""Weighted composite with time-decay. Higher = route more work here."""</span>
+    raw = (
+        agent.success_rate    * W_SUCCESS +
+        agent.speed_score     * W_SPEED +
+        agent.cost_efficiency * W_COST
+    )
+    as_of = as_of <span class="c-kw">or</span> datetime.utcnow()
+    days_idle = (as_of - agent.last_completed_at).total_seconds() / <span class="c-num">86400</span>
+    <span class="c-kw">return</span> raw * (DECAY_RATE ** days_idle)
+
+<span class="c-kw">def</span> <span class="c-fn">select_best_agent</span>(task, agents, as_of=<span class="c-kw">None</span>):
+    <span class="c-str">"""Pick the highest-pheromone agent whose skill set covers the task."""</span>
+    candidates = [
+        a <span class="c-kw">for</span> a <span class="c-kw">in</span> agents
+        <span class="c-kw">if</span> task.domain <span class="c-kw">in</span> a.skill_domains <span class="c-kw">and not</span> a.is_suspended
+    ]
+    <span class="c-kw">if not</span> candidates:
+        <span class="c-kw">raise</span> <span class="c-fn">NoEligibleAgentError</span>(task.domain)
+    <span class="c-kw">return</span> <span class="c-fn">max</span>(candidates, key=<span class="c-kw">lambda</span> a: pheromone_score(a, as_of))
         </div>
 
         <p>
@@ -1295,19 +1356,50 @@ body {
         </div>
 
         <div class="code-block">
-            <div class="code-block-label">Key Tables (aria_data schema)</div>
-<span class="c-var">semantic_memories</span>     <span class="c-cm"># pgvector 768d &mdash; long-term semantic storage</span>
-<span class="c-var">knowledge_entities</span>    <span class="c-cm"># Organic KG nodes (JSONB properties)</span>
-<span class="c-var">knowledge_relations</span>   <span class="c-cm"># Organic KG edges (typed relationships)</span>
-<span class="c-var">skill_graph_entities</span>  <span class="c-cm"># Auto-generated skill graph nodes</span>
-<span class="c-var">skill_graph_relations</span> <span class="c-cm"># Auto-generated skill graph edges</span>
-<span class="c-var">goals</span>                 <span class="c-cm"># Goal hierarchy with progress tracking</span>
-<span class="c-var">activity_log</span>          <span class="c-cm"># Every action Aria takes, timestamped</span>
-<span class="c-var">model_usage</span>           <span class="c-cm"># LLM call logs (model, tokens, cost, latency)</span>
-<span class="c-var">skill_invocations</span>     <span class="c-cm"># Skill usage logs (skill, tool, duration, status)</span>
-<span class="c-var">working_memory</span>        <span class="c-cm"># Key-value store for real-time state</span>
-<span class="c-var">thoughts</span>              <span class="c-cm"># Internal reflections and diary entries</span>
-<span class="c-var">knowledge_query_log</span>  <span class="c-cm"># Every graph traversal, with tokens saved</span>
+            <div class="code-block-label">alembic/versions/003_aria_data_schema.py &mdash; key tables</div>
+<span class="c-kw">def</span> <span class="c-fn">upgrade</span>() -&gt; <span class="c-kw">None</span>:
+    op.execute(<span class="c-str">"CREATE SCHEMA IF NOT EXISTS aria_data"</span>)
+    op.execute(<span class="c-str">"CREATE EXTENSION IF NOT EXISTS vector"</span>)
+
+    <span class="c-cm"># ── Memory ──</span>
+    op.create_table(<span class="c-str">"semantic_memories"</span>, <span class="c-cm"># pgvector 768d, cosine similarity</span>
+        Column(<span class="c-str">"id"</span>, Integer, primary_key=<span class="c-kw">True</span>),
+        Column(<span class="c-str">"content"</span>, Text, nullable=<span class="c-kw">False</span>),
+        Column(<span class="c-str">"embedding"</span>, Vector(<span class="c-num">768</span>)),
+        Column(<span class="c-str">"importance"</span>, Float, default=<span class="c-num">0.5</span>),
+        Column(<span class="c-str">"access_count"</span>, Integer, default=<span class="c-num">0</span>),
+        schema=<span class="c-str">"aria_data"</span>,
+    )
+    <span class="c-cm"># ── Knowledge Graph (organic) ──</span>
+    op.create_table(<span class="c-str">"knowledge_entities"</span>,  <span class="c-cm"># JSONB properties per node</span>
+        Column(<span class="c-str">"id"</span>, Integer, primary_key=<span class="c-kw">True</span>),
+        Column(<span class="c-str">"name"</span>, String(<span class="c-num">200</span>), unique=<span class="c-kw">True</span>),
+        Column(<span class="c-str">"entity_type"</span>, String(<span class="c-num">50</span>)),
+        Column(<span class="c-str">"properties"</span>, JSONB, default={}),
+        schema=<span class="c-str">"aria_data"</span>,
+    )
+    op.create_table(<span class="c-str">"knowledge_relations"</span>,
+        Column(<span class="c-str">"source_id"</span>, Integer, ForeignKey(<span class="c-str">"aria_data.knowledge_entities.id"</span>)),
+        Column(<span class="c-str">"target_id"</span>, Integer, ForeignKey(<span class="c-str">"aria_data.knowledge_entities.id"</span>)),
+        Column(<span class="c-str">"relation_type"</span>, String(<span class="c-num">50</span>)),  <span class="c-cm"># provides | belongs_to | affinity | depends_on</span>
+        schema=<span class="c-str">"aria_data"</span>,
+    )
+    <span class="c-cm"># ── Telemetry ──</span>
+    op.create_table(<span class="c-str">"model_usage"</span>,         <span class="c-cm"># every LLM call: model, tokens, cost, latency</span>
+        ...)
+    op.create_table(<span class="c-str">"skill_invocations"</span>,   <span class="c-cm"># every skill: tool, duration, success/fail</span>
+        ...)
+    op.create_table(<span class="c-str">"activity_log"</span>,        <span class="c-cm"># timestamped action log</span>
+        ...)
+    <span class="c-cm"># ── Cognition ──</span>
+    op.create_table(<span class="c-str">"goals"</span>,               <span class="c-cm"># hierarchy with progress tracking</span>
+        ...)
+    op.create_table(<span class="c-str">"working_memory"</span>,      <span class="c-cm"># key-value store for real-time state</span>
+        ...)
+    op.create_table(<span class="c-str">"thoughts"</span>,            <span class="c-cm"># reflections, diary entries</span>
+        ...)
+    op.create_table(<span class="c-str">"knowledge_query_log"</span>, <span class="c-cm"># every graph traversal, tokens saved</span>
+        ...)
         </div>
 
         <p>
