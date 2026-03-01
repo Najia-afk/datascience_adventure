@@ -542,7 +542,7 @@ body {
             Pipelines are Aria's compound workflows. Each is defined in YAML, parsed into a <strong>directed
             acyclic graph</strong>, topologically sorted, and executed with parallel branches via
             <code>asyncio.gather()</code>. Steps can reference outputs from prior steps using
-            <code>{{context.step_name.field}}</code> templates.
+            <code>&#123;&#123;context.step_name.field&#125;&#125;</code> templates.
         </p>
 
         <div class="code-block">
@@ -559,7 +559,7 @@ body {
     <span class="c-kw">skill:</span> research
     <span class="c-kw">method:</span> <span class="c-fn">deep_search</span>
     <span class="c-kw">params:</span>
-      <span class="c-var">topics:</span> <span class="c-str">"{{context.check_goals.focus_areas}}"</span>
+      <span class="c-var">topics:</span> <span class="c-str">"&#123;&#123;context.check_goals.focus_areas&#125;&#125;"</span>
     <span class="c-kw">depends_on:</span> [<span class="c-str">check_goals</span>]
     <span class="c-kw">on_failure:</span> <span class="c-str">retry:2</span>
 
@@ -619,7 +619,7 @@ body {
                 <div class="icon">🔗</div>
                 <h4>Template Resolution</h4>
                 <p>
-                    Parameters support <code>{{context.step.field}}</code> templates, resolved at runtime
+                    Parameters support <code>&#123;&#123;context.step.field&#125;&#125;</code> templates, resolved at runtime
                     from prior step outputs. Enables dynamic data flow across the pipeline.
                 </p>
             </div>
