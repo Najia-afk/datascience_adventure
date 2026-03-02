@@ -139,12 +139,12 @@
                     html.clientHeight, html.scrollHeight, html.offsetHeight
                 );
                 
-                console.log("Detected iframe height:", height);
-                
                 if (height > 0) {
-                    // Only update if height changed significantly to avoid jitter
-                    const currentHeight = parseInt(iframe.style.height || 0);
-                    if (Math.abs(height + 50 - currentHeight) > 10) {
+                    // Only update if the content height actually changed
+                    // Compare against raw content height (without padding) to prevent infinite loops
+                    const lastContentHeight = window.dsaApp._lastContentHeight || 0;
+                    if (Math.abs(height - lastContentHeight) > 10) {
+                        window.dsaApp._lastContentHeight = height;
                         iframe.style.height = `${height + 50}px`;
                     }
                     
@@ -244,6 +244,7 @@
             }
             
             window.dsaApp.resizeCounter = 0;
+            window.dsaApp._lastContentHeight = 0;
             window.dsaApp.resizeTimer = setInterval(function() {
                 window.dsaApp.resizeCounter++;
                 const loaded = handleIframeResize();
