@@ -1,17 +1,17 @@
 <div class="logo">
-    <a href="/" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML">
+    <a href="/" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="/">
         <img src="/logos/logo_dsa.png" alt="DSA Logo">
         <span>DataScience Adventure</span>
     </a>
 </div>
 <nav class="nav-links">
-    <a href="/" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML" class="nav-link">Home</a>
+    <a href="/" hx-get="/summary" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="/" class="nav-link">Home</a>
     
     <div class="dropdown">
         <button class="nav-link dropdown-btn">Projects ▾</button>
         <div class="dropdown-content">
-            <a href="/project/aria" hx-get="/project/aria" hx-target="#main-content" hx-swap="innerHTML">⚡ Aria Blue</a>
-            <a href="/project/bubble" hx-get="/project/bubble" hx-target="#main-content" hx-swap="innerHTML">🔍 Bubble</a>
+            <a href="/project/aria" hx-get="/project/aria" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true">⚡ Aria Blue</a>
+            <a href="/project/bubble" hx-get="/project/bubble" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true">🔍 Bubble</a>
             <a href="#" style="border-top: 1px solid var(--border); opacity: 0.5; pointer-events: none; font-size: 0.7rem;">DATA SCIENCE PROJECTS</a>
             <a href="/mission2" hx-get="/mission2" hx-target="body" hx-swap="innerHTML">📊 World Bank Education Analysis</a>
             <a href="/mission3" hx-get="/mission3" hx-target="body" hx-swap="innerHTML">🍎 Nutriscore Correlations</a>
@@ -27,7 +27,7 @@
         <button class="nav-link dropdown-btn">Articles ▾</button>
         <div class="dropdown-content">
             {% for art in articles %}
-            <a href="{{ art.route }}" hx-get="{{ art.route }}" hx-target="#main-content" hx-swap="innerHTML">{{ art.short_title }}</a>
+            <a href="{{ art.route }}" hx-get="{{ art.route }}" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true">{{ art.short_title }}</a>
             {% endfor %}
         </div>
     </div>
@@ -35,12 +35,12 @@
     <div class="dropdown">
         <button class="nav-link dropdown-btn">Dashboard ▾</button>
         <div class="dropdown-content">
-            <a href="/dashboard/home-credit" hx-get="/dashboard/home-credit" hx-target="#main-content" hx-swap="innerHTML">Home Credit AI</a>
+            <a href="/dashboard/home-credit" hx-get="/dashboard/home-credit" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true">Home Credit AI</a>
         </div>
     </div>
 
-    <a href="/feed" hx-get="/feed" hx-target="#main-content" hx-swap="innerHTML" class="nav-link">Feed</a>
-    <a href="/contact" hx-get="/contact" hx-target="#main-content" hx-swap="innerHTML" class="nav-link">Contact</a>
+    <a href="/feed" hx-get="/feed" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true" class="nav-link">Feed</a>
+    <a href="/contact" hx-get="/contact" hx-target="#main-content" hx-swap="innerHTML" hx-push-url="true" class="nav-link">Contact</a>
     
     <!-- Login/User section - will be populated by JavaScript -->
     <div id="auth-section">

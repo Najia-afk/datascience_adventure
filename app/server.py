@@ -558,9 +558,18 @@ def create_app():
         if os.path.exists(candidate_path2):
             return render_template(f'templates/{mission_path}.html')
 
-        # Fallback: return the generic mission layout which contains the iframe and HTMX hooks
-        # This allows HTMX calls like hx-get="/mission7" to return the interactive layout.
-        return render_template('mission_layout.html')
+        # Only fall back to mission layout if a matching _content.html file exists
+        # (the mission layout fetches {mission_path}_content.html via HTMX)
+        content_file = f'{mission_path}_content.html'
+        content_locations = [
+            os.path.join(content_dir, content_file),
+            os.path.join(content_dir, 'templates', content_file),
+        ]
+        if any(os.path.exists(loc) for loc in content_locations):
+            return render_template('mission_layout.html')
+
+        # No matching page or content found — return 404
+        abort(404)
 
     # Dynamic route for mission content HTML files
     @app.route('/<path:mission_path>_content.html')
