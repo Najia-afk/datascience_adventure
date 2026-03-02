@@ -2494,8 +2494,7 @@ self._circuit_opened_at = time.monotonic()  <span class="c-cm"># ← dead write<
                         values.size = values.size * 1.2;
                     }
                 }
-            },
-            background: 'transparent'
+            }
         };
 
         var network = new vis.Network(container, { nodes: nodesDS, edges: edgesDS }, options);
