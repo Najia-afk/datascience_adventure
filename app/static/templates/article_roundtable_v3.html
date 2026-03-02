@@ -347,12 +347,7 @@
 
 <script>
 (function() {
-    // Wait for vis.js to load
     function initGraph() {
-        if (typeof vis === 'undefined') {
-            setTimeout(initGraph, 100);
-            return;
-        }
 
         var container = document.getElementById('roundtable-graph');
         if (!container) return;
@@ -444,8 +439,18 @@
         });
     }
 
-    // Small delay to ensure DOM is ready
-    setTimeout(initGraph, 200);
+    (function waitForVis() {
+        var retries = 0;
+        var interval = setInterval(function() {
+            if (typeof vis !== 'undefined' && vis.Network) {
+                clearInterval(interval);
+                initGraph();
+            } else if (++retries >= 100) {
+                clearInterval(interval);
+                console.warn('vis-network failed to load after 10s');
+            }
+        }, 100);
+    })();
 })();
 </script>
 

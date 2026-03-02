@@ -1410,7 +1410,6 @@ body {
 <script>
 (function() {
     function initGraph() {
-        if (typeof vis === 'undefined') { setTimeout(initGraph, 100); return; }
         var container = document.getElementById('story-graph');
         if (!container) return;
 
@@ -1501,7 +1500,18 @@ body {
             network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
         });
     }
-    setTimeout(initGraph, 200);
+    (function waitForVis() {
+        var retries = 0;
+        var interval = setInterval(function() {
+            if (typeof vis !== 'undefined' && vis.Network) {
+                clearInterval(interval);
+                initGraph();
+            } else if (++retries >= 100) {
+                clearInterval(interval);
+                console.warn('vis-network failed to load after 10s');
+            }
+        }, 100);
+    })();
 })();
 </script>
 
@@ -1509,7 +1519,6 @@ body {
 <script>
 (function() {
     function initCharts() {
-        if (typeof Chart === 'undefined') { setTimeout(initCharts, 100); return; }
 
         Chart.defaults.color = '#b0b0cc';
         Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
@@ -1626,6 +1635,17 @@ body {
             }
         });
     }
-    setTimeout(initCharts, 300);
+    (function waitForChart() {
+        var retries = 0;
+        var interval = setInterval(function() {
+            if (typeof Chart !== 'undefined') {
+                clearInterval(interval);
+                initCharts();
+            } else if (++retries >= 100) {
+                clearInterval(interval);
+                console.warn('Chart.js failed to load after 10s');
+            }
+        }, 100);
+    })();
 })();
 </script>

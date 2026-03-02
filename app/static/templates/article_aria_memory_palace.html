@@ -1059,7 +1059,18 @@ body {
             network.setOptions({ physics: { enabled: false } });
         });
     }
-    setTimeout(initGraph, 600);
+    (function waitForVis() {
+        var retries = 0;
+        var interval = setInterval(function() {
+            if (typeof vis !== 'undefined' && vis.Network) {
+                clearInterval(interval);
+                initGraph();
+            } else if (++retries >= 100) {
+                clearInterval(interval);
+                console.warn('vis-network failed to load after 10s');
+            }
+        }, 100);
+    })();
 })();
 </script>
 
@@ -1273,6 +1284,17 @@ body {
         });
     }
 
-    setTimeout(initCharts, 300);
+    (function waitForChart() {
+        var retries = 0;
+        var interval = setInterval(function() {
+            if (typeof Chart !== 'undefined') {
+                clearInterval(interval);
+                initCharts();
+            } else if (++retries >= 100) {
+                clearInterval(interval);
+                console.warn('Chart.js failed to load after 10s');
+            }
+        }, 100);
+    })();
 })();
 </script>
