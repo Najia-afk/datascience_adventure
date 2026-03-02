@@ -44,5 +44,12 @@ python3 /app/utils/scripts/validate_article_sidecars.py /app/app/static/template
 # (deploy.sh copies them, but as a safety net, copy again from source)
 cp -rv /app/app/static/templates/* /var/www/htmx_website/templates/ 2>/dev/null || true
 
+# Copy ALL generated content back to /srv/htmx_website/ so it's baked into the image.
+# deploy.sh writes missions, scripts, etc. to /var/www/htmx_website/ but that path
+# gets overlaid by the Docker volume at runtime. /srv/ survives and start_app.sh
+# syncs it into the volume on each container start.
+cp -a /var/www/htmx_website/. /srv/htmx_website/
+
 # Fix permissions for the web directory to be readable by everyone (for Nginx)
 chmod -R 755 /var/www/htmx_website
+chmod -R 755 /srv/htmx_website
